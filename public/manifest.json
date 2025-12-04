@@ -1,0 +1,67 @@
+{
+  "name": "Heydi",
+  "short_name": "Heydi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#D4B6A6",
+  "theme_color": "#000000",
+  "gcm_sender_id": "103953800507",
+
+  "icons": [
+    {
+      "src": "icons/icon-24x24.svg",
+      "sizes": "24x24",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-32x32.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-48x48.svg",
+      "sizes": "48x48",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-72x72.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-96x96.svg",
+      "sizes": "96x96",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-128x128.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-144x144.svg",
+      "sizes": "144x144",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-152x152.svg",
+      "sizes": "152x152",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [{
+      "src": "/screenshots/mobile.png",
+      "sizes": "600x1000",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}
