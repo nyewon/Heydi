@@ -1,12 +1,14 @@
 /*
- * Signup - 회원가입 화면
+ * ProfileEdit - 프로필 수정 화면
  *
  * 세부사항:
  * - 프로필 이미지 선택 기능
- * - 아이디, 비밀번호, 닉네임 입력 폼
- * - 아이디 중복 확인, 회원가입 가이드 모달
+ * - 아이디 수정 불가, readOnly 처리
+ * - 비밀번호 변경 기능
+ * - 닉네임 수정 기능(현재 닉네임 표시)
+ * - 회원가입 가이드 모달
  * - 유효성 검사
- * - 회원가입 완료 후 Login으로 이동
+ * - 프로필 수정 완료 후 Mypage로 이동
  */
 
 import { useState } from "react";
@@ -16,70 +18,55 @@ import {
   Container,
   Input,
   Button,
-  IdCheckModal,
   GuideModal,
 } from "@components/index";
 import { useProfileImage } from "@hooks/useProfileImage";
-import {
-  validateId,
-  validatePassword,
-  validateNickname,
-} from "@utils/validate";
+import { validatePassword, validateNickname } from "@utils/validate";
 import Profile from "@assets/icons/profile.svg?react";
 import Plus from "@assets/icons/plus.svg?react";
 import { IoMdInformationCircle } from "react-icons/io";
 
-const Signup = () => {
+const ProfileEdit = () => {
   const navigate = useNavigate();
 
-  const [id, setId] = useState("");
+  const user = {
+    email: "test1@email.com",
+    nickname: "TestUser",
+    profile_url: "",
+  };
+
+  const [email] = useState(user.email);
   const [pw, setPw] = useState("");
   const [pwCheck, setPwCheck] = useState("");
-  const [nickname, setNickname] = useState("");
+  const [nickname, setNickname] = useState(user.nickname);
   const [error, setError] = useState("");
-  const [isIdChecked, setIsIdChecked] = useState(false);
-  const [modalType, setModalType] = useState<null | "success" | "fail">(null);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   const { profileImg, fileInputRef, handleSelectImage, openFileDialog } =
     useProfileImage();
 
-  const handleCheckId = () => {
-    setModalType("success");
-    setIsIdChecked(true);
-  };
+  const profileImage = profileImg || user.profile_url || "";
 
-  const handleSignup = () => {
+  const handleSaveProfile = () => {
     setError("");
 
-    if (!id || !pw || !pwCheck || !nickname) {
-      setError("회원가입 양식이 일치하지 않습니다.");
+    if (!validateNickname(nickname)) {
+      setError("닉네임 형식이 올바르지 않습니다.");
       return;
     }
 
-    if (
-      !validateId(id) ||
-      !validatePassword(pw) ||
-      !validateNickname(nickname)
-    ) {
-      setError("회원가입 양식이 일치하지 않습니다.");
+    if (pw && (!validatePassword(pw) || pw !== pwCheck)) {
+      setError("비밀번호가 유효하지 않거나 서로 일치하지 않습니다.");
       return;
     }
 
-    if (pw !== pwCheck) {
-      setError("비밀번호가 서로 일치하지 않습니다.");
-      return;
-    }
-
-    alert("회원가입 성공!");
+    alert("프로필 수정 완료!");
     navigate(-1);
   };
 
   const isDisabled =
-    !isIdChecked ||
-    !validatePassword(pw) ||
-    pw !== pwCheck ||
-    !validateNickname(nickname);
+    !validateNickname(nickname) ||
+    (pw.length > 0 && (!validatePassword(pw) || pw !== pwCheck));
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -87,9 +74,9 @@ const Signup = () => {
 
       <Container className="pt-6 flex flex-col items-center w-full">
         <div className="relative flex items-center justify-center mt-5 mb-18">
-          {profileImg ? (
+          {profileImage ? (
             <img
-              src={profileImg}
+              src={profileImage}
               alt="profile"
               className="w-28 h-28 rounded-full object-cover"
             />
@@ -125,47 +112,30 @@ const Signup = () => {
           <div className="relative w-full">
             <input
               type="text"
-              placeholder="아이디를 입력하세요."
-              value={id}
-              onChange={e => {
-                if (!isIdChecked) {
-                  setId(e.target.value);
-                  setIsIdChecked(false);
-                  setError("");
-                }
-              }}
-              readOnly={isIdChecked}
+              value={email}
+              readOnly
               className="
-                w-full h-12 px-4 pr-24
-                rounded-[8px] border text-sm outline-none
-                placeholder-[#D0D0D0]
-                text-[#4A4A4A] border-[#D9D9D9]
+                w-full h-12 px-4 rounded-[8px] border text-sm 
+                outline-none bg-[#FFFFFF] cursor-not-allowed
+                text-[#D9D9D9] border-[#D9D9D9]
               "
             />
 
-            <button
-              onClick={handleCheckId}
-              disabled={!validateId(id) || isIdChecked}
-              className={`
+            <div
+              className="
                 absolute top-1/2 -translate-y-1/2 right-[10px]
-                w-20 h-8 rounded-[8px] text-sm text-white
+                w-20 h-8 rounded-[8px] text-sm 
                 flex items-center justify-center
-                ${
-                  isIdChecked
-                    ? "bg-[#EFE8E1] text-[#4A4A4A] cursor-not-allowed"
-                    : validateId(id)
-                      ? "bg-[#D4B6A6]"
-                      : "bg-[#D9D9D9]"
-                }
-              `}
+                bg-[#EFE8E1] text-[#FFFFFF]
+              "
             >
-              {isIdChecked ? "확인완료" : "중복확인"}
-            </button>
+              확인완료
+            </div>
           </div>
 
           <Input
             type="text"
-            placeholder="비밀번호를 입력하세요."
+            placeholder="기존 비밀번호를 입력하세요."
             value={pw}
             onChange={e => {
               setPw(e.target.value);
@@ -174,8 +144,8 @@ const Signup = () => {
           />
 
           <Input
-            type="password"
-            placeholder="비밀번호를 재입력 하세요."
+            type="text"
+            placeholder="변경할 비밀번호를 입력하세요."
             value={pwCheck}
             onChange={e => {
               setPwCheck(e.target.value);
@@ -202,23 +172,17 @@ const Signup = () => {
         <Button
           variant="full"
           disabled={isDisabled}
-          onClick={handleSignup}
+          onClick={handleSaveProfile}
           className="w-full mt-24"
         >
-          회원가입하기
+          프로필 수정하기
         </Button>
       </Container>
 
-      {modalType && (
-        <IdCheckModal
-          isOpen={modalType !== null}
-          type={modalType}
-          onClose={() => setModalType(null)}
-        />
-      )}
+      {/* 모달들 */}
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
     </div>
   );
 };
 
-export default Signup;
+export default ProfileEdit;
