@@ -44,7 +44,7 @@ const DiaryChat = () => {
     <div className="w-full flex flex-col items-center">
       <BackHeader />
 
-      <Container className="mt-6">
+      <Container className="pt-4 pb-10">
         <div className="flex flex-col items-center text-center">
           <span className="text-2xl font-bold text-[#76615A] mt-5">
             {today}

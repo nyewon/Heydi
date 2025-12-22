@@ -15,13 +15,8 @@ import {
   DefaultHeader,
   DiaryCard,
 } from "@components/index";
-
-const dummyData = [
-  { date: "12월 8일", emotion: "무난함", topic: "여행/비" },
-  { date: "12월 7일", emotion: "행복", topic: "여행" },
-  { date: "12월 5일", emotion: "슬픔", topic: "학교" },
-  { date: "12월 2일", emotion: "짜증", topic: "친구" },
-];
+import { DIARY_LIST_DUMMIES } from "@mocks/diary";
+import { EMOTIONS } from "@constants/emotions";
 
 const Diary = () => {
   const navigate = useNavigate();
@@ -31,13 +26,13 @@ const Diary = () => {
       <DefaultHeader showIcon="diary" />
 
       <Container withBottomNav={true}>
-        {dummyData.map((item, index) => (
+        {DIARY_LIST_DUMMIES.map(item => (
           <DiaryCard
-            key={index}
-            date={item.date}
-            emotion={item.emotion}
-            topic={item.topic}
-            onClick={() => navigate(`/diary/detail/${index}`)}
+            key={item.diaryId}
+            date={item.title}
+            emotion={EMOTIONS[item.emotion]}
+            topic={item.topics.join(" / ")}
+            onClick={() => navigate(`/diary/detail/${item.diaryId}`)}
           />
         ))}
       </Container>

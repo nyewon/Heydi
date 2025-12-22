@@ -1,39 +1,21 @@
 /*
- * AccountModal - 계정 관련(로그아웃, 회원탈퇴) 모달
+ * PdfModal - PDF로 내보내기 모달
  */
 
-import { RxExit } from "react-icons/rx";
+import { RiShareForward2Fill } from "react-icons/ri";
 import { Button, Modal } from "@components/index";
 
-type AccountConfirmType = "logout" | "withdraw";
-
-interface AccountModalProps {
+interface PdfModalProps {
   isOpen: boolean;
-  type: AccountConfirmType;
   onConfirm: () => void;
   onClose: () => void;
 }
 
-const AccountModal = ({
-  isOpen,
-  type,
-  onConfirm,
-  onClose,
-}: AccountModalProps) => {
-  const titles = {
-    logout: "로그아웃",
-    withdraw: "회원탈퇴",
-  };
-
-  const messages = {
-    logout: "로그아웃 하시겠습니까?",
-    withdraw: "회원을 탈퇴 하시겠습니까?",
-  };
-
+const PdfModal = ({ isOpen, onConfirm, onClose }: PdfModalProps) => {
   return (
     <Modal
       isOpen={isOpen}
-      title={titles[type]}
+      title="일기 내보내기"
       onClose={onClose}
       footer={
         <div className="flex gap-3 w-full justify-center">
@@ -52,13 +34,13 @@ const AccountModal = ({
       }
     >
       <div className="flex items-center gap-3 px-3 py-3 bg-[#EFE8E1] rounded-lg mt-2 mb-6">
-        <RxExit size={20} color="#B28C7E" />
+        <RiShareForward2Fill size={20} color="#B28C7E" />
         <span className="text-sm text-[#4A4A4A] font-semibold">
-          {messages[type]}
+          PDF로 내보내시겠습니까?
         </span>
       </div>
     </Modal>
   );
 };
 
-export default AccountModal;
+export default PdfModal;

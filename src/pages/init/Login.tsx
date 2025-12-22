@@ -90,7 +90,7 @@ const LoginPage = () => {
         <div className="flex-1 h-[1px] bg-[#D9D9D9]" />
       </div>
 
-      <p className="text-[10px] text-[#D9D9D9] mb-20">
+      <p className="text-xs text-[#D9D9D9] mb-20">
         아직 회원가입을 안하셨나요?
         <span
           className="text-[#D4B6A6] font-semibold cursor-pointer ml-2"

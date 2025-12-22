@@ -11,6 +11,7 @@ import {
   DiaryWaiting,
   DiaryChat,
   DiaryDetail,
+  DiaryEdit,
   Report,
   Community,
   CommunityDetail,
@@ -47,6 +48,7 @@ const App = () => {
             <Route path="/diary/wait" element={<DiaryWaiting />} />
             <Route path="/diary/chat/:sessionId" element={<DiaryChat />} />
             <Route path="/diary/detail/:diaryId" element={<DiaryDetail />} />
+            <Route path="/diary/edit/:diaryId" element={<DiaryEdit />} />
 
             {/* Report */}
             <Route path="/report" element={<Report />} />

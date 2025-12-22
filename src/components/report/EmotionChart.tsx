@@ -1,4 +1,4 @@
-import { EMOTION_ICONS, EmotionKey } from "@/constants/emotions";
+import { EMOTION_S_ICONS, EmotionKey } from "@/constants/emotions";
 
 const EmotionChart = () => {
   const data: { week: string; percent: number; emotion: EmotionKey }[] = [
@@ -25,7 +25,7 @@ const EmotionChart = () => {
         {data.map((item, idx) => (
           <div key={idx} className="flex flex-col items-center gap-0">
             <div className="w-6 h-6 flex justify-center items-center mb-1">
-              {EMOTION_ICONS[item.emotion]}
+              {EMOTION_S_ICONS[item.emotion]}
             </div>
 
             <div

@@ -1,3 +1,13 @@
+/*
+ * CommunityCard - 커뮤니티 카드 컴포넌트
+ *
+ * 세부사항:
+ * - Community Page에서 사용
+ * - 프로필 이미지, 작성자, 날짜, 제목, 감정, 주제, 내용, 좋아요 수, 댓글 수 표시
+ * - 좋아요 버튼 클릭 시 상태 변경
+ * - 카드 클릭 시 상세 페이지로 이동 가능
+ */
+
 import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";

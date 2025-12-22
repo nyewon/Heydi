@@ -1,3 +1,10 @@
+/*
+ * Loading - 로딩 화면
+ *
+ * 세부사항:
+ * - 로딩 중인 상태 표시
+ */
+
 import { Container } from "@components/index";
 
 const Loading = () => {

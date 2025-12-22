@@ -1,33 +1,33 @@
 /*
- * AccountModal - 계정 관련(로그아웃, 회원탈퇴) 모달
+ * DeleteModal - 일기 및 공유글 삭제 모달
  */
 
-import { RxExit } from "react-icons/rx";
+import { TiDelete } from "react-icons/ti";
 import { Button, Modal } from "@components/index";
 
-type AccountConfirmType = "logout" | "withdraw";
+type DeleteType = "diary" | "post";
 
-interface AccountModalProps {
+interface DeleteModalProps {
   isOpen: boolean;
-  type: AccountConfirmType;
+  type: DeleteType;
   onConfirm: () => void;
   onClose: () => void;
 }
 
-const AccountModal = ({
+const DeleteModal = ({
   isOpen,
   type,
   onConfirm,
   onClose,
-}: AccountModalProps) => {
+}: DeleteModalProps) => {
   const titles = {
-    logout: "로그아웃",
-    withdraw: "회원탈퇴",
+    diary: "일기 삭제",
+    post: "공유글 삭제",
   };
 
   const messages = {
-    logout: "로그아웃 하시겠습니까?",
-    withdraw: "회원을 탈퇴 하시겠습니까?",
+    diary: "일기를 삭제하시겠습니까?",
+    post: "공유한 글을 삭제하시겠습니까?",
   };
 
   return (
@@ -52,8 +52,12 @@ const AccountModal = ({
       }
     >
       <div className="flex items-center gap-3 px-3 py-3 bg-[#EFE8E1] rounded-lg mt-2 mb-6">
-        <RxExit size={20} color="#B28C7E" />
-        <span className="text-sm text-[#4A4A4A] font-semibold">
+        <TiDelete size={28} color="#B28C7E" />
+        <span
+          className={`text-[#4A4A4A] font-semibold ${
+            type === "post" ? "text-xs" : "text-sm"
+          }`}
+        >
           {messages[type]}
         </span>
       </div>
@@ -61,4 +65,4 @@ const AccountModal = ({
   );
 };
 
-export default AccountModal;
+export default DeleteModal;
