@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 interface ModalProps {
@@ -10,6 +10,18 @@ interface ModalProps {
 }
 
 const Modal = ({ isOpen, title, children, onClose, footer }: ModalProps) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return createPortal(
@@ -37,13 +49,13 @@ const Modal = ({ isOpen, title, children, onClose, footer }: ModalProps) => {
 
         <div
           className="
-                text-center text-[#4A3F3A]
-                max-h-[400px] overflow-y-auto pr-1
-                [&::-webkit-scrollbar]:w-2
-                [&::-webkit-scrollbar-track]:bg-transparent
-                [&::-webkit-scrollbar-thumb]:bg-[#B28C7E]
-                [&::-webkit-scrollbar-thumb]:rounded-full
-            "
+            text-center text-[#4A3F3A]
+            max-h-[400px] overflow-y-auto pr-1
+            [&::-webkit-scrollbar]:w-2
+            [&::-webkit-scrollbar-track]:bg-transparent
+            [&::-webkit-scrollbar-thumb]:bg-[#B28C7E]
+            [&::-webkit-scrollbar-thumb]:rounded-full
+          "
         >
           {children}
         </div>

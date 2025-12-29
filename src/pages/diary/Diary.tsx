@@ -16,7 +16,6 @@ import {
   DiaryCard,
 } from "@components/index";
 import { DIARY_LIST_DUMMIES } from "@mocks/diary";
-import { EMOTIONS } from "@constants/emotions";
 
 const Diary = () => {
   const navigate = useNavigate();
@@ -26,15 +25,17 @@ const Diary = () => {
       <DefaultHeader showIcon="diary" />
 
       <Container withBottomNav={true}>
-        {DIARY_LIST_DUMMIES.map(item => (
-          <DiaryCard
-            key={item.diaryId}
-            date={item.title}
-            emotion={EMOTIONS[item.emotion]}
-            topic={item.topics.join(" / ")}
-            onClick={() => navigate(`/diary/detail/${item.diaryId}`)}
-          />
-        ))}
+        {[...DIARY_LIST_DUMMIES]
+          .sort((a, b) => Number(b.diaryId) - Number(a.diaryId))
+          .map(item => (
+            <DiaryCard
+              key={item.diaryId}
+              title={item.title}
+              emotion={item.emotion}
+              topics={item.topics}
+              onClick={() => navigate(`/diary/detail/${item.diaryId}`)}
+            />
+          ))}
       </Container>
 
       <BottomNav />

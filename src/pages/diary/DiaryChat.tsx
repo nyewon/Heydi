@@ -60,11 +60,8 @@ const DiaryChat = () => {
             w-full bg-white rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.1)]
             border border-[#E0CFC5] p-4 mt-6
             h-[400px] overflow-y-auto
-
-            [&::-webkit-scrollbar]:w-[6px]
-            [&::-webkit-scrollbar-thumb]:bg-[#B28C7E]
-            [&::-webkit-scrollbar-thumb]:border-transparent 
-            [&::-webkit-scrollbar-thumb]:rounded-[2px]
+            scrollbar-none
+            [&::-webkit-scrollbar]:hidden
           "
         >
           <div className="flex flex-col gap-3">

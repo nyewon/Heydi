@@ -78,7 +78,7 @@ const DiaryDetail = () => {
         </DiaryInfoBox>
 
         <DiaryInfoBox label="오늘의 대화 내용">
-          <div className="w-full flex flex-col gap-2 max-h-[300px] overflow-y-auto pt-2">
+          <div className="w-full flex flex-col gap-2 max-h-[300px] overflow-y-auto pt-2 scrollbar-none [&::-webkit-scrollbar]:hidden">
             {diary.conversations.map((msg, idx) => (
               <div
                 key={idx}
