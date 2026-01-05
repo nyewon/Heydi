@@ -12,27 +12,28 @@ import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import DefaultProfile from "@assets/icons/profile_s.svg";
+import { EmotionKey, EMOTIONS } from "@constants/emotions";
 
 interface CommunityCardProps {
   profileImg?: string;
-  writer: string;
+  user: string;
   date: string;
   title: string;
-  emotion: string;
-  topic: string;
+  emotion: EmotionKey;
+  topics: string[];
   content: string;
   likes: number;
-  comments?: number;
+  comments: number;
   onClick?: () => void;
 }
 
 const CommunityCard = ({
   profileImg,
-  writer,
+  user,
   date,
   title,
   emotion,
-  topic,
+  topics,
   content,
   likes,
   comments = 0,
@@ -60,7 +61,7 @@ const CommunityCard = ({
             alt="profile"
             className="w-7 h-7 rounded-full object-cover"
           />
-          <span className="text-xs font-bold text-[#4A4A4A]">{writer}</span>
+          <span className="text-xs font-bold text-[#4A4A4A]">{user}</span>
         </div>
 
         <span className="text-[10px] text-[#4A4A4A]">{date}</span>
@@ -69,7 +70,7 @@ const CommunityCard = ({
       <p className="text-[14px] font-bold text-[#4A4A4A] mb-2">{title}</p>
 
       <p className="text-[12px] font-bold text-[#4A4A4A] mb-2">
-        감정: {emotion} &nbsp;&nbsp; 주제: {topic}
+        감정: {EMOTIONS[emotion]} &nbsp;&nbsp; 주제: {topics.join(" / ")}
       </p>
 
       <p className="text-[12px] leading-5 font-bold text-[#4A4A4A] line-clamp-3 mb-4">

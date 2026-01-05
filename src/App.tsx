@@ -14,7 +14,9 @@ import {
   DiaryEdit,
   Report,
   Community,
-  CommunityDetail,
+  PostDetail,
+  SelectDiary,
+  PostEdit,
   Mypage,
   ProfileEdit,
   Loading,
@@ -55,9 +57,11 @@ const App = () => {
 
             {/* Community */}
             <Route path="/community" element={<Community />} />
+            <Route path="/community/detail/:postId" element={<PostDetail />} />
+            <Route path="/community/select-diary" element={<SelectDiary />} />
             <Route
-              path="/community/detail/:postId"
-              element={<CommunityDetail />}
+              path="/community/post-edit/:diaryId"
+              element={<PostEdit />}
             />
 
             {/* MyPage */}

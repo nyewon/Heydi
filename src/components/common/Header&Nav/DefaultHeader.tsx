@@ -12,7 +12,7 @@ const DefaultHeader = ({ showIcon = false }: HeaderProps) => {
 
   const handleIconClick = () => {
     if (showIcon === "community") {
-      navigate("/community");
+      navigate("/community/select-diary");
     } else if (showIcon === "diary") {
       navigate("/diary/wait");
     }

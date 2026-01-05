@@ -4,7 +4,7 @@ import { LuMenu } from "react-icons/lu";
 import { useState } from "react";
 import Logo from "@assets/logo_txt.svg?react";
 import SaveIcon from "@assets/icons/save.svg?react";
-import { Dropdown, DeleteModal, PdfModal } from "@components/index";
+import { MenuDropdown, DeleteModal, PdfModal } from "@components/index";
 
 interface BackHeaderProps {
   rightIcon?: "none" | "save" | "menu";
@@ -26,23 +26,17 @@ const BackHeader = ({
     navigate(-1);
   };
 
-  const dropdownItems = [
-    { label: "수정하기", onClick: () => navigate(`/diary/edit/${diaryId}`) },
-    {
-      label: "삭제하기",
-      onClick: () => {
-        setOpen(false);
-        setDeleteOpen(true);
-      },
-    },
-    {
-      label: "PDF로 내보내기",
-      onClick: () => {
-        setOpen(false);
-        setPdfOpen(true);
-      },
-    },
-  ];
+  const handleEditDiary = () => {
+    navigate(`/diary/edit/${diaryId}`);
+  };
+
+  const handleDeleteDiary = () => {
+    setDeleteOpen(true);
+  };
+
+  const handleExportPdf = () => {
+    setPdfOpen(true);
+  };
 
   const handleDeleteConfirm = () => {
     console.log("diary deleted");
@@ -67,12 +61,8 @@ const BackHeader = ({
           <div className="absolute right-4">
             <button
               onClick={() => {
-                if (rightIcon === "save") {
-                  onSave?.();
-                }
-                if (rightIcon === "menu") {
-                  setOpen(prev => !prev);
-                }
+                if (rightIcon === "save") onSave?.();
+                if (rightIcon === "menu") setOpen(prev => !prev);
               }}
               className="cursor-pointer"
             >
@@ -81,10 +71,12 @@ const BackHeader = ({
             </button>
 
             {rightIcon === "menu" && (
-              <Dropdown
+              <MenuDropdown
                 open={open}
                 onClose={() => setOpen(false)}
-                items={dropdownItems}
+                onEdit={handleEditDiary}
+                onDelete={handleDeleteDiary}
+                onExportPdf={handleExportPdf}
               />
             )}
           </div>

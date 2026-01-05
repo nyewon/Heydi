@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-interface DropdownItem {
+export interface DropdownItem {
   label: string;
   onClick: () => void;
 }
@@ -8,10 +8,10 @@ interface DropdownItem {
 interface DropdownProps {
   open: boolean;
   onClose: () => void;
-  items: DropdownItem[];
+  children: React.ReactNode;
 }
 
-const Dropdown = ({ open, onClose, items }: DropdownProps) => {
+const Dropdown = ({ open, onClose, children }: DropdownProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,24 +27,7 @@ const Dropdown = ({ open, onClose, items }: DropdownProps) => {
 
   if (!open) return null;
 
-  return (
-    <div
-      ref={ref}
-      className="absolute right-0 mt-2 w-34 bg-white rounded-xl shadow-lg border border-[#D9D9D9] text-[#4A4A4A] overflow-hidden"
-    >
-      {items.map((item, index) => (
-        <button
-          key={item.label}
-          onClick={item.onClick}
-          className={`w-full px-4 text-center text-sm cursor-pointer ${
-            index === 1 ? "py-1" : "py-3"
-          }`}
-        >
-          {item.label}
-        </button>
-      ))}
-    </div>
-  );
+  return <div ref={ref}>{children}</div>;
 };
 
 export default Dropdown;
