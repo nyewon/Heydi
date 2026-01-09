@@ -26,18 +26,16 @@ import Profile from "@assets/icons/profile.svg?react";
 import Plus from "@assets/icons/plus.svg?react";
 import { IoMdInformationCircle } from "react-icons/io";
 
+import { USER_DUMMY } from "@mocks/mypage";
+
 const ProfileEdit = () => {
   const navigate = useNavigate();
 
-  const user = {
-    email: "test1@email.com",
-    nickname: "TestUser",
-    profile_url: "",
-  };
+  const user = USER_DUMMY;
 
-  const [email] = useState(user.email);
+  const [username] = useState(user.username ?? "");
   const [pw, setPw] = useState("");
-  const [pwCheck, setPwCheck] = useState("");
+  const [newpw, setNewpw] = useState("");
   const [nickname, setNickname] = useState(user.nickname);
   const [error, setError] = useState("");
   const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -55,18 +53,35 @@ const ProfileEdit = () => {
       return;
     }
 
-    if (pw && (!validatePassword(pw) || pw !== pwCheck)) {
-      setError("비밀번호가 유효하지 않거나 서로 일치하지 않습니다.");
+    if (pw && !validatePassword(pw)) {
+      setError("비밀번호가 유효하지 않습니다.");
       return;
     }
 
-    alert("프로필 수정 완료!");
+    if (pw && pw !== user.currentPassword) {
+      setError("기존 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    if (pw && newpw && pw === newpw) {
+      setError("새 비밀번호는 기존 비밀번호와 달라야 합니다.");
+      return;
+    }
+
+    console.log("프로필 수정 완료", {
+      username,
+      nickname,
+      currentPasswordInput: pw,
+      newPasswordInput: newpw,
+      profileImage,
+    });
+
     navigate(-1);
   };
 
   const isDisabled =
     !validateNickname(nickname) ||
-    (pw.length > 0 && (!validatePassword(pw) || pw !== pwCheck));
+    (pw.length > 0 && (!validatePassword(pw) || !validatePassword(newpw)));
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -112,7 +127,7 @@ const ProfileEdit = () => {
           <div className="relative w-full">
             <input
               type="text"
-              value={email}
+              value={username}
               readOnly
               className="
                 w-full h-12 px-4 rounded-[8px] border text-sm 
@@ -134,7 +149,7 @@ const ProfileEdit = () => {
           </div>
 
           <Input
-            type="text"
+            type="password"
             placeholder="기존 비밀번호를 입력하세요."
             value={pw}
             onChange={e => {
@@ -144,11 +159,11 @@ const ProfileEdit = () => {
           />
 
           <Input
-            type="text"
+            type="password"
             placeholder="변경할 비밀번호를 입력하세요."
-            value={pwCheck}
+            value={newpw}
             onChange={e => {
-              setPwCheck(e.target.value);
+              setNewpw(e.target.value);
               setError("");
             }}
           />
@@ -179,7 +194,6 @@ const ProfileEdit = () => {
         </Button>
       </Container>
 
-      {/* 모달들 */}
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
     </div>
   );

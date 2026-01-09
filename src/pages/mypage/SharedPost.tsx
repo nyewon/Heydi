@@ -1,29 +1,25 @@
 /*
- * Community - 커뮤니티 메인 화면
+ * SharedPost - 공유한 게시글 목록 화면
  *
  * 세부사항:
  * - CommunityCard 컴포넌트를 사용
  * - 게시글 클릭 시 해당 게시글 상세 페이지로 이동
- * - 더미 데이터로 커뮤니티 게시글 목록 표시
+ * - 더미 데이터로 공유한 게시글 목록 표시
  */
 
 import { useNavigate } from "react-router-dom";
-import {
-  Container,
-  DefaultHeader,
-  BottomNav,
-  CommunityCard,
-} from "@components/index";
-import { COMMUNITY_POST_DUMMIES } from "@mocks/community";
+import { Container, BackHeader, CommunityCard } from "@components/index";
+import { COMMUNITY_POST_DUMMIES, USER_DUMMY } from "@mocks/mypage";
 
-const Community = () => {
+const SharedPost = () => {
   const navigate = useNavigate();
   return (
     <div className="w-full flex flex-col items-center">
-      <DefaultHeader showIcon="community" />
+      <BackHeader />
 
-      <Container withBottomNav={true}>
+      <Container>
         {[...COMMUNITY_POST_DUMMIES]
+          .filter(post => post.user === USER_DUMMY.nickname)
           .sort(
             (a, b) =>
               new Date(b.date.replace(/\./g, "-")).getTime() -
@@ -45,10 +41,8 @@ const Community = () => {
             />
           ))}
       </Container>
-
-      <BottomNav />
     </div>
   );
 };
 
-export default Community;
+export default SharedPost;

@@ -5,6 +5,7 @@
  * - 프로필 이미지, 닉네임, 내가 좋아요/공유한 글 수 표시
  * - 프로필 수정, 알림 설정, 로그아웃, 회원탈퇴 기능 제공
  * - AccountModal: 로그아웃 및 회원탈퇴 확인 모달 표시
+ * - AlarmModal: 알림 설정 모달 표시 (알림 활성화/비활성화 토글), 선택된 시간 없을 시 기본값 현재 시간
  */
 
 import { useState } from "react";
@@ -14,23 +15,27 @@ import {
   DefaultHeader,
   BottomNav,
   AccountModal,
+  AlarmModal,
 } from "@components/index";
 import DefaultProfile from "@assets/icons/profile.svg";
 import { IoChevronForward } from "react-icons/io5";
+import { MYPAGE_DUMMY } from "@mocks/mypage";
 
 const Mypage = () => {
   const nevigate = useNavigate();
-  const [alarmEnabled, setAlarmEnabled] = useState(false);
+
+  const { user, likedPosts, sharedPosts, alarm } = MYPAGE_DUMMY;
+
+  const [alarmEnabled, setAlarmEnabled] = useState(alarm.enabled);
+  const [alarmTime, setAlarmTime] = useState<{
+    ampm: "AM" | "PM";
+    hour: number;
+    minute: number;
+  } | null>(alarm.enabled ? alarm : null);
+  const [isAlarmModalOpen, setIsAlarmModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"logout" | "withdraw" | null>(
     null,
   );
-
-  const user = {
-    username: "Test1",
-    profile_url: "",
-    likedPosts: 2,
-    sharedPosts: 1,
-  };
 
   const profileImage = user.profile_url || DefaultProfile;
 
@@ -56,29 +61,35 @@ const Mypage = () => {
           <img
             src={profileImage}
             alt="profile"
-            className="w-[124px] h-[124px] rounded-full object-cover mb-3"
+            className="w-[124px] h-[124px] rounded-full object-cover mb-2"
           />
-          <span className="text-base font-bold text-[#4A4A4A]">
-            {user.username}
+          <span className="text-lg font-bold text-[#4A4A4A]">
+            {user.nickname}
           </span>
         </div>
 
         <div className="flex justify-between gap-6 w-full mb-10">
-          <div className="flex-1 h-20 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center">
-            <span className="text-xs font-semibold text-[#4A4A4A] mb-1">
+          <div
+            className="flex-1 h-22 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center cursor-pointer"
+            onClick={() => nevigate("/mypage/like-posts")}
+          >
+            <span className="text-sm font-semibold text-[#4A4A4A] mb-2">
               내가 좋아요 한 글
             </span>
-            <span className="text-[20px] font-bold text-[#B28C7E]">
-              {user.likedPosts}
+            <span className="text-[24px] font-bold text-[#B28C7E]">
+              {likedPosts}
             </span>
           </div>
 
-          <div className="flex-1 h-20 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center">
-            <span className="text-xs font-semibold text-[#4A4A4A] mb-1">
+          <div
+            className="flex-1 h-22 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center cursor-pointer"
+            onClick={() => nevigate("/mypage/shared-posts")}
+          >
+            <span className="text-sm font-semibold text-[#4A4A4A] mb-2">
               내가 공유 한 글
             </span>
-            <span className="text-[20px] font-bold text-[#B28C7E]">
-              {user.sharedPosts}
+            <span className="text-[24px] font-bold text-[#B28C7E]">
+              {sharedPosts}
             </span>
           </div>
         </div>
@@ -93,17 +104,23 @@ const Mypage = () => {
           <IoChevronForward size={24} color="#B28C7E" />
         </div>
 
-        <div className="w-full flex justify-between items-center py-4">
+        <div
+          className="w-full flex justify-between items-center py-4 cursor-pointer"
+          onClick={() => setIsAlarmModalOpen(true)}
+        >
           <span className="text-base font-semibold text-[#4A4A4A]">
             알림 설정
           </span>
 
           <div
             className={`
-              w-13 h-7 flex items-center rounded-full p-1 cursor-pointer transition-all
+              w-13 h-7 flex items-center rounded-full p-1 transition-all
               ${alarmEnabled ? "bg-[#B28C7E]" : "bg-[#EFE8E1]"}
             `}
-            onClick={() => setAlarmEnabled(prev => !prev)}
+            onClick={e => {
+              e.stopPropagation();
+              setAlarmEnabled(prev => !prev);
+            }}
           >
             <div
               className={`
@@ -134,6 +151,26 @@ const Mypage = () => {
       </Container>
 
       <BottomNav />
+
+      {isAlarmModalOpen && (
+        <AlarmModal
+          isOpen={true}
+          onClose={() => setIsAlarmModalOpen(false)}
+          defaultAmPm={alarmTime?.ampm}
+          defaultHour={alarmTime?.hour}
+          defaultMinute={alarmTime?.minute}
+          onConfirm={(ampm, hour, minute) => {
+            setAlarmEnabled(true);
+            setAlarmTime({ ampm, hour, minute });
+            setIsAlarmModalOpen(false);
+          }}
+          onDisable={() => {
+            setAlarmEnabled(false);
+            setAlarmTime(null);
+            setIsAlarmModalOpen(false);
+          }}
+        />
+      )}
 
       <AccountModal
         isOpen={modalType !== null}
