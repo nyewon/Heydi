@@ -2,9 +2,6 @@ export * from "./common/index";
 export * from "./modal/index";
 export * from "./dropdown/index";
 
+export * from "./diary/index";
 export * from "./community/index";
 export * from "./report/index";
-
-// Diary
-export { default as DiaryCard } from "./DiaryCard";
-export { default as DiaryInfoBox } from "./DiaryInfoBox";
