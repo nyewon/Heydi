@@ -100,7 +100,7 @@ const Report = () => {
           </p>
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
-          <p className="text-[10px] text-[#4A4A4A] leading-5">
+          <p className="text-xs text-[#4A4A4A] leading-5">
             {REPORT_DUMMY.activitySummary}
           </p>
         </div>
@@ -111,7 +111,7 @@ const Report = () => {
           </p>
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
-          <p className="text-[10px] leading-5 text-[#4A4A4A]">
+          <p className="text-xs leading-5 text-[#4A4A4A]">
             {REPORT_DUMMY.insight}
           </p>
         </div>
