@@ -195,8 +195,8 @@ const DiaryEdit = () => {
                 key={idx}
                 className={`text-[10px] p-2 px-3 rounded-lg break-words inline-block w-fit min-w-[60px] ${
                   msg.role === "assistant"
-                    ? "bg-[#EFE8E1] text-[#4A4A4A] max-w-[60%] self-start"
-                    : "bg-[#B28C7E] text-white max-w-[80%] self-end"
+                    ? "bg-[#EFE8E1] text-[#4A4A4A] max-w-[60%] self-start rounded-bl-none"
+                    : "bg-[#B28C7E] text-white max-w-[80%] self-end rounded-br-none"
                 }`}
               >
                 {msg.content}

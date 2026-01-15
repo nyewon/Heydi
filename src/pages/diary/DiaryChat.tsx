@@ -77,8 +77,8 @@ const DiaryChat = () => {
                     px-3 py-2 rounded-lg text-xs leading-5 max-w-[70%]
                     ${
                       msg.type === "user"
-                        ? "bg-[#B28C7E] text-[#FFFFFF]"
-                        : "bg-[#EFE8E1] text-[#4A4A4A]"
+                        ? "bg-[#B28C7E] text-[#FFFFFF] rounded-br-none"
+                        : "bg-[#EFE8E1] text-[#4A4A4A] rounded-bl-none"
                     }
                   `}
                 >
