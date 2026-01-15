@@ -57,7 +57,7 @@ const Mypage = () => {
       <DefaultHeader />
 
       <Container withBottomNav={true}>
-        <div className="flex flex-col items-center mt-6 mb-10">
+        <div className="flex flex-col items-center mt-2 mb-10">
           <img
             src={profileImage}
             alt="profile"
