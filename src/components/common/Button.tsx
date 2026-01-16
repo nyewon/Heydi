@@ -14,7 +14,7 @@ const Button = ({
   className = "",
 }: ButtonProps) => {
   const baseStyles = `
-    font-semibold text-white
+    font-bold text-white
     flex items-center justify-center
     transition-none
   `;
