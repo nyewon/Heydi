@@ -70,7 +70,7 @@ const Report = () => {
               </p>
               <div
                 className="
-                  py-4 bg-[#EFE8E1] rounded-xl text-xs font-semibold text-[#4A4A4A]
+                  py-4 bg-[#EFE8E1] rounded-xl text-xs text-[#4A4A4A]
                   flex items-center justify-center
                 "
               >
@@ -84,7 +84,7 @@ const Report = () => {
               </p>
               <div
                 className="
-                  py-4 bg-[#EFE8E1] rounded-xl text-xs font-semibold text-[#4A4A4A]
+                  py-4 bg-[#EFE8E1] rounded-xl text-xs text-[#4A4A4A]
                   flex items-center justify-center
                 "
               >
