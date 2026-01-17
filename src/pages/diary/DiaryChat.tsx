@@ -46,11 +46,11 @@ const DiaryChat = () => {
 
       <Container className="pt-4 pb-10">
         <div className="flex flex-col items-center text-center">
-          <span className="text-2xl font-bold text-[#76615A] mt-5">
+          <span className="text-2xl font-extrabold text-[#76615A] mt-5">
             {today}
           </span>
 
-          <span className="text-sm font-semibold text-[#76615A] mt-1">
+          <span className="text-sm font-bold text-[#76615A] mt-1">
             {formatElapsedTime(elapsed)}
           </span>
         </div>

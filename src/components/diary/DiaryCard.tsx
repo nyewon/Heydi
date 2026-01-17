@@ -8,7 +8,7 @@
  */
 
 import Note from "@assets/icons/note.svg?react";
-import { EmotionKey, EMOTIONS } from "@constants/emotions";
+import { EmotionKey, EMOTIONS, EMOTION_S_ICONS } from "@constants/emotions";
 
 interface DiaryCardProps {
   title: string;
@@ -31,8 +31,14 @@ const DiaryCard = ({ title, emotion, topics, onClick }: DiaryCardProps) => {
           {title}의 일기
         </span>
 
-        <div className="flex items-center text-xs font-semibold text-[#4A4A4A] gap-4">
-          <span>감정: {EMOTIONS[emotion]}</span>
+        <div className="flex items-center text-xs text-[#4A4A4A] gap-4">
+          <span className="flex items-center">
+            감정:
+            <span className="flex items-center gap-0.5 ml-1">
+              {EMOTION_S_ICONS[emotion]}
+              {EMOTIONS[emotion]}
+            </span>
+          </span>
           <span>주제: {topics.join(" / ")}</span>
         </div>
       </div>
