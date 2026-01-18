@@ -57,13 +57,13 @@ const Mypage = () => {
       <DefaultHeader />
 
       <Container withBottomNav={true}>
-        <div className="flex flex-col items-center mt-6 mb-10">
+        <div className="flex flex-col items-center mt-2 mb-10">
           <img
             src={profileImage}
             alt="profile"
             className="w-[124px] h-[124px] rounded-full object-cover mb-2"
           />
-          <span className="text-lg font-bold text-[#4A4A4A]">
+          <span className="text-lg font-extrabold text-[#4A4A4A]">
             {user.nickname}
           </span>
         </div>
@@ -73,10 +73,10 @@ const Mypage = () => {
             className="flex-1 h-22 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center cursor-pointer"
             onClick={() => nevigate("/mypage/like-posts")}
           >
-            <span className="text-sm font-semibold text-[#4A4A4A] mb-2">
+            <span className="text-sm font-bold text-[#4A4A4A] mb-2">
               내가 좋아요 한 글
             </span>
-            <span className="text-[24px] font-bold text-[#B28C7E]">
+            <span className="text-[24px] font-extrabold text-[#B28C7E]">
               {likedPosts}
             </span>
           </div>
@@ -85,10 +85,10 @@ const Mypage = () => {
             className="flex-1 h-22 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center cursor-pointer"
             onClick={() => nevigate("/mypage/shared-posts")}
           >
-            <span className="text-sm font-semibold text-[#4A4A4A] mb-2">
+            <span className="text-sm font-bold text-[#4A4A4A] mb-2">
               내가 공유 한 글
             </span>
-            <span className="text-[24px] font-bold text-[#B28C7E]">
+            <span className="text-[24px] font-extrabold text-[#B28C7E]">
               {sharedPosts}
             </span>
           </div>
@@ -98,7 +98,7 @@ const Mypage = () => {
           className="w-full flex justify-between items-center py-4 cursor-pointer"
           onClick={handleProfileEdit}
         >
-          <span className="text-base font-semibold text-[#4A4A4A]">
+          <span className="text-base font-bold text-[#4A4A4A]">
             프로필 수정
           </span>
           <IoChevronForward size={24} color="#B28C7E" />
@@ -108,9 +108,7 @@ const Mypage = () => {
           className="w-full flex justify-between items-center py-4 cursor-pointer"
           onClick={() => setIsAlarmModalOpen(true)}
         >
-          <span className="text-base font-semibold text-[#4A4A4A]">
-            알림 설정
-          </span>
+          <span className="text-base font-bold text-[#4A4A4A]">알림 설정</span>
 
           <div
             className={`
@@ -135,18 +133,14 @@ const Mypage = () => {
           className="w-full py-4 cursor-pointer"
           onClick={() => setModalType("logout")}
         >
-          <span className="text-base font-semibold text-[#4A4A4A]">
-            로그아웃
-          </span>
+          <span className="text-base font-bold text-[#4A4A4A]">로그아웃</span>
         </div>
 
         <div
           className="w-full py-4 cursor-pointer"
           onClick={() => setModalType("withdraw")}
         >
-          <span className="text-base font-semibold text-[#4A4A4A]">
-            회원탈퇴
-          </span>
+          <span className="text-base font-bold text-[#4A4A4A]">회원탈퇴</span>
         </div>
       </Container>
 

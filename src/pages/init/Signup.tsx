@@ -114,7 +114,7 @@ const Signup = () => {
         </div>
 
         <button
-          className="w-full text-left text-sm text-[#B28C7E] font-semibold mb-6 flex items-center gap-1"
+          className="w-full text-left text-sm text-[#B28C7E] font-extrabold mb-6 flex items-center gap-1"
           onClick={() => setIsGuideOpen(true)}
         >
           <IoMdInformationCircle size={24} color="#B28C7E" />

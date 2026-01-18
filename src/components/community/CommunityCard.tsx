@@ -12,7 +12,7 @@ import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import DefaultProfile from "@assets/icons/profile_s.svg";
-import { EmotionKey, EMOTIONS } from "@constants/emotions";
+import { EmotionKey, EMOTIONS, EMOTION_S_ICONS } from "@constants/emotions";
 
 interface CommunityCardProps {
   profileImg?: string;
@@ -63,19 +63,27 @@ const CommunityCard = ({
             alt="profile"
             className="w-7 h-7 rounded-full object-cover"
           />
-          <span className="text-xs font-bold text-[#4A4A4A]">{user}</span>
+          <span className="text-xs font-extrabold text-[#4A4A4A]">{user}</span>
         </div>
 
         <span className="text-[10px] text-[#4A4A4A]">{date}</span>
       </div>
 
-      <p className="text-[14px] font-bold text-[#4A4A4A] mb-2">{title}</p>
+      <p className="text-sm font-bold text-[#4A4A4A] mb-2">{title}</p>
 
-      <p className="text-[12px] font-bold text-[#4A4A4A] mb-2">
-        감정: {EMOTIONS[emotion]} &nbsp;&nbsp; 주제: {topics.join(" / ")}
+      <p className="text-xs text-[#4A4A4A] mb-2 flex items-center gap-3">
+        <span className="flex items-center">
+          감정:
+          <span className="flex items-center gap-0.5 ml-1">
+            {EMOTION_S_ICONS[emotion]}
+            {EMOTIONS[emotion]}
+          </span>
+        </span>
+
+        <span>주제: {topics.join(" / ")}</span>
       </p>
 
-      <p className="text-[12px] leading-5 font-bold text-[#4A4A4A] line-clamp-3 mb-4">
+      <p className="text-xs leading-5 text-[#4A4A4A] line-clamp-3 mb-4">
         {content}
       </p>
 
@@ -89,16 +97,14 @@ const CommunityCard = ({
             color={isLiked ? "#B28C7E" : "#EFE8E1"}
             className={isLiked ? "opacity-100" : "opacity-70"}
           />
-          <span className="text-xs font-semibold text-[#4A4A4A]">
+          <span className="text-xs font-bold text-[#4A4A4A]">
             {isLiked ? likes + 1 : likes}
           </span>
         </button>
 
         <div className="flex items-center gap-1">
           <IoChatboxEllipsesOutline size={20} color="#B28C7E" />
-          <span className="text-xs font-semibold text-[#4A4A4A]">
-            {comments}
-          </span>
+          <span className="text-xs font-bold text-[#4A4A4A]">{comments}</span>
         </div>
       </div>
     </div>

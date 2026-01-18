@@ -32,7 +32,9 @@ const DiaryWaiting = () => {
 
       <Container className="pb-10">
         <div className="flex flex-col items-center text-center mt-20 mb-20">
-          <span className="text-2xl font-bold text-[#76615A]">{today}</span>
+          <span className="text-2xl font-extrabold text-[#76615A]">
+            {today}
+          </span>
 
           <span className="text-base font-bold text-[#76615A] mt-1">
             {time}
@@ -42,7 +44,7 @@ const DiaryWaiting = () => {
             <img src={Bear} alt="bear" className="w-50 h-auto" loading="lazy" />
           </div>
 
-          <p className="text-xs font-semibold text-[#76615A] mb-15">
+          <p className="text-xs font-bold text-[#76615A] mb-15">
             대화를 시작해 오늘의 하루를 들려주세요
           </p>
         </div>

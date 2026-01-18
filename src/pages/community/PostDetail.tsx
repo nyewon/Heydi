@@ -23,7 +23,7 @@ import { FaHeart } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { FaTrashAlt } from "react-icons/fa";
 import DefaultProfile from "@assets/icons/profile_s.svg";
-import { EMOTIONS } from "@constants/emotions";
+import { EMOTIONS, EMOTION_S_ICONS } from "@constants/emotions";
 import { POST_DETAIL_DUMMIES } from "@mocks/community";
 
 const PostDetail = () => {
@@ -64,7 +64,7 @@ const PostDetail = () => {
                 src={post.profile || DefaultProfile}
                 className="w-7 h-7 rounded-full object-cover"
               />
-              <span className="text-xs font-bold text-[#4A4A4A]">
+              <span className="text-xs font-extrabold text-[#4A4A4A]">
                 {post.user}
               </span>
             </div>
@@ -73,12 +73,19 @@ const PostDetail = () => {
 
           <p className="text-sm font-bold text-[#4A4A4A] mb-3">{post.title}</p>
 
-          <p className="text-[12px] text-[#4A4A4A] mb-2">
-            감정: {EMOTIONS[post.emotion]} &nbsp;&nbsp; 주제:{" "}
-            {post.topics.join(" / ")}
+          <p className="text-xs font-bold text-[#4A4A4A] mb-2 flex items-center gap-3">
+            <span className="flex items-center">
+              감정:
+              <span className="flex items-center gap-0.5 ml-1">
+                {EMOTION_S_ICONS[post.emotion]}
+                {EMOTIONS[post.emotion]}
+              </span>
+            </span>
+
+            <span>주제: {post.topics.join(" / ")}</span>
           </p>
 
-          <p className="text-[12px] text-[#4A4A4A] whitespace-pre-line mb-4">
+          <p className="text-xs text-[#4A4A4A] whitespace-pre-line mb-4">
             {post.content}
           </p>
 
@@ -92,7 +99,7 @@ const PostDetail = () => {
             </div>
           )}
 
-          <p className="text-[8px] text-[#D9D9D9] mb-5">
+          <p className="text-[10px] text-[#D9D9D9] mb-5">
             {post.diaryDate}에 작성된 일기입니다.
           </p>
 
@@ -106,14 +113,14 @@ const PostDetail = () => {
                 color={isLiked ? "#B28C7E" : "#EFE8E1"}
                 className={isLiked ? "opacity-100" : "opacity-70"}
               />
-              <span className="text-xs font-semibold text-[#4A4A4A]">
+              <span className="text-xs font-bold text-[#4A4A4A]">
                 {likeCount}
               </span>
             </button>
 
             <div className="flex items-center gap-1 cursor-pointer">
               <IoChatboxEllipsesOutline size={20} color="#B28C7E" />
-              <span className="text-xs font-semibold text-[#4A4A4A]">
+              <span className="text-xs font-bold text-[#4A4A4A]">
                 {comments.length}
               </span>
             </div>

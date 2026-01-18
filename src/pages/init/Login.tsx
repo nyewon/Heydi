@@ -93,7 +93,7 @@ const LoginPage = () => {
       <p className="text-xs text-[#D9D9D9] mb-20">
         아직 회원가입을 안하셨나요?
         <span
-          className="text-[#D4B6A6] font-semibold cursor-pointer ml-2"
+          className="text-[#D4B6A6] font-bold cursor-pointer ml-2"
           onClick={() => navigate("/signup")}
         >
           회원가입하기

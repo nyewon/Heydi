@@ -15,9 +15,7 @@ const TopTopics = ({ topics }: { topics: Topic[] }) => {
   return (
     <div className="w-full mb-6">
       <div className="rounded-2xl bg-[#EFE8E1] text-[#4A4A4A] p-5 mb-4">
-        <div className="text-xs opacity-70 font-semibold mb-1">
-          #{main.rank}
-        </div>
+        <div className="text-xs opacity-70 font-bold mb-1">#{main.rank}</div>
         <div className="text-3xl mb-2">{getTopicIcon(main.title)}</div>
         <div className="text-[18px] font-bold">{main.title}</div>
         <div className="text-[13px] opacity-80 mt-1">
@@ -51,7 +49,7 @@ const TopTopics = ({ topics }: { topics: Topic[] }) => {
               key={topic.rank}
               className={[
                 "relative flex items-center gap-1",
-                "rounded-full px-4 py-2 text-xs font-semibold text-[#4A4A4A]",
+                "rounded-full px-4 py-2 text-xs font-bold text-[#4A4A4A]",
                 subBgMap[topic.rank],
               ].join(" ")}
             >
