@@ -87,7 +87,7 @@ const ProfileEdit = () => {
     <div className="w-full flex flex-col items-center">
       <BackHeader />
 
-      <Container className="pt-6 flex flex-col items-center w-full">
+      <Container className="pt-6 pb-10">
         <div className="relative flex items-center justify-center mt-5 mb-18">
           {profileImage ? (
             <img
@@ -116,7 +116,7 @@ const ProfileEdit = () => {
         </div>
 
         <button
-          className="w-full text-left text-sm text-[#B28C7E] font-semibold mb-6 flex items-center gap-1"
+          className="w-full text-left text-sm text-[#B28C7E] font-extrabold mb-6 flex items-center gap-1"
           onClick={() => setIsGuideOpen(true)}
         >
           <IoMdInformationCircle size={24} color="#B28C7E" />

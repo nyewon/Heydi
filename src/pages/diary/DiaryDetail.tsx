@@ -29,7 +29,7 @@ const DiaryDetail = () => {
 
   if (!diary) {
     return (
-      <div className="w-full flex justify-center items-center text-center p-10 text-sm font-semibold text-[#76615A]">
+      <div className="w-full flex justify-center items-center text-center p-10 text-sm font-bold text-[#76615A]">
         Error <br />
         일기를 찾을 수 없습니다.
       </div>
@@ -49,7 +49,9 @@ const DiaryDetail = () => {
 
       <Container className="pb-10">
         <div className="w-full bg-white border border-[#E0CFC5] rounded-xl p-4 mb-4">
-          <p className="text-sm font-bold text-[#4A4A4A] mb-2">{diary.title}</p>
+          <p className="text-sm font-extrabold text-[#4A4A4A] mb-2">
+            {diary.title}
+          </p>
           <p className="text-xs text-[#4A4A4A]">작성 날짜: {diary.createdAt}</p>
           <p className="text-xs text-[#4A4A4A]">
             총 대화 시간: {diary.totalTalkTime}
@@ -84,8 +86,8 @@ const DiaryDetail = () => {
                 key={idx}
                 className={`text-[10px] p-2 px-3 rounded-lg break-words inline-block w-fit min-w-[60px] ${
                   msg.role === "assistant"
-                    ? "bg-[#EFE8E1] text-[#4A4A4A] max-w-[60%] self-start"
-                    : "bg-[#B28C7E] text-white max-w-[80%] self-end"
+                    ? "bg-[#EFE8E1] text-[#4A4A4A] max-w-[60%] self-start rounded-bl-none"
+                    : "bg-[#B28C7E] text-white max-w-[80%] self-end rounded-br-none"
                 }`}
               >
                 {msg.content}

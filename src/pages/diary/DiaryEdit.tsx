@@ -82,7 +82,9 @@ const DiaryEdit = () => {
 
       <Container className="pb-8">
         <div className="w-full bg-white border border-[#E0CFC5] rounded-xl p-4 mb-4">
-          <p className="text-sm font-bold text-[#4A4A4A] mb-2">{diary.title}</p>
+          <p className="text-sm font-extrabold text-[#4A4A4A] mb-2">
+            {diary.title}
+          </p>
           <p className="text-xs text-[#4A4A4A]">작성 날짜: {diary.createdAt}</p>
           <p className="text-xs text-[#4A4A4A]">
             총 대화 시간: {diary.totalTalkTime}
@@ -195,8 +197,8 @@ const DiaryEdit = () => {
                 key={idx}
                 className={`text-[10px] p-2 px-3 rounded-lg break-words inline-block w-fit min-w-[60px] ${
                   msg.role === "assistant"
-                    ? "bg-[#EFE8E1] text-[#4A4A4A] max-w-[60%] self-start"
-                    : "bg-[#B28C7E] text-white max-w-[80%] self-end"
+                    ? "bg-[#EFE8E1] text-[#4A4A4A] max-w-[60%] self-start rounded-bl-none"
+                    : "bg-[#B28C7E] text-white max-w-[80%] self-end rounded-br-none"
                 }`}
               >
                 {msg.content}
@@ -228,7 +230,7 @@ const DiaryEdit = () => {
                 <Plus />
               </label>
 
-              <p className="text-[10px] text-[#B28C7E] text-center font-semibold mt-2">
+              <p className="text-[10px] text-[#B28C7E] text-center font-bold mt-2">
                 사진은 최대 4장까지 업로드 할 수 있어요.
               </p>
             </>

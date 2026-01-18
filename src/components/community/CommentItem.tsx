@@ -39,7 +39,7 @@ const CommentItem = ({
       <div className="flex-1">
         <div className="flex items-center justify-between mb-3 relative">
           <p
-            className={`text-xs font-bold ${
+            className={`text-xs font-extrabold ${
               isMine ? "text-[#B28C7E]" : "text-[#4A4A4A]"
             }`}
           >

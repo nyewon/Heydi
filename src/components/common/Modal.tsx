@@ -42,7 +42,7 @@ const Modal = ({ isOpen, title, children, onClose, footer }: ModalProps) => {
         onClick={e => e.stopPropagation()}
       >
         {title && (
-          <h2 className="text-lg font-semibold text-center text-[#4A3F3A]">
+          <h2 className="text-lg font-bold text-center text-[#4A3F3A]">
             {title}
           </h2>
         )}
