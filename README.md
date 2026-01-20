@@ -134,3 +134,14 @@ src/
 - :hammer:[rename]: 파일, 폴더 삭제 및 이름 수정
 - :bulb:[comment]: 주석 추가 및 변경
 ```
+
+## 💡 Branch Convention
+```bash
+{type}/#{issuenumber}/{task}
+- feat: 기능 개발 Branch
+- Refactor: 기존 기능 수정 Branch
+- develop: 배포 전 통합 Branch
+- main: 운영 배포 Branch
+
+- ex) feat/#1/초기세팅
+```
