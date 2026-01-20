@@ -99,26 +99,29 @@ src/
 ![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat-square&logo=pwa&logoColor=white)
 
 ### Frontend
-- React
-- TypeScript 
+- React: 19.2.0
+- TypeScript: 5.7.2
 
 ### UI & 스타일링
-- Tailwind CSS
-- react-icons
+- Tailwind CSS: 4.1.17
+- react-icons: 5.5.0
 
 ### 상태 관리 & 유틸
-- zustand
+- zustand: planned
+- axios: 1.13.2
+- react-router-dom: 7.9.6
 
 ### 실시간 통신
 - WebSocket
 
 ### PWA / 알림
 - PWA
-- Firebase Cloud Messaging (FCM)
+- Firebase Cloud Messaging (FCM): planned
 
 ### 개발 도구
-- ESLint
-- Prettier
+- Vite: 6.3.1
+- ESLint: 9.39.1
+- Prettier: 3.7.3
 
 ---
 
