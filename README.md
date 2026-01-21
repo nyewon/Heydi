@@ -81,6 +81,8 @@ src/
 │
 ├── services/      # API 통신 로직
 │
+├── models/         # 전역 타입 정의
+│
 ├── utils/         # 공통 유틸리티 함수
 │
 ├── App.tsx        # 전체 라우팅 및 레이아웃 설정

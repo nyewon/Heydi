@@ -19,6 +19,7 @@ export default defineConfig({
       { find: "@services", replacement: "/src/services" },
       { find: "@utils", replacement: "/src/utils" },
       { find: "@mocks", replacement: "/src/mocks" },
+      { find: "@models", replacement: "/src/models" },
     ],
   },
 });

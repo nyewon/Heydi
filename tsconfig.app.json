@@ -33,8 +33,9 @@
       "@services/*": ["src/services/*"],
       "@utils/*": ["src/utils/*"],
       "@mocks/*": ["src/mocks/*"],
+      "@models/*": ["src/models/*"],
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "**/*.ts", "**/*.tsx"],
+  "include": ["src", "**/*.ts", "**/*.tsx"]
 }
