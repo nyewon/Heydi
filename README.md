@@ -116,7 +116,7 @@ src/
 
 ### PWA / 알림
 - PWA
-- Firebase Cloud Messaging (FCM): planned
+- Firebase Cloud Messaging (FCM): 12.8.0
 
 ### 개발 도구
 - Vite: 6.3.1
