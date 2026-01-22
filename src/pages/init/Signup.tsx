@@ -28,6 +28,7 @@ import {
 import Profile from "@assets/icons/profile.svg?react";
 import Plus from "@assets/icons/plus.svg?react";
 import { IoMdInformationCircle } from "react-icons/io";
+import { SignupRequest } from "@models/auths";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -70,6 +71,15 @@ const Signup = () => {
       setError("비밀번호가 서로 일치하지 않습니다.");
       return;
     }
+
+    const signupPayload: SignupRequest = {
+      username: id,
+      password: pw,
+      nickname,
+      profileImage: fileInputRef.current?.files?.[0] ?? null,
+    };
+
+    console.log("SIGNUP PAYLOAD", signupPayload);
 
     alert("회원가입 성공!");
     navigate(-1);

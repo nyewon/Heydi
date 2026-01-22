@@ -16,17 +16,28 @@ import Logo from "@assets/logo.svg?react";
 import KakaoIcon from "@assets/login/kakao.svg?react";
 import GoogleIcon from "@assets/login/google.svg?react";
 import { validateId, validatePassword } from "@utils/validate";
+import { useFCM } from "@hooks/useFCM";
+import { LoginRequest } from "@models/auths";
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
+  const fcmToken = useFCM();
 
   const handleLogin = () => {
     if (id === "test123" && pw === "test123!") {
-      navigate("/diary");
+      const loginPayload: LoginRequest = {
+        username: id,
+        password: pw,
+        fcm_token: fcmToken,
+      };
+
+      console.log("LOGIN PAYLOAD", loginPayload);
+
       setError("");
+      navigate("/diary");
       return;
     }
 
