@@ -13,39 +13,39 @@ import Annoyed_M from "@assets/icons/emotion_m/annoyed.svg?react";
 import Angry_M from "@assets/icons/emotion_m/angry.svg?react";
 
 export const EMOTIONS = {
-  happy: "행복",
-  joy: "기쁨",
-  neutral: "무난함",
-  sad: "슬픔",
-  annoyed: "짜증",
-  angry: "분노",
+  행복: "행복",
+  기쁨: "기쁨",
+  무난함: "무난함",
+  슬픔: "슬픔",
+  짜증: "짜증",
+  분노: "분노",
 } as const;
 
 export type EmotionKey = keyof typeof EMOTIONS;
 
-export const EMOTION_S_ICONS: Record<EmotionKey, React.ReactNode> = {
-  happy: <Happy_S />,
-  joy: <Joy_S />,
-  neutral: <Neutral_S />,
-  sad: <Sad_S />,
-  annoyed: <Annoyed_S />,
-  angry: <Angry_S />,
+export const EMOTION_S_ICONS: Record<string, React.ReactNode> = {
+  행복: <Happy_S />,
+  기쁨: <Joy_S />,
+  무난함: <Neutral_S />,
+  슬픔: <Sad_S />,
+  짜증: <Annoyed_S />,
+  분노: <Angry_S />,
 };
 
-export const EMOTION_M_ICONS: Record<EmotionKey, React.ReactNode> = {
-  happy: <Happy_M />,
-  joy: <Joy_M />,
-  neutral: <Neutral_M />,
-  sad: <Sad_M />,
-  annoyed: <Annoyed_M />,
-  angry: <Angry_M />,
+export const EMOTION_M_ICONS: Record<string, React.ReactNode> = {
+  행복: <Happy_M />,
+  기쁨: <Joy_M />,
+  무난함: <Neutral_M />,
+  슬픔: <Sad_M />,
+  짜증: <Annoyed_M />,
+  분노: <Angry_M />,
 };
 
-export const EMOTION_SENTENCE: Record<EmotionKey, string> = {
-  happy: "행복한",
-  joy: "기쁜",
-  neutral: "무난한",
-  sad: "슬픈",
-  annoyed: "짜증이 많은",
-  angry: "분노가 강했던",
+export const EMOTION_SENTENCE: Record<string, string> = {
+  행복: "행복한",
+  기쁨: "기쁜",
+  무난함: "무난한",
+  슬픔: "슬픈",
+  짜증: "짜증이 많은",
+  분노: "분노가 강했던",
 };

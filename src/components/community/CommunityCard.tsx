@@ -12,14 +12,14 @@ import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import DefaultProfile from "@assets/icons/profile_s.svg";
-import { EmotionKey, EMOTIONS, EMOTION_S_ICONS } from "@constants/emotions";
+import { EMOTION_S_ICONS } from "@constants/emotions";
 
 interface CommunityCardProps {
   profileImg?: string;
   user: string;
   date: string;
   title: string;
-  emotion: EmotionKey;
+  emotion: string;
   topics: string[];
   content: string;
   likes: number;
@@ -76,7 +76,7 @@ const CommunityCard = ({
           감정:
           <span className="flex items-center gap-0.5 ml-1">
             {EMOTION_S_ICONS[emotion]}
-            {EMOTIONS[emotion]}
+            {emotion}
           </span>
         </span>
 
