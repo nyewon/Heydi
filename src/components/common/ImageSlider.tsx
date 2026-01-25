@@ -12,7 +12,11 @@ import { useState } from "react";
 import { MdCancel } from "react-icons/md";
 
 interface ImageSliderProps {
-  images: string[];
+  images: {
+    id: number;
+    imageUrl: string;
+    order: number;
+  }[];
   currentIndex: number;
   // eslint-disable-next-line no-unused-vars
   onChangeIndex: (index: number) => void;
@@ -68,14 +72,14 @@ const ImageSlider = ({
             transform: `translateX(-${currentIndex * 100}%)`,
           }}
         >
-          {images.map((src, idx) => (
+          {images.map((image, idx) => (
             <div
-              key={idx}
+              key={image.id ?? idx}
               className="relative w-full flex-shrink-0"
               style={{ height }}
             >
               <img
-                src={src}
+                src={image.imageUrl}
                 draggable={false}
                 className="
                   w-full h-full
@@ -93,7 +97,7 @@ const ImageSlider = ({
                     absolute top-2 right-2
                     rounded-full
                     p-1 cursor-pointer
-                    "
+                  "
                 >
                   <MdCancel size={26} color="white" />
                 </button>

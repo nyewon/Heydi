@@ -17,15 +17,19 @@ import {
   DiaryInfoBox,
   ImageSlider,
 } from "@components/index";
-import { DIARY_DETAIL_DUMMIES } from "@mocks/diary";
+import {
+  DIARY_DETAIL_DUMMIES,
+  CONVERSATION_MESSAGES_DUMMIES,
+} from "@mocks/diary";
 import { EMOTION_S_ICONS, EMOTION_SENTENCE } from "@constants/emotions";
+import { formatDate, formatElapsedTime } from "@utils/date";
 
 const DiaryDetail = () => {
   const { diaryId } = useParams<{ diaryId: string }>();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSending, setIsSending] = useState(false);
 
-  const diary = DIARY_DETAIL_DUMMIES.find(d => d.diaryId === diaryId);
+  const diary = DIARY_DETAIL_DUMMIES.find(d => d.id === Number(diaryId));
 
   if (!diary) {
     return (
@@ -35,6 +39,10 @@ const DiaryDetail = () => {
       </div>
     );
   }
+
+  const messages = CONVERSATION_MESSAGES_DUMMIES.find(
+    m => m.sessionId === diary.conversationSessionId,
+  );
 
   const handleSendToReport = () => {
     if (isSending) return;
@@ -52,28 +60,32 @@ const DiaryDetail = () => {
           <p className="text-sm font-extrabold text-[#4A4A4A] mb-2">
             {diary.title}
           </p>
-          <p className="text-xs text-[#4A4A4A]">작성 날짜: {diary.createdAt}</p>
           <p className="text-xs text-[#4A4A4A]">
-            총 대화 시간: {diary.totalTalkTime}
+            작성 날짜: {formatDate(diary.createdDate)}
+          </p>
+          <p className="text-xs text-[#4A4A4A]">
+            총 대화 시간: {formatElapsedTime(diary.conversationDurationSec)}
           </p>
         </div>
 
         <DiaryInfoBox label="오늘의 감정상태">
           <div className="flex items-center gap-1">
             <span className="flex items-center">
-              {EMOTION_S_ICONS[diary.emotion]}
+              {EMOTION_S_ICONS[diary.emotionCategory]}
             </span>
             <span>
-              오늘은 {EMOTION_SENTENCE[diary.emotion]} 하루를 보냈어요.
+              오늘은 {EMOTION_SENTENCE[diary.emotionCategory]} 하루를 보냈어요.
             </span>
           </div>
         </DiaryInfoBox>
 
         <DiaryInfoBox label="오늘의 주제">
-          {diary.topics.join(" / ")}
+          {diary.topic.join(" / ")}
         </DiaryInfoBox>
 
-        <DiaryInfoBox label="오늘의 한 줄 일기">{diary.oneLine}</DiaryInfoBox>
+        <DiaryInfoBox label="오늘의 한 줄 일기">
+          {diary.oneLineDiary}
+        </DiaryInfoBox>
 
         <DiaryInfoBox label="오늘의 일기">
           <p className="text-xs leading-5">{diary.content}</p>
@@ -81,25 +93,25 @@ const DiaryDetail = () => {
 
         <DiaryInfoBox label="오늘의 대화 내용">
           <div className="w-full flex flex-col gap-2 max-h-[300px] overflow-y-auto pt-2 scrollbar-none [&::-webkit-scrollbar]:hidden">
-            {diary.conversations.map((msg, idx) => (
+            {messages?.messages.map((msg, idx) => (
               <div
                 key={idx}
                 className={`text-[10px] p-2 px-3 rounded-lg break-words inline-block w-fit min-w-[60px] ${
-                  msg.role === "assistant"
+                  msg.role === "ASSISTANT"
                     ? "bg-[#EFE8E1] text-[#4A4A4A] max-w-[60%] self-start rounded-bl-none"
                     : "bg-[#B28C7E] text-white max-w-[80%] self-end rounded-br-none"
                 }`}
               >
-                {msg.content}
+                {msg.text}
               </div>
             ))}
           </div>
         </DiaryInfoBox>
 
-        {diary.images.length > 0 && (
+        {diary.photos.length > 0 && (
           <DiaryInfoBox label="오늘의 사진">
             <ImageSlider
-              images={diary.images}
+              images={diary.photos}
               currentIndex={currentIndex}
               onChangeIndex={setCurrentIndex}
             />
@@ -110,9 +122,11 @@ const DiaryDetail = () => {
           variant="full"
           className="w-full mt-8"
           onClick={handleSendToReport}
-          disabled={isSending}
+          disabled={isSending || diary.report.included}
         >
-          리포트로 보내기
+          {isSending || diary.report.included
+            ? "리포트 전달 완료"
+            : "리포트로 보내기"}
         </Button>
       </Container>
     </div>
