@@ -1,4 +1,5 @@
 import {
+  AlarmResponseRequest,
   MypageInfoResponse,
   MypagePostListResponse,
   UserInfoResponse,
@@ -141,3 +142,11 @@ export const MY_POST_DUMMIES: MypagePostListResponse[] = [
     isLiked: false,
   },
 ];
+
+// Alarm Setting
+export const ALARM_DUMMY: AlarmResponseRequest = {
+  enabled: true,
+  meridiem: "PM",
+  hour: 9,
+  minute: 30,
+};

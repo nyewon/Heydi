@@ -44,3 +44,11 @@ export interface MypagePostListResponse {
   commentCount: number;
   isLiked: boolean;
 }
+
+// Alarm Response & Request
+export interface AlarmResponseRequest {
+  enabled: boolean;
+  meridiem: "AM" | "PM";
+  hour: number;
+  minute: number;
+}
