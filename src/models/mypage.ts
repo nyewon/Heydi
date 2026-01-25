@@ -27,3 +27,20 @@ export interface UserInfoUpdateRequest {
   nickname: string;
   newpassword?: string;
 }
+
+// Like Posts & Shared Posts List Response
+export interface MypagePostListResponse {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string;
+  postId: number;
+  diaryId: number;
+  title: string;
+  preview: string;
+  emotion: string;
+  topics: string[];
+  createdAt: string;
+  likeCount: number;
+  commentCount: number;
+  isLiked: boolean;
+}
