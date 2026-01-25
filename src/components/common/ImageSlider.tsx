@@ -8,15 +8,12 @@
  * - 이미지 삭제 기능 포함
  */
 
+import { PhotoItem } from "@models/diary";
 import { useState } from "react";
 import { MdCancel } from "react-icons/md";
 
 interface ImageSliderProps {
-  images: {
-    id: number;
-    imageUrl: string;
-    order: number;
-  }[];
+  images: PhotoItem[];
   currentIndex: number;
   // eslint-disable-next-line no-unused-vars
   onChangeIndex: (index: number) => void;

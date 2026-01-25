@@ -47,3 +47,11 @@ export interface ConversationMessage {
   text: string;
   createdAt: string;
 }
+
+// Diary & Community Photo
+export interface PhotoItem {
+  id?: number;
+  imageUrl: string;
+  order: number;
+  file?: File;
+}
