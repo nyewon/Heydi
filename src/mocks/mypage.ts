@@ -1,19 +1,13 @@
 import { EmotionKey } from "@constants/emotions";
-import { MypageInfoResponse } from "@models/mypage";
+import { MypageInfoResponse, UserInfoResponse } from "@models/mypage";
 
 // User
-export interface User {
-  username?: string;
-  nickname: string;
-  profile_url: string;
-  currentPassword?: string;
-}
-
-export const USER_DUMMY: User = {
+export const USER_INFO_DUMMY: UserInfoResponse = {
+  userId: 1,
   username: "test123",
   nickname: "Test",
-  profile_url: "",
-  currentPassword: "test123!",
+  profileImageUrl: "",
+  password: "test123!",
 };
 
 // Mypage Info

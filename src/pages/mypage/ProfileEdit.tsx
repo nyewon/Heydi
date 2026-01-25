@@ -26,14 +26,12 @@ import Profile from "@assets/icons/profile.svg?react";
 import Plus from "@assets/icons/plus.svg?react";
 import { IoMdInformationCircle } from "react-icons/io";
 
-import { USER_DUMMY } from "@mocks/mypage";
+import { USER_INFO_DUMMY } from "@mocks/mypage";
+import { UserInfoUpdateRequest } from "@models/mypage";
 
 const ProfileEdit = () => {
   const navigate = useNavigate();
-
-  const user = USER_DUMMY;
-
-  const [username] = useState(user.username ?? "");
+  const user = USER_INFO_DUMMY;
   const [pw, setPw] = useState("");
   const [newpw, setNewpw] = useState("");
   const [nickname, setNickname] = useState(user.nickname);
@@ -43,7 +41,7 @@ const ProfileEdit = () => {
   const { profileImg, fileInputRef, handleSelectImage, openFileDialog } =
     useProfileImage();
 
-  const profileImage = profileImg || user.profile_url || "";
+  const profileImage = profileImg || user.profileImageUrl || "";
 
   const handleSaveProfile = () => {
     setError("");
@@ -53,13 +51,13 @@ const ProfileEdit = () => {
       return;
     }
 
-    if (pw && !validatePassword(pw)) {
-      setError("비밀번호가 유효하지 않습니다.");
+    if (pw && pw !== user.password) {
+      setError("기존 비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    if (pw && pw !== user.currentPassword) {
-      setError("기존 비밀번호가 일치하지 않습니다.");
+    if (newpw && !validatePassword(newpw)) {
+      setError("새 비밀번호가 유효하지 않습니다.");
       return;
     }
 
@@ -68,20 +66,22 @@ const ProfileEdit = () => {
       return;
     }
 
-    console.log("프로필 수정 완료", {
-      username,
-      nickname,
-      currentPasswordInput: pw,
-      newPasswordInput: newpw,
+    const payload: UserInfoUpdateRequest = {
+      userId: user.userId,
+      username: user.username,
       profileImage,
-    });
+      nickname,
+      newpassword: newpw,
+    };
 
-    navigate(-1);
+    console.log("프로필 수정 요청: ", payload);
+
+    navigate("/mypage", { replace: true });
   };
 
   const isDisabled =
     !validateNickname(nickname) ||
-    (pw.length > 0 && (!validatePassword(pw) || !validatePassword(newpw)));
+    (newpw.length > 0 && !validatePassword(newpw));
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -119,7 +119,7 @@ const ProfileEdit = () => {
           className="w-full text-left text-sm text-[#B28C7E] font-extrabold mb-6 flex items-center gap-1"
           onClick={() => setIsGuideOpen(true)}
         >
-          <IoMdInformationCircle size={24} color="#B28C7E" />
+          <IoMdInformationCircle size={24} />
           회원가입 가이드 보기
         </button>
 
@@ -127,7 +127,7 @@ const ProfileEdit = () => {
           <div className="relative w-full">
             <input
               type="text"
-              value={username}
+              value={user.username}
               readOnly
               className="
                 w-full h-12 px-4 rounded-[8px] border text-sm 
