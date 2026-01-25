@@ -19,44 +19,47 @@ import {
 } from "@components/index";
 import DefaultProfile from "@assets/icons/profile.svg";
 import { IoChevronForward } from "react-icons/io5";
-import { MYPAGE_DUMMY } from "@mocks/mypage";
+import { MYPAGE_INFO_DUMMY } from "@mocks/mypage";
 
 const Mypage = () => {
-  const nevigate = useNavigate();
+  const navigate = useNavigate();
 
-  const { user, likedPosts, sharedPosts, alarm } = MYPAGE_DUMMY;
+  const { nickname, profileImageUrl, likedPostCount, sharedPostCount, alarm } =
+    MYPAGE_INFO_DUMMY;
 
   const [alarmEnabled, setAlarmEnabled] = useState(alarm.enabled);
   const [alarmTime, setAlarmTime] = useState<{
     ampm: "AM" | "PM";
     hour: number;
     minute: number;
-  } | null>(alarm.enabled ? alarm : null);
+  } | null>(null);
+
   const [isAlarmModalOpen, setIsAlarmModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"logout" | "withdraw" | null>(
     null,
   );
 
-  const profileImage = user.profile_url || DefaultProfile;
+  const profileImage = profileImageUrl || DefaultProfile;
 
   const handleConfirm = () => {
     if (modalType === "logout") {
       console.log("logout");
-    } else if (modalType === "withdraw") {
-      console.log("signout");
+    }
+    if (modalType === "withdraw") {
+      console.log("withdraw");
     }
     setModalType(null);
   };
 
   const handleProfileEdit = () => {
-    nevigate("/mypage/edit");
+    navigate("/mypage/edit");
   };
 
   return (
     <div className="w-full flex flex-col items-center">
       <DefaultHeader />
 
-      <Container withBottomNav={true}>
+      <Container withBottomNav>
         <div className="flex flex-col items-center mt-2 mb-10">
           <img
             src={profileImage}
@@ -64,32 +67,32 @@ const Mypage = () => {
             className="w-[124px] h-[124px] rounded-full object-cover mb-2"
           />
           <span className="text-lg font-extrabold text-[#4A4A4A]">
-            {user.nickname}
+            {nickname}
           </span>
         </div>
 
         <div className="flex justify-between gap-6 w-full mb-10">
           <div
             className="flex-1 h-22 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => nevigate("/mypage/like-posts")}
+            onClick={() => navigate("/mypage/like-posts")}
           >
             <span className="text-sm font-bold text-[#4A4A4A] mb-2">
               내가 좋아요 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {likedPosts}
+              {likedPostCount}
             </span>
           </div>
 
           <div
             className="flex-1 h-22 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => nevigate("/mypage/shared-posts")}
+            onClick={() => navigate("/mypage/shared-posts")}
           >
             <span className="text-sm font-bold text-[#4A4A4A] mb-2">
               내가 공유 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {sharedPosts}
+              {sharedPostCount}
             </span>
           </div>
         </div>

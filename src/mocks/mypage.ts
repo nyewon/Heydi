@@ -1,4 +1,5 @@
 import { EmotionKey } from "@constants/emotions";
+import { MypageInfoResponse } from "@models/mypage";
 
 // User
 export interface User {
@@ -15,30 +16,15 @@ export const USER_DUMMY: User = {
   currentPassword: "test123!",
 };
 
-// Mypage
-export interface Mypage {
-  user: User;
-  likedPosts: number;
-  sharedPosts: number;
-  alarm: AlarmSetting;
-}
-
-export interface AlarmSetting {
-  enabled: boolean;
-  ampm: "AM" | "PM";
-  hour: number;
-  minute: number;
-}
-
-export const MYPAGE_DUMMY: Mypage = {
-  user: USER_DUMMY,
-  likedPosts: 2,
-  sharedPosts: 1,
+// Mypage Info
+export const MYPAGE_INFO_DUMMY: MypageInfoResponse = {
+  userId: 1,
+  nickname: "Test",
+  profileImageUrl: "",
+  likedPostCount: 2,
+  sharedPostCount: 1,
   alarm: {
     enabled: true,
-    ampm: "PM",
-    hour: 9,
-    minute: 0,
   },
 };
 
