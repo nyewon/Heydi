@@ -19,23 +19,40 @@ import {
   TopicModal,
 } from "@components/index";
 import { EMOTION_SENTENCE, EMOTION_S_ICONS } from "@constants/emotions";
-import { DIARY_DETAIL_DUMMIES, DiaryDetailDummy } from "@mocks/diary";
+import {
+  DIARY_DETAIL_DUMMIES,
+  CONVERSATION_MESSAGES_DUMMIES,
+} from "@mocks/diary";
+import { DiaryDetailResponse, DiaryEditRequest } from "@models/diary";
+import { formatDate, formatElapsedTime } from "@utils/date";
 import { useImageUploader } from "@hooks/useImageUploader";
 import Plus from "@assets/icons/plus.svg?react";
 
 const DiaryEdit = () => {
   const navigate = useNavigate();
   const { diaryId } = useParams<{ diaryId: string }>();
+  const diaryData = DIARY_DETAIL_DUMMIES.find(d => d.id === Number(diaryId));
+
+  if (!diaryData) {
+    return (
+      <div className="w-full flex justify-center items-center text-center p-10 text-sm font-bold text-[#76615A]">
+        Error <br />
+        일기를 찾을 수 없습니다.
+      </div>
+    );
+  }
+
+  const [diary, setDiary] = useState<DiaryDetailResponse>(diaryData);
   const [emotionModalOpen, setEmotionModalOpen] = useState(false);
   const [topicModalOpen, setTopicModalOpen] = useState(false);
   const [editingField, setEditingField] = useState<
-    null | "oneLine" | "content"
+    null | "oneLineDiary" | "content"
   >(null);
   const [tempValue, setTempValue] = useState("");
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const diaryData = DIARY_DETAIL_DUMMIES.find(d => d.diaryId === diaryId)!;
-  const [diary, setDiary] = useState<DiaryDetailDummy>(diaryData);
+  const messages = CONVERSATION_MESSAGES_DUMMIES.find(
+    m => m.sessionId === diary.conversationSessionId,
+  );
 
   const {
     images,
@@ -45,7 +62,13 @@ const DiaryEdit = () => {
     fileInputRef,
     openFilePicker,
     handleFiles,
-  } = useImageUploader();
+  } = useImageUploader({
+    initialImages: diary.photos.map(photo => ({
+      id: photo.id,
+      imageUrl: photo.imageUrl,
+      order: photo.order,
+    })),
+  });
 
   useEffect(() => {
     if (editingField === "content" && contentRef.current) {
@@ -57,21 +80,19 @@ const DiaryEdit = () => {
       const length = el.value.length;
       el.setSelectionRange(length, length);
     }
-  }, [editingField]);
+  }, [editingField, tempValue]);
 
   const handleSave = () => {
-    const payload = {
-      id: diary.diaryId,
-      emotion: diary.emotion,
-      topics: diary.topics,
-      oneLine: diary.oneLine,
+    const payload: DiaryEditRequest = {
+      emotionCategory: diary.emotionCategory,
+      topic: diary.topic,
+      oneLineDiary: diary.oneLineDiary,
       content: diary.content,
-      images,
     };
 
-    console.log("SAVE PAYLOAD", payload); // api 연동 시 삭제
+    console.log("SAVE PAYLOAD", payload);
 
-    navigate(`/diary/detail/${diary.diaryId}`, {
+    navigate(`/diary/detail/${diary.id}`, {
       replace: true,
     });
   };
@@ -85,9 +106,11 @@ const DiaryEdit = () => {
           <p className="text-sm font-extrabold text-[#4A4A4A] mb-2">
             {diary.title}
           </p>
-          <p className="text-xs text-[#4A4A4A]">작성 날짜: {diary.createdAt}</p>
           <p className="text-xs text-[#4A4A4A]">
-            총 대화 시간: {diary.totalTalkTime}
+            작성 날짜: {formatDate(diary.createdDate)}
+          </p>
+          <p className="text-xs text-[#4A4A4A]">
+            총 대화 시간: {formatElapsedTime(diary.conversationDurationSec)}
           </p>
         </div>
 
@@ -97,11 +120,9 @@ const DiaryEdit = () => {
           onEditClick={() => setEmotionModalOpen(true)}
         >
           <div className="flex items-center gap-1">
-            <span className="flex items-center">
-              {EMOTION_S_ICONS[diary.emotion]}
-            </span>
+            <span>{EMOTION_S_ICONS[diary.emotionCategory]}</span>
             <span>
-              오늘은 {EMOTION_SENTENCE[diary.emotion]} 하루를 보냈어요.
+              오늘은 {EMOTION_SENTENCE[diary.emotionCategory]} 하루를 보냈어요.
             </span>
           </div>
         </DiaryInfoBox>
@@ -111,18 +132,18 @@ const DiaryEdit = () => {
           type="edit"
           onEditClick={() => setTopicModalOpen(true)}
         >
-          {diary.topics.join(" / ")}
+          {diary.topic.join(" / ")}
         </DiaryInfoBox>
 
         <DiaryInfoBox
           label="오늘의 한 줄 일기"
           type="edit"
           onEditClick={() => {
-            setEditingField("oneLine");
-            setTempValue(diary.oneLine);
+            setEditingField("oneLineDiary");
+            setTempValue(diary.oneLineDiary);
           }}
         >
-          {editingField === "oneLine" ? (
+          {editingField === "oneLineDiary" ? (
             <input
               value={tempValue}
               autoFocus
@@ -131,7 +152,7 @@ const DiaryEdit = () => {
               onBlur={() => {
                 setDiary(prev => ({
                   ...prev,
-                  oneLine: tempValue,
+                  oneLineDiary: tempValue,
                 }));
                 setEditingField(null);
               }}
@@ -143,7 +164,7 @@ const DiaryEdit = () => {
               className="w-full text-xs focus:outline-none"
             />
           ) : (
-            diary.oneLine
+            diary.oneLineDiary
           )}
         </DiaryInfoBox>
 
@@ -192,16 +213,16 @@ const DiaryEdit = () => {
 
         <DiaryInfoBox label="오늘의 대화 내용">
           <div className="w-full flex flex-col gap-2 max-h-[300px] overflow-y-auto pt-2 scrollbar-none [&::-webkit-scrollbar]:hidden">
-            {diary.conversations.map((msg, idx) => (
+            {messages?.messages.map((msg, idx) => (
               <div
                 key={idx}
                 className={`text-[10px] p-2 px-3 rounded-lg break-words inline-block w-fit min-w-[60px] ${
-                  msg.role === "assistant"
+                  msg.role === "ASSISTANT"
                     ? "bg-[#EFE8E1] text-[#4A4A4A] max-w-[60%] self-start rounded-bl-none"
                     : "bg-[#B28C7E] text-white max-w-[80%] self-end rounded-br-none"
                 }`}
               >
-                {msg.content}
+                {msg.text}
               </div>
             ))}
           </div>
@@ -256,26 +277,26 @@ const DiaryEdit = () => {
 
       <EmotionModal
         isOpen={emotionModalOpen}
-        defaultEmotion={diary.emotion}
+        defaultEmotion={diary.emotionCategory}
         onClose={() => setEmotionModalOpen(false)}
-        onConfirm={nextEmotion => {
+        onConfirm={nextEmotion =>
           setDiary(prev => ({
             ...prev,
-            emotion: nextEmotion,
-          }));
-        }}
+            emotionCategory: nextEmotion,
+          }))
+        }
       />
 
       <TopicModal
         isOpen={topicModalOpen}
-        defaultTopics={diary.topics}
+        defaultTopics={diary.topic}
         onClose={() => setTopicModalOpen(false)}
-        onConfirm={nextTopics => {
+        onConfirm={nextTopics =>
           setDiary(prev => ({
             ...prev,
-            topics: nextTopics,
-          }));
-        }}
+            topic: nextTopics,
+          }))
+        }
       />
     </div>
   );

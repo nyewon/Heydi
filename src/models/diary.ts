@@ -15,7 +15,7 @@ export interface DiaryListResponse {
   totalPages: number;
 }
 
-// Diary Detail & Edit
+// Diary Detail
 export interface DiaryDetailResponse {
   id: number;
   title: string;
@@ -54,4 +54,12 @@ export interface PhotoItem {
   imageUrl: string;
   order: number;
   file?: File;
+}
+
+// Diary Edit
+export interface DiaryEditRequest {
+  emotionCategory: string;
+  topic: string[];
+  oneLineDiary: string;
+  content: string;
 }
