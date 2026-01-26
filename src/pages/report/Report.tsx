@@ -26,10 +26,10 @@ import {
 } from "@components/index";
 import { IoCalendarNumberOutline } from "react-icons/io5";
 import {
-  REPORT_DUMMY,
   MONTHLY_EMOTION_DUMMY,
   MONTHLY_TOPICS_DUMMY,
   CALENDAR_DUMMY,
+  MONTHLY_REPORT_DUMMY,
 } from "@mocks/report";
 
 const Report = () => {
@@ -79,7 +79,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {REPORT_DUMMY.likes}
+                {MONTHLY_REPORT_DUMMY.preferences.like}
               </div>
             </div>
 
@@ -93,7 +93,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {REPORT_DUMMY.dislikes}
+                {MONTHLY_REPORT_DUMMY.preferences.dislike}
               </div>
             </div>
           </div>
@@ -106,7 +106,7 @@ const Report = () => {
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
           <p className="text-xs text-[#4A4A4A] leading-5">
-            {REPORT_DUMMY.activitySummary}
+            {MONTHLY_REPORT_DUMMY.activity.summary}
           </p>
         </div>
 
@@ -117,7 +117,7 @@ const Report = () => {
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
           <p className="text-xs leading-5 text-[#4A4A4A]">
-            {REPORT_DUMMY.insight}
+            {MONTHLY_REPORT_DUMMY.insight.content}
           </p>
         </div>
 
@@ -137,9 +137,11 @@ const Report = () => {
           </p>
 
           <DiaryCard
-            {...REPORT_DUMMY.lastMonthDiary}
+            {...MONTHLY_REPORT_DUMMY.lastMonthReminder}
             onClick={() =>
-              navigate(`/diary/detail/${REPORT_DUMMY.lastMonthDiary.diaryId}`)
+              navigate(
+                `/diary/detail/${MONTHLY_REPORT_DUMMY.lastMonthReminder.diaryId}`,
+              )
             }
           />
         </div>

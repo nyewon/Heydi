@@ -31,3 +31,28 @@ export interface CalendarResponse {
     diaryId: number;
   }[];
 }
+
+// Monthly Report
+export interface MonthlyReportResponse {
+  yearMonth: string;
+  preferences: {
+    like: string;
+    dislike: string;
+  };
+  activity: {
+    summary: string;
+  };
+  insight: {
+    content: string;
+  };
+  lastMonthReminder: LastMonthReminder;
+}
+
+export interface LastMonthReminder {
+  sourceYearMonth: string;
+  diaryId: number;
+  date: string;
+  title: string;
+  topics: string[];
+  emotion: string;
+}

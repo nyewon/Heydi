@@ -1,28 +1,9 @@
-import type { EmotionKey } from "@/constants/emotions";
 import {
   CalendarResponse,
   MonthlyEmotionResponse,
+  MonthlyReportResponse,
   MonthlyTopicsResponse,
 } from "@models/report";
-
-// Diary Card
-export interface DiaryCardDummy {
-  diaryId: string;
-  title: string;
-  emotion: EmotionKey;
-  topics: string[];
-}
-
-// Full Report
-export interface ReportDummy {
-  year: number;
-  month: number;
-  likes: string;
-  dislikes: string;
-  activitySummary: string;
-  insight: string;
-  lastMonthDiary: DiaryCardDummy;
-}
 
 // Emotion Chart
 export const MONTHLY_EMOTION_DUMMY: MonthlyEmotionResponse = {
@@ -95,23 +76,29 @@ export const CALENDAR_DUMMY: CalendarResponse = {
   ],
 };
 
-export const REPORT_DUMMY: ReportDummy = {
-  year: 2025,
-  month: 12,
+// Full Report
+export const MONTHLY_REPORT_DUMMY: MonthlyReportResponse = {
+  yearMonth: "2025-12",
+  preferences: {
+    like: "맛집 탐방",
+    dislike: "발표",
+  },
+  activity: {
+    summary:
+      "이번 달에는 학교에서 친구들과 시간을 많이 보냈어요. 점심을 함께 먹고, 과제를 하면서 소소한 대화를 나누는 시간이 잦았어요.",
+  },
 
-  likes: "맛집 탐방",
-  dislikes: "발표",
+  insight: {
+    content:
+      "운동을 계획했지만 실행으로 이어지지 않았어요. 다음 달에는 하루 10분이라도 몸을 움직이는 목표를 세워보는 건 어떨까요?",
+  },
 
-  activitySummary:
-    "이번 달에는 학교에 가서 친구들과 점심을 많이 먹었어요! 학교 식당에 가기도 하고 배달 음식을 시켜 먹으며 좋은 추억을 만들었습니다.",
-
-  insight:
-    "운동을 한다고 했지만 계속 미루기만 했어요. 다음 달에는 누워있는 시간을 줄이고 잠깐이라도 운동을 하는 습관을 만들어보면 어떨까요?",
-
-  lastMonthDiary: {
-    diaryId: "0",
+  lastMonthReminder: {
+    sourceYearMonth: "2025-11",
+    diaryId: 0,
+    date: "2025-11-20",
     title: "11월 20일의 일기",
-    emotion: "짜증",
     topics: ["친구"],
+    emotion: "짜증",
   },
 };
