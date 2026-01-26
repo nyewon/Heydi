@@ -1,11 +1,5 @@
 import type { EmotionKey } from "@/constants/emotions";
-
-// Emotion Chart
-export interface EmotionChartItem {
-  week: string;
-  percent: number;
-  emotion: EmotionKey;
-}
+import { MonthlyEmotionResponse } from "@models/report";
 
 // Topics
 export interface Topic {
@@ -45,7 +39,6 @@ export interface DiaryCardDummy {
 export interface ReportDummy {
   year: number;
   month: number;
-  emotionChart: EmotionChartItem[];
   topTopics: Topic[];
   likes: string;
   dislikes: string;
@@ -55,17 +48,51 @@ export interface ReportDummy {
   lastMonthDiary: DiaryCardDummy;
 }
 
+// Emotion Chart
+export const MONTHLY_EMOTION_DUMMY: MonthlyEmotionResponse = {
+  yearMonth: "2025-12",
+  weeks: [
+    {
+      weekIndex: 1,
+      startDate: "2025-12-01",
+      endDate: "2025-12-07",
+      topEmotion: "기쁨",
+      emotionRate: 56,
+    },
+    {
+      weekIndex: 2,
+      startDate: "2025-12-08",
+      endDate: "2025-12-14",
+      topEmotion: "무난함",
+      emotionRate: 42,
+    },
+    {
+      weekIndex: 3,
+      startDate: "2025-12-15",
+      endDate: "2025-12-21",
+      topEmotion: "슬픔",
+      emotionRate: 18,
+    },
+    {
+      weekIndex: 4,
+      startDate: "2025-12-22",
+      endDate: "2025-12-28",
+      topEmotion: "행복",
+      emotionRate: 63,
+    },
+    {
+      weekIndex: 5,
+      startDate: "2025-12-29",
+      endDate: "2025-12-31",
+      topEmotion: "짜증",
+      emotionRate: 27,
+    },
+  ],
+};
+
 export const REPORT_DUMMY: ReportDummy = {
   year: 2025,
   month: 12,
-
-  emotionChart: [
-    { week: "1주", percent: 72, emotion: "happy" },
-    { week: "2주", percent: 54, emotion: "sad" },
-    { week: "3주", percent: 68, emotion: "joy" },
-    { week: "4주", percent: 72, emotion: "happy" },
-    { week: "5주", percent: 38, emotion: "neutral" },
-  ],
 
   topTopics: [
     {
@@ -102,7 +129,7 @@ export const REPORT_DUMMY: ReportDummy = {
   lastMonthDiary: {
     diaryId: "0",
     title: "11월 20일의 일기",
-    emotion: "annoyed",
+    emotion: "짜증",
     topics: ["친구"],
   },
 };
