@@ -29,6 +29,7 @@ import {
   REPORT_DUMMY,
   MONTHLY_EMOTION_DUMMY,
   MONTHLY_TOPICS_DUMMY,
+  CALENDAR_DUMMY,
 } from "@mocks/report";
 
 const Report = () => {
@@ -124,7 +125,11 @@ const Report = () => {
           <p className="text-base font-bold text-[#4A4A4A]">캘린더</p>
         </div>
 
-        <Calendar year={year} month={month} calendars={REPORT_DUMMY.calendar} />
+        <Calendar
+          year={year}
+          month={month}
+          calendars={CALENDAR_DUMMY.entries}
+        />
 
         <div className="w-full mt-6 mb-2">
           <p className="text-base font-bold text-[#4A4A4A] mb-2">

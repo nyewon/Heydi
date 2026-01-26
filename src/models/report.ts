@@ -23,3 +23,11 @@ export interface MonthlyTopicsResponse {
     ratio: number;
   }[];
 }
+
+// Calendar
+export interface CalendarResponse {
+  entries: {
+    date: string;
+    diaryId: number;
+  }[];
+}

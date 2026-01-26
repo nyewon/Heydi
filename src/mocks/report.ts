@@ -1,31 +1,9 @@
 import type { EmotionKey } from "@/constants/emotions";
-import { MonthlyEmotionResponse, MonthlyTopicsResponse } from "@models/report";
-
-// Topics
-export interface Topic {
-  rank: number;
-  title: string;
-  percent: number;
-  description?: string;
-}
-
-// Calendar
-export interface CalendarProps {
-  year: number;
-  month: number;
-}
-
-export interface CalendarDate {
-  day: number;
-  current: boolean;
-}
-
-export interface CalendarEntry {
-  diaryId: number;
-  year: number;
-  month: number;
-  day: number;
-}
+import {
+  CalendarResponse,
+  MonthlyEmotionResponse,
+  MonthlyTopicsResponse,
+} from "@models/report";
 
 // Diary Card
 export interface DiaryCardDummy {
@@ -43,7 +21,6 @@ export interface ReportDummy {
   dislikes: string;
   activitySummary: string;
   insight: string;
-  calendar: CalendarEntry[];
   lastMonthDiary: DiaryCardDummy;
 }
 
@@ -89,6 +66,7 @@ export const MONTHLY_EMOTION_DUMMY: MonthlyEmotionResponse = {
   ],
 };
 
+// Top Topics
 export const MONTHLY_TOPICS_DUMMY: MonthlyTopicsResponse = {
   yearMonth: "2025-12",
   top1: {
@@ -100,6 +78,20 @@ export const MONTHLY_TOPICS_DUMMY: MonthlyTopicsResponse = {
     { name: "인간관계", ratio: 21 },
     { name: "취미", ratio: 17 },
     { name: "건강", ratio: 11 },
+  ],
+};
+
+// Calendar
+export const CALENDAR_DUMMY: CalendarResponse = {
+  entries: [
+    { date: "2025-12-03", diaryId: 1 },
+    { date: "2025-12-05", diaryId: 2 },
+    { date: "2025-12-06", diaryId: 3 },
+    { date: "2025-12-07", diaryId: 4 },
+    { date: "2025-12-20", diaryId: 5 },
+    { date: "2025-12-21", diaryId: 6 },
+    { date: "2025-12-22", diaryId: 7 },
+    { date: "2025-12-25", diaryId: 8 },
   ],
 };
 
@@ -115,17 +107,6 @@ export const REPORT_DUMMY: ReportDummy = {
 
   insight:
     "운동을 한다고 했지만 계속 미루기만 했어요. 다음 달에는 누워있는 시간을 줄이고 잠깐이라도 운동을 하는 습관을 만들어보면 어떨까요?",
-
-  calendar: [
-    { diaryId: 1, year: 2025, month: 12, day: 3 },
-    { diaryId: 2, year: 2025, month: 12, day: 5 },
-    { diaryId: 3, year: 2025, month: 12, day: 6 },
-    { diaryId: 4, year: 2025, month: 12, day: 7 },
-    { diaryId: 5, year: 2025, month: 12, day: 20 },
-    { diaryId: 6, year: 2025, month: 12, day: 21 },
-    { diaryId: 7, year: 2025, month: 12, day: 22 },
-    { diaryId: 8, year: 2025, month: 12, day: 25 },
-  ],
 
   lastMonthDiary: {
     diaryId: "0",
