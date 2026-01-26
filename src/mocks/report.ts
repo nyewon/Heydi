@@ -1,5 +1,5 @@
 import type { EmotionKey } from "@/constants/emotions";
-import { MonthlyEmotionResponse } from "@models/report";
+import { MonthlyEmotionResponse, MonthlyTopicsResponse } from "@models/report";
 
 // Topics
 export interface Topic {
@@ -39,7 +39,6 @@ export interface DiaryCardDummy {
 export interface ReportDummy {
   year: number;
   month: number;
-  topTopics: Topic[];
   likes: string;
   dislikes: string;
   activitySummary: string;
@@ -90,21 +89,23 @@ export const MONTHLY_EMOTION_DUMMY: MonthlyEmotionResponse = {
   ],
 };
 
+export const MONTHLY_TOPICS_DUMMY: MonthlyTopicsResponse = {
+  yearMonth: "2025-12",
+  top1: {
+    name: "학업",
+    ratio: 32,
+    description: "시험과 과제, 진로에 대한 주제가 가장 많이 등장했어요",
+  },
+  top2to4: [
+    { name: "인간관계", ratio: 21 },
+    { name: "취미", ratio: 17 },
+    { name: "건강", ratio: 11 },
+  ],
+};
+
 export const REPORT_DUMMY: ReportDummy = {
   year: 2025,
   month: 12,
-
-  topTopics: [
-    {
-      rank: 1,
-      title: "학업",
-      percent: 32,
-      description: "시험과 과제, 진로에 대한 주제가 가장 많이 등장했어요",
-    },
-    { rank: 2, title: "인간관계", percent: 21 },
-    { rank: 3, title: "취미", percent: 17 },
-    { rank: 4, title: "건강", percent: 11 },
-  ],
 
   likes: "맛집 탐방",
   dislikes: "발표",
