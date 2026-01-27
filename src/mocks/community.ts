@@ -1,61 +1,55 @@
 import { EmotionKey } from "@constants/emotions";
+import { PostListResponse } from "@models/community";
 
 // Community Post List
-export interface CommunityCardProps {
-  postId: string;
-  profileImg?: string;
-  user: string;
-  date: string;
-  title: string;
-  emotion: EmotionKey;
-  topics: string[];
-  content: string;
-  likes: number;
-  comments: number;
-  liked: boolean;
-  onClick?: () => void;
-}
-
-export const COMMUNITY_POST_DUMMIES: CommunityCardProps[] = [
-  {
-    postId: "1",
-    user: "Test",
-    date: "2025.12.7",
-    title: "일본 여행 1일차",
-    emotion: "happy",
-    topics: ["여행"],
-    content:
-      "오늘은 일본 여행 1일차예요. 아침 일찍 비행기를 타고 인천공항에서 간사이 공항으로 이동했어요. 오랜만에 하는 여행이라서 매우 설렜어요. 공항에 도착해서는 바로 숙소로 이동했어요. 숙소는 깔끔하고 아늑했어요. 짐을 풀고 나서는 근처 맛집을 찾아가서 점심을 먹었어요. 일본 음식은 역시 맛있었어요! 오후에는 유명한 관광지를 돌아다녔어요. 날씨도 좋아서 사진도 많이 찍었답니다. 저녁에는 현지 친구를 만나서 함께 저녁을 먹었어요. 오늘 하루 정말 알차고 즐거웠어요. 내일도 기대돼요!",
-    likes: 32,
-    comments: 2,
-    liked: true,
-  },
-  {
-    postId: "2",
-    user: "Test2",
-    date: "2025.12.5",
-    title: "운동 열심히 한 날",
-    emotion: "joy",
-    topics: ["운동", "요리"],
-    content:
-      "오랜만에 헬스장에 가서 운동을 했어요. 계속 미루다가 가서 처음에는 힘들었지만 계속 운동을 하다보니 기분이 좋아졌어요. 운동을 마치고 집에 돌아가서 간단한 파스타를 만들었는데 생각보다 맛있게 나와서 기분이 좋았어요. 오늘 하루는 운동도 하고 요리도 해서 뿌듯한 하루였어요.",
-    likes: 5,
-    comments: 1,
-    liked: false,
-  },
-  {
-    postId: "3",
-    user: "Test1",
-    date: "2025.12.1",
-    title: "조용한 하루",
-    emotion: "neutral",
-    topics: ["일상"],
-    content: "오늘은 별다른 일 없이 조용하게 보낸 하루였다.",
-    likes: 0,
-    comments: 0,
-    liked: false,
-  },
-];
+export const COMMUNITY_POST_LIST_DUMMY: PostListResponse = {
+  posts: [
+    {
+      post_id: 100,
+      user_id: 2,
+      nickname: "Test",
+      profile_url: "https://bucket.s3.amazonaws.com/profiles/abc.jpg",
+      post_title: "일본 여행 1일차",
+      post_topics: ["여행"],
+      post_emotion: "행복",
+      post_content:
+        "오늘은 일본 여행 1일차예요. 아침 일찍 비행기를 타고 인천공항에서 간사이 공항으로 이동했어요. 오랜만에 하는 여행이라서 매우 설렜어요.",
+      like_count: 32,
+      comment_count: 2,
+      is_liked: true,
+      created_at: "2025-12-07T10:00:00",
+    },
+    {
+      post_id: 99,
+      user_id: 5,
+      nickname: "Test2",
+      profile_url: "https://bucket.s3.amazonaws.com/profiles/def.jpg",
+      post_title: "운동 열심히 한 날",
+      post_topics: ["운동", "요리"],
+      post_emotion: "기쁨",
+      post_content:
+        "오랜만에 헬스장에 가서 운동을 했어요. 운동 후에 파스타를 만들어 먹었는데 생각보다 맛있었어요.",
+      like_count: 5,
+      comment_count: 1,
+      is_liked: false,
+      created_at: "2025-12-05T09:30:00",
+    },
+    {
+      post_id: 98,
+      user_id: 8,
+      nickname: "Test1",
+      profile_url: "https://bucket.s3.amazonaws.com/profiles/ghi.jpg",
+      post_title: "조용한 하루",
+      post_topics: ["일상"],
+      post_emotion: "무난함",
+      post_content: "오늘은 별다른 일 없이 조용하게 보낸 하루였다.",
+      like_count: 0,
+      comment_count: 0,
+      is_liked: false,
+      created_at: "2025-12-01T08:45:00",
+    },
+  ],
+};
 
 // Community Post Detail
 export interface CommunityComment {
@@ -86,7 +80,7 @@ export const POST_DETAIL_DUMMIES: CommunityPostDetail[] = [
     profile: "",
     date: "2025.12.7",
     title: "일본 여행 1일차",
-    emotion: "happy",
+    emotion: "행복",
     topics: ["여행"],
     content:
       "오늘은 일본 여행 1일차예요. 아침 일찍 비행기를 타고 인천공항에서 간사이 공항으로 이동했어요. 오랜만에 하는 여행이라서 매우 설렜어요. 공항에 도착한 뒤에는 짐을 찾고 바로 숙소로 이동했어요. 저녁에는 숙소 주변에서 간단하게 라멘을 먹었는데, 진한 국물 향이 피곤함을 싹 날려줬어요. 오랜 이동으로 몸은 조금 피곤했지만, 드디어 여행이 시작됐다는 설렘이 더 컸어요. 이제 내일은 본격적으로 여러 곳을 돌아다닐 생각이라 벌써부터 기대가 돼요.",
@@ -115,7 +109,7 @@ export const POST_DETAIL_DUMMIES: CommunityPostDetail[] = [
     profile: "",
     date: "2025.12.5",
     title: "운동 열심히 한 날",
-    emotion: "joy",
+    emotion: "기쁨",
     topics: ["운동", "요리"],
     content:
       "오랜만에 헬스장에 가서 운동을 했어요. 계속 미루다가 가서 처음에는 힘들었지만 계속 운동을 하다보니 기분이 좋아졌어요. 운동을 마치고 집에 돌아가서 간단한 파스타를 만들었는데 생각보다 맛있게 나와서 기분이 좋았어요. 오늘 하루는 운동도 하고 요리도 해서 뿌듯한 하루였어요.",
@@ -136,7 +130,7 @@ export const POST_DETAIL_DUMMIES: CommunityPostDetail[] = [
     profile: "",
     date: "2025.12.1",
     title: "조용한 하루",
-    emotion: "neutral",
+    emotion: "무난함",
     topics: ["일상"],
     content: "오늘은 별다른 일 없이 조용하게 보낸 하루였다.",
     postImages: [],

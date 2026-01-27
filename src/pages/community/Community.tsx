@@ -14,7 +14,7 @@ import {
   BottomNav,
   CommunityCard,
 } from "@components/index";
-import { COMMUNITY_POST_DUMMIES } from "@mocks/community";
+import { COMMUNITY_POST_LIST_DUMMY } from "@mocks/community";
 
 const Community = () => {
   const navigate = useNavigate();
@@ -23,25 +23,25 @@ const Community = () => {
       <DefaultHeader showIcon="community" />
 
       <Container withBottomNav={true}>
-        {[...COMMUNITY_POST_DUMMIES]
+        {[...COMMUNITY_POST_LIST_DUMMY.posts]
           .sort(
             (a, b) =>
-              new Date(b.date.replace(/\./g, "-")).getTime() -
-              new Date(a.date.replace(/\./g, "-")).getTime(),
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime(),
           )
           .map(post => (
             <CommunityCard
-              key={post.postId}
-              user={post.user}
-              date={post.date}
-              title={post.title}
-              emotion={post.emotion}
-              topics={post.topics}
-              content={post.content}
-              likes={post.likes}
-              comments={post.comments}
-              liked={post.liked}
-              onClick={() => navigate(`/community/detail/${post.postId}`)}
+              key={post.post_id}
+              user={post.nickname}
+              date={post.created_at.split("T")[0].replace(/-/g, ".")}
+              title={post.post_title}
+              emotion={post.post_emotion}
+              topics={post.post_topics}
+              content={post.post_content}
+              likes={post.like_count}
+              comments={post.comment_count}
+              liked={post.is_liked}
+              onClick={() => navigate(`/community/detail/${post.post_id}`)}
             />
           ))}
       </Container>
