@@ -17,3 +17,30 @@ export interface PostListItem {
 export interface PostListResponse {
   posts: PostListItem[];
 }
+
+// Community Post Detail
+export interface PostAuthor {
+  user_id: number;
+  nickname: string;
+  profile_url: string;
+}
+
+export interface PostDetailResponse {
+  post_id: number;
+  author: PostAuthor;
+  diary_id: number;
+  diary_date: string;
+  post_title: string;
+  post_topics: string[];
+  post_emotion: string;
+  post_content: string;
+  photos: {
+    id: number;
+    imageUrl: string;
+    order: number;
+  }[];
+  like_count: number;
+  comment_count: number;
+  is_liked: boolean;
+  created_at: string;
+}
