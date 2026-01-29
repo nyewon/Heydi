@@ -23,7 +23,10 @@ import { FaHeart, FaTrashAlt } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import DefaultProfile from "@assets/icons/profile_s.svg";
 import { EMOTION_S_ICONS } from "@constants/emotions";
-import { POST_DETAIL_DUMMIES } from "@mocks/community";
+import {
+  POST_DETAIL_DUMMIES,
+  COMMUNITY_COMMENT_DUMMIES,
+} from "@mocks/community";
 
 const PostDetail = () => {
   const currentUser = "Test";
@@ -41,18 +44,7 @@ const PostDetail = () => {
   const [likeCount, setLikeCount] = useState(post.like_count);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const comments = [
-    {
-      user: "Test1",
-      profile: "",
-      content: "와 여행 시작부터 너무 알차네요!",
-    },
-    {
-      user: "Test2",
-      profile: "",
-      content: "사진 많이 찍었겠다 😊",
-    },
-  ];
+  const comments = COMMUNITY_COMMENT_DUMMIES.comments;
 
   const handleToggleLike = () => {
     setIsLiked(prev => !prev);

@@ -44,3 +44,30 @@ export interface PostDetailResponse {
   is_liked: boolean;
   created_at: string;
 }
+
+export interface CommunityComment {
+  comment_id: number;
+  user_id: number;
+  nickname: string;
+  profile_url: string;
+  content: string;
+  is_mine: boolean;
+  created_at: string;
+}
+
+export interface CommunityCommentListResponse {
+  comments: CommunityComment[];
+  next_cursor: number | null;
+  has_next: boolean;
+}
+
+export interface CommunityCommentMutationResult {
+  comment_id: number;
+  user_id: number;
+  nickname: string;
+  profile_url: string;
+  content: string;
+  is_mine: boolean;
+  created_at: string;
+  updated_at: string | null;
+}
