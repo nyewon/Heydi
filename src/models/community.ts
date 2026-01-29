@@ -71,3 +71,14 @@ export interface CommunityCommentMutationResult {
   created_at: string;
   updated_at: string | null;
 }
+
+// Community Post Creation / Editing
+export interface CommunityPostUpsertRequest {
+  diary_id: number;
+  post_title: string;
+  diary_date: string;
+  conversation_duration?: number;
+  post_emotion: string;
+  post_content: string;
+  post_topics: string[];
+}
