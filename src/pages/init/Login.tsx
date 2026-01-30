@@ -7,6 +7,7 @@
  * - 회원가입 페이지 이동 링크
  * - 유효성 검사
  * - 로그인 완료 후 Diary Page로 이동
+ * - api 연동 완료
  */
 
 import { useState } from "react";
@@ -18,6 +19,7 @@ import GoogleIcon from "@assets/login/google.svg?react";
 import { validateId, validatePassword } from "@utils/validate";
 import { useFCM } from "@hooks/useFCM";
 import { LoginRequest } from "@models/auths";
+import { login } from "@services/auth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -26,34 +28,31 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const fcmToken = useFCM();
 
-  const handleLogin = () => {
-    if (id === "test123" && pw === "test123!") {
+  const handleLogin = async () => {
+    if (!validateId(id) || !validatePassword(pw)) {
+      setError("로그인 양식이 일치하지 않습니다.");
+      return;
+    }
+
+    try {
       const loginPayload: LoginRequest = {
         username: id,
         password: pw,
         fcm_token: fcmToken,
       };
 
-      console.log("LOGIN PAYLOAD", loginPayload);
+      const res = await login(loginPayload);
 
-      setError("");
-      navigate("/diary");
-      return;
-    }
-
-    if (!validateId(id) || !validatePassword(pw)) {
-      setError("로그인 양식이 일치하지 않습니다.");
-      return;
-    }
-
-    if (id !== "test123") {
-      setError("존재하지 않는 사용자입니다.");
-      return;
-    }
-
-    if (pw !== "1234") {
-      setError("아이디 또는 비밀번호가 일치하지 않습니다.");
-      return;
+      if (res.success) {
+        setError("");
+        navigate("/diary");
+      } else {
+        setError(res.message || "로그인에 실패했습니다.");
+      }
+    } catch (e: any) {
+      setError(
+        e?.response?.data?.message || "서버와 통신 중 오류가 발생했습니다.",
+      );
     }
   };
 
