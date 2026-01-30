@@ -10,3 +10,7 @@ export interface SignupRequest {
   nickname: string;
   profileImage: File | null;
 }
+
+export interface UsernameCheckRequest {
+  username: string;
+}
