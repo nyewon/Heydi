@@ -45,3 +45,7 @@ export const signup = async (payload: SignupRequest) => {
 
   return res.data;
 };
+
+export const socialLogin = (provider: "google" | "kakao") => {
+  window.location.href = `${import.meta.env.VITE_SERVER_URL}/oauth2/authorization/${provider}`;
+};

@@ -19,7 +19,7 @@ import GoogleIcon from "@assets/login/google.svg?react";
 import { validateId, validatePassword } from "@utils/validate";
 import { useFCM } from "@hooks/useFCM";
 import { LoginRequest } from "@models/auths";
-import { login } from "@services/auth";
+import { login, socialLogin } from "@services/auth";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -93,8 +93,15 @@ const LoginPage = () => {
         <div className="flex-1 h-[1px] bg-[#D9D9D9]" />
 
         <div className="flex items-center gap-4 mx-4">
-          <KakaoIcon className="cursor-pointer" />
-          <GoogleIcon className="cursor-pointer" />
+          <KakaoIcon
+            className="cursor-pointer"
+            onClick={() => socialLogin("kakao")}
+          />
+
+          <GoogleIcon
+            className="cursor-pointer"
+            onClick={() => socialLogin("google")}
+          />
         </div>
 
         <div className="flex-1 h-[1px] bg-[#D9D9D9]" />
