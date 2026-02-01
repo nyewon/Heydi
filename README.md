@@ -109,7 +109,7 @@ src/
 - react-icons: 5.5.0
 
 ### 상태 관리 & 유틸
-- zustand: planned
+- zustand: 5.0.11
 - axios: 1.13.2
 - react-router-dom: 7.9.6
 
