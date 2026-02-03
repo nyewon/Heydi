@@ -11,7 +11,7 @@
  * - 프로필 수정 완료 후 Mypage로 이동
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BackHeader,
@@ -25,25 +25,48 @@ import { validatePassword, validateNickname } from "@utils/validate";
 import Profile from "@assets/icons/profile.svg?react";
 import Plus from "@assets/icons/plus.svg?react";
 import { IoMdInformationCircle } from "react-icons/io";
-
-import { USER_INFO_DUMMY } from "@mocks/mypage";
-import { UserInfoUpdateRequest } from "@models/mypage";
+import { UserInfoUpdateRequest, UserInfoResponse } from "@models/mypage";
+import { updateUserInfo, getUserInfo } from "@services/auth";
 
 const ProfileEdit = () => {
   const navigate = useNavigate();
-  const user = USER_INFO_DUMMY;
+  const [user, setUser] = useState<UserInfoResponse | null>(null);
   const [pw, setPw] = useState("");
   const [newpw, setNewpw] = useState("");
-  const [nickname, setNickname] = useState(user.nickname);
+  const [nickname, setNickname] = useState("");
   const [error, setError] = useState("");
   const [isGuideOpen, setIsGuideOpen] = useState(false);
 
-  const { profileImg, fileInputRef, handleSelectImage, openFileDialog } =
-    useProfileImage();
+  const {
+    profileImg,
+    profileFile,
+    fileInputRef,
+    handleSelectImage,
+    openFileDialog,
+  } = useProfileImage();
 
-  const profileImage = profileImg || user.profileImageUrl || "";
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const res = await getUserInfo();
+        const info = res.result as UserInfoResponse;
 
-  const handleSaveProfile = () => {
+        setUser(info);
+        setNickname(info.nickname);
+      } catch {
+        setError("프로필 정보를 불러오지 못했습니다.");
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  if (!user) return null;
+
+  const displayImage = profileImg || user.profileImageUrl || null;
+  const showPasswordFields = Boolean(user.password);
+
+  const handleSaveProfile = async () => {
     setError("");
 
     if (!validateNickname(nickname)) {
@@ -51,37 +74,48 @@ const ProfileEdit = () => {
       return;
     }
 
-    if (pw && pw !== user.password) {
-      setError("기존 비밀번호가 일치하지 않습니다.");
-      return;
-    }
+    if (showPasswordFields) {
+      if (pw && pw !== user.password) {
+        setError("기존 비밀번호가 일치하지 않습니다.");
+        return;
+      }
 
-    if (newpw && !validatePassword(newpw)) {
-      setError("새 비밀번호가 유효하지 않습니다.");
-      return;
-    }
+      if (newpw && !validatePassword(newpw)) {
+        setError("새 비밀번호가 유효하지 않습니다.");
+        return;
+      }
 
-    if (pw && newpw && pw === newpw) {
-      setError("새 비밀번호는 기존 비밀번호와 달라야 합니다.");
-      return;
+      if (pw && newpw && pw === newpw) {
+        setError("새 비밀번호는 기존 비밀번호와 달라야 합니다.");
+        return;
+      }
     }
 
     const payload: UserInfoUpdateRequest = {
-      userId: user.userId,
-      username: user.username,
-      profileImage,
       nickname,
-      newpassword: newpw,
+      deleteProfileImage: profileFile === null,
     };
 
-    console.log("프로필 수정 요청: ", payload);
+    if (showPasswordFields) {
+      if (pw) payload.currentPassword = pw;
+      if (newpw) payload.newPassword = newpw;
+    }
 
-    navigate("/mypage", { replace: true });
+    if (profileFile !== undefined) {
+      payload.profileImage = profileFile;
+    }
+
+    try {
+      await updateUserInfo(payload);
+      navigate("/mypage", { replace: true });
+    } catch {
+      setError("프로필 수정에 실패했습니다.");
+    }
   };
 
   const isDisabled =
     !validateNickname(nickname) ||
-    (newpw.length > 0 && !validatePassword(newpw));
+    (showPasswordFields && newpw.length > 0 && !validatePassword(newpw));
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -89,9 +123,9 @@ const ProfileEdit = () => {
 
       <Container className="pt-6 pb-10">
         <div className="relative flex items-center justify-center mt-5 mb-18">
-          {profileImage ? (
+          {displayImage ? (
             <img
-              src={profileImage}
+              src={displayImage}
               alt="profile"
               className="w-28 h-28 rounded-full object-cover"
             />
@@ -130,7 +164,7 @@ const ProfileEdit = () => {
               value={user.username}
               readOnly
               className="
-                w-full h-12 px-4 rounded-[8px] border text-sm 
+                w-full h-12 px-4 rounded-[8px] border text-sm
                 outline-none bg-[#FFFFFF] cursor-not-allowed
                 text-[#D9D9D9] border-[#D9D9D9]
               "
@@ -139,7 +173,7 @@ const ProfileEdit = () => {
             <div
               className="
                 absolute top-1/2 -translate-y-1/2 right-[10px]
-                w-20 h-8 rounded-[8px] text-sm 
+                w-20 h-8 rounded-[8px] text-sm
                 flex items-center justify-center
                 bg-[#EFE8E1] text-[#FFFFFF]
               "
@@ -148,25 +182,29 @@ const ProfileEdit = () => {
             </div>
           </div>
 
-          <Input
-            type="password"
-            placeholder="기존 비밀번호를 입력하세요."
-            value={pw}
-            onChange={e => {
-              setPw(e.target.value);
-              setError("");
-            }}
-          />
+          {showPasswordFields && (
+            <>
+              <Input
+                type="password"
+                placeholder="기존 비밀번호를 입력하세요."
+                value={pw}
+                onChange={e => {
+                  setPw(e.target.value);
+                  setError("");
+                }}
+              />
 
-          <Input
-            type="password"
-            placeholder="변경할 비밀번호를 입력하세요."
-            value={newpw}
-            onChange={e => {
-              setNewpw(e.target.value);
-              setError("");
-            }}
-          />
+              <Input
+                type="password"
+                placeholder="변경할 비밀번호를 입력하세요."
+                value={newpw}
+                onChange={e => {
+                  setNewpw(e.target.value);
+                  setError("");
+                }}
+              />
+            </>
+          )}
 
           <Input
             placeholder="닉네임을 입력하세요."

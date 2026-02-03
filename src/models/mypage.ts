@@ -21,11 +21,11 @@ export interface UserInfoResponse {
 
 // Profile(User) Update Request
 export interface UserInfoUpdateRequest {
-  userId: number;
-  username: string;
-  profileImage: string;
   nickname: string;
-  newpassword?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  profileImage?: File | null;
+  deleteProfileImage: boolean;
 }
 
 // Like Posts & Shared Posts List Response

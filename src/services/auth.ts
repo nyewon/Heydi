@@ -4,7 +4,9 @@ import {
   SignupRequest,
   UsernameCheckRequest,
 } from "@models/auths";
+import { UserInfoUpdateRequest } from "@models/mypage";
 
+// 자체 로그인
 export const login = async (payload: LoginRequest) => {
   const res = await axios.post(
     `${import.meta.env.VITE_SERVER_URL}/auth/login`,
@@ -13,6 +15,7 @@ export const login = async (payload: LoginRequest) => {
   return res.data;
 };
 
+// 아이디 중복 체크
 export const usernameCheck = async (payload: UsernameCheckRequest) => {
   const res = await axios.post(
     `${import.meta.env.VITE_SERVER_URL}/auth/check-username?username=`,
@@ -21,6 +24,7 @@ export const usernameCheck = async (payload: UsernameCheckRequest) => {
   return res.data;
 };
 
+// 회원가입
 export const signup = async (payload: SignupRequest) => {
   const formData = new FormData();
 
@@ -46,6 +50,60 @@ export const signup = async (payload: SignupRequest) => {
   return res.data;
 };
 
+// 소셜 로그인
 export const socialLogin = (provider: "google" | "kakao") => {
   window.location.href = `${import.meta.env.VITE_SERVER_URL}/oauth2/authorization/${provider}`;
+};
+
+// 유저 정보 수정
+export const updateUserInfo = async (payload: UserInfoUpdateRequest) => {
+  const formData = new FormData();
+
+  formData.append("nickname", payload.nickname);
+
+  if (payload.currentPassword) {
+    formData.append("currentPassword", payload.currentPassword);
+  }
+
+  if (payload.newPassword) {
+    formData.append("newPassword", payload.newPassword);
+  }
+
+  if (payload.profileImage !== undefined) {
+    if (payload.profileImage === null) {
+      formData.append("profileImage", "");
+    } else {
+      formData.append("profileImage", payload.profileImage);
+    }
+  }
+
+  formData.append(
+    "deleteProfileImage",
+    payload.deleteProfileImage ? "true" : "false",
+  );
+
+  const res = await axios.patch(
+    `${import.meta.env.VITE_SERVER_URL}/mypage/profile/me`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    },
+  );
+
+  return res.data;
+};
+
+// 유저 정보 조회
+export const getUserInfo = async () => {
+  const res = await axios.get(
+    `${import.meta.env.VITE_SERVER_URL}/mypage/profile/me`,
+    {
+      withCredentials: true,
+    },
+  );
+
+  return res.data;
 };
