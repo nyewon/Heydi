@@ -1,4 +1,4 @@
-import axios from "axios";
+import instance from "./axios";
 import {
   LoginRequest,
   SignupRequest,
@@ -8,19 +8,13 @@ import { UserInfoUpdateRequest } from "@models/mypage";
 
 // 자체 로그인
 export const login = async (payload: LoginRequest) => {
-  const res = await axios.post(
-    `${import.meta.env.VITE_SERVER_URL}/auth/login`,
-    payload,
-  );
+  const res = await instance.post("/auth/login", payload);
   return res.data;
 };
 
 // 아이디 중복 체크
 export const usernameCheck = async (payload: UsernameCheckRequest) => {
-  const res = await axios.post(
-    `${import.meta.env.VITE_SERVER_URL}/auth/check-username?username=`,
-    payload,
-  );
+  const res = await instance.post("/auth/check-username?username=", payload);
   return res.data;
 };
 
@@ -36,16 +30,11 @@ export const signup = async (payload: SignupRequest) => {
     formData.append("profileImage", payload.profileImage);
   }
 
-  const res = await axios.post(
-    `${import.meta.env.VITE_SERVER_URL}/auth/signup`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      withCredentials: true,
+  const res = await instance.post("/auth/signup", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
     },
-  );
+  });
 
   return res.data;
 };
@@ -82,28 +71,17 @@ export const updateUserInfo = async (payload: UserInfoUpdateRequest) => {
     payload.deleteProfileImage ? "true" : "false",
   );
 
-  const res = await axios.patch(
-    `${import.meta.env.VITE_SERVER_URL}/mypage/profile/me`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      withCredentials: true,
+  const res = await instance.patch("/mypage/profile/me", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
     },
-  );
+  });
 
   return res.data;
 };
 
 // 유저 정보 조회
 export const getUserInfo = async () => {
-  const res = await axios.get(
-    `${import.meta.env.VITE_SERVER_URL}/mypage/profile/me`,
-    {
-      withCredentials: true,
-    },
-  );
-
+  const res = await instance.get("/mypage/profile/me");
   return res.data;
 };
