@@ -81,6 +81,8 @@ src/
 │
 ├── services/      # API 통신 로직
 │
+├── stores/        # 전역 상태 관리 (zustand)
+│
 ├── models/         # 전역 타입 정의
 │
 ├── utils/         # 공통 유틸리티 함수
