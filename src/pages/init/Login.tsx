@@ -20,9 +20,12 @@ import { validateId, validatePassword } from "@utils/validate";
 import { useFCM } from "@hooks/useFCM";
 import { LoginRequest } from "@models/auths";
 import { login, socialLogin } from "@services/auth";
+import { useAuthStore } from "@stores/useAuthStore";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const loginSuccess = useAuthStore(state => state.loginSuccess);
+
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
@@ -45,6 +48,7 @@ const LoginPage = () => {
 
       if (res.success) {
         setError("");
+        loginSuccess(null);
         navigate("/diary");
       } else {
         setError(res.message || "로그인에 실패했습니다.");
