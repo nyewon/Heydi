@@ -85,3 +85,15 @@ export const getUserInfo = async () => {
   const res = await instance.get("/mypage/profile/me");
   return res.data;
 };
+
+// 로그아웃
+export const logout = async () => {
+  const res = await instance.post("/auth/logout");
+  return res.data;
+};
+
+// 회원 탈퇴
+export const withdraw = async () => {
+  const res = await instance.delete("/auth/withdraw");
+  return res.data;
+};

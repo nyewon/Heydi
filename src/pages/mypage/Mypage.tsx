@@ -21,9 +21,12 @@ import DefaultProfile from "@assets/icons/profile.svg";
 import { IoChevronForward } from "react-icons/io5";
 import { MYPAGE_INFO_DUMMY, ALARM_DUMMY } from "@mocks/mypage";
 import { AlarmResponseRequest } from "@models/mypage";
+import { logout, withdraw } from "@services/auth";
+import { useAuthStore } from "@stores/useAuthStore";
 
 const Mypage = () => {
   const navigate = useNavigate();
+  const clearAuth = useAuthStore(state => state.logout);
 
   const { nickname, profileImageUrl, likedPostCount, sharedPostCount, alarm } =
     MYPAGE_INFO_DUMMY;
@@ -71,12 +74,31 @@ const Mypage = () => {
     setIsAlarmModalOpen(false);
   };
 
-  const handleConfirmAccount = () => {
+  const handleConfirmAccount = async () => {
     if (modalType === "logout") {
-      console.log("logout");
+      try {
+        const res = await logout();
+
+        if (res.success) {
+          clearAuth();
+          navigate("/", { replace: true });
+        }
+      } catch (e) {
+        console.error("로그아웃 실패", e);
+      }
     }
+
     if (modalType === "withdraw") {
-      console.log("withdraw");
+      try {
+        const res = await withdraw();
+
+        if (res.success) {
+          clearAuth();
+          navigate("/", { replace: true });
+        }
+      } catch (e) {
+        console.error("회원탈퇴 실패", e);
+      }
     }
     setModalType(null);
   };
