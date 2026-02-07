@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -5,7 +6,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import {
-  Login,
   Signup,
   Diary,
   DiaryWaiting,
@@ -23,9 +23,16 @@ import {
   SharedPost,
   Loading,
 } from "@pages/index";
-import { ScrollToTop } from "@components/common";
+import { ScrollToTop, InitRoute, ProtectedRoute } from "@components/index";
+import { useAuthStore } from "@stores/useAuthStore";
 
 const App = () => {
+  const checkAuth = useAuthStore(state => state.checkAuth);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
   return (
     <Router>
       <div
@@ -43,10 +50,10 @@ const App = () => {
         <ScrollToTop />
         <Routes>
           {/* Init */}
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<InitRoute />} />
           <Route path="/signup" element={<Signup />} />
 
-          <Route>
+          <Route element={<ProtectedRoute />}>
             {/* Diary */}
             <Route path="/diary" element={<Diary />} />
             <Route path="/diary/wait" element={<DiaryWaiting />} />
