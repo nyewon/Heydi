@@ -9,6 +9,7 @@
  * - 회원가입 가이드 모달
  * - 유효성 검사
  * - 프로필 수정 완료 후 Mypage로 이동
+ * - 프로필 수정 api 연동 완료
  */
 
 import { useEffect, useState } from "react";
@@ -75,11 +76,6 @@ const ProfileEdit = () => {
     }
 
     if (showPasswordFields) {
-      if (pw && pw !== user.password) {
-        setError("기존 비밀번호가 일치하지 않습니다.");
-        return;
-      }
-
       if (newpw && !validatePassword(newpw)) {
         setError("새 비밀번호가 유효하지 않습니다.");
         return;
@@ -108,8 +104,8 @@ const ProfileEdit = () => {
     try {
       await updateUserInfo(payload);
       navigate("/mypage", { replace: true });
-    } catch {
-      setError("프로필 수정에 실패했습니다.");
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "프로필 수정 실패");
     }
   };
 
