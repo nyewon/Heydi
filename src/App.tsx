@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -22,15 +22,23 @@ import {
   LikePosts,
   SharedPost,
   Loading,
+  Splash,
 } from "@pages/index";
 import { ScrollToTop, InitRoute, ProtectedRoute } from "@components/index";
 import { useAuthStore } from "@stores/useAuthStore";
 
 const App = () => {
   const checkAuth = useAuthStore(state => state.checkAuth);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     checkAuth();
+
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -47,45 +55,60 @@ const App = () => {
           [@supports(-webkit-touch-callout:none)]:tap-highlight-transparent
         "
       >
-        <ScrollToTop />
-        <Routes>
-          {/* Init */}
-          <Route path="/" element={<InitRoute />} />
-          <Route path="/signup" element={<Signup />} />
+        {showSplash ? (
+          <Splash />
+        ) : (
+          <>
+            <ScrollToTop />
+            <Routes>
+              {/* Init */}
+              <Route path="/" element={<InitRoute />} />
+              <Route path="/signup" element={<Signup />} />
 
-          <Route element={<ProtectedRoute />}>
-            {/* Diary */}
-            <Route path="/diary" element={<Diary />} />
-            <Route path="/diary/wait" element={<DiaryWaiting />} />
-            <Route path="/diary/chat/:sessionId" element={<DiaryChat />} />
-            <Route path="/diary/detail/:diaryId" element={<DiaryDetail />} />
-            <Route path="/diary/edit/:diaryId" element={<DiaryEdit />} />
+              <Route element={<ProtectedRoute />}>
+                {/* Diary */}
+                <Route path="/diary" element={<Diary />} />
+                <Route path="/diary/wait" element={<DiaryWaiting />} />
+                <Route path="/diary/chat/:sessionId" element={<DiaryChat />} />
+                <Route
+                  path="/diary/detail/:diaryId"
+                  element={<DiaryDetail />}
+                />
+                <Route path="/diary/edit/:diaryId" element={<DiaryEdit />} />
 
-            {/* Report */}
-            <Route path="/report" element={<Report />} />
+                {/* Report */}
+                <Route path="/report" element={<Report />} />
 
-            {/* Community */}
-            <Route path="/community" element={<Community />} />
-            <Route path="/community/detail/:postId" element={<PostDetail />} />
-            <Route path="/community/select-diary" element={<SelectDiary />} />
-            <Route
-              path="/community/post-edit/:diaryId"
-              element={<PostEdit />}
-            />
+                {/* Community */}
+                <Route path="/community" element={<Community />} />
+                <Route
+                  path="/community/detail/:postId"
+                  element={<PostDetail />}
+                />
+                <Route
+                  path="/community/select-diary"
+                  element={<SelectDiary />}
+                />
+                <Route
+                  path="/community/post-edit/:diaryId"
+                  element={<PostEdit />}
+                />
 
-            {/* MyPage */}
-            <Route path="/mypage" element={<Mypage />} />
-            <Route path="/mypage/edit" element={<ProfileEdit />} />
-            <Route path="/mypage/like-posts" element={<LikePosts />} />
-            <Route path="/mypage/shared-posts" element={<SharedPost />} />
+                {/* MyPage */}
+                <Route path="/mypage" element={<Mypage />} />
+                <Route path="/mypage/edit" element={<ProfileEdit />} />
+                <Route path="/mypage/like-posts" element={<LikePosts />} />
+                <Route path="/mypage/shared-posts" element={<SharedPost />} />
 
-            {/* Etc */}
-            <Route path="/etc" element={<Loading />} />
-          </Route>
+                {/* Etc */}
+                <Route path="/etc" element={<Loading />} />
+              </Route>
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </>
+        )}
       </div>
     </Router>
   );
