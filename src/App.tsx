@@ -29,17 +29,23 @@ import { useAuthStore } from "@stores/useAuthStore";
 
 const App = () => {
   const checkAuth = useAuthStore(state => state.checkAuth);
-  const [showSplash, setShowSplash] = useState(true);
+  const isLoading = useAuthStore(state => state.isLoading);
+  const [showSplash, setShowSplash] = useState(
+    !sessionStorage.getItem("splashShown"),
+  );
 
   useEffect(() => {
     checkAuth();
 
+    if (!showSplash) return;
+
     const timer = setTimeout(() => {
+      sessionStorage.setItem("splashShown", "true");
       setShowSplash(false);
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [showSplash]);
 
   return (
     <Router>
@@ -57,6 +63,8 @@ const App = () => {
       >
         {showSplash ? (
           <Splash />
+        ) : isLoading ? (
+          <Loading />
         ) : (
           <>
             <ScrollToTop />
