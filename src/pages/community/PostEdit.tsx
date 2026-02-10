@@ -20,13 +20,21 @@ import {
   Button,
 } from "@components/index";
 import { EMOTION_SENTENCE, EMOTION_S_ICONS } from "@constants/emotions";
-import { DIARY_DETAIL_DUMMIES, DiaryDetailDummy } from "@mocks/diary";
+import { DIARY_DETAIL_DUMMIES } from "@mocks/diary";
 import { useImageUploader } from "@hooks/useImageUploader";
+import { formatDate, formatElapsedTime } from "@utils/date";
+import { DiaryDetailResponse } from "@models/diary";
+import { CommunityPostUpsertRequest } from "@models/community";
 import Plus from "@assets/icons/plus.svg?react";
 
 const PostEdit = () => {
   const navigate = useNavigate();
   const { diaryId } = useParams<{ diaryId: string }>();
+  const diaryData = DIARY_DETAIL_DUMMIES.find(d => d.id === Number(diaryId));
+
+  if (!diaryData) return null;
+
+  const [diary, setDiary] = useState<DiaryDetailResponse>(diaryData);
   const [emotionModalOpen, setEmotionModalOpen] = useState(false);
   const [topicModalOpen, setTopicModalOpen] = useState(false);
   const [editingField, setEditingField] = useState<
@@ -34,9 +42,6 @@ const PostEdit = () => {
   >(null);
   const [tempValue, setTempValue] = useState("");
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const diaryData = DIARY_DETAIL_DUMMIES.find(d => d.diaryId === diaryId)!;
-  const [diary, setDiary] = useState<DiaryDetailDummy>(diaryData);
 
   const {
     images,
@@ -61,12 +66,14 @@ const PostEdit = () => {
   }, [editingField]);
 
   const handleSave = () => {
-    const payload = {
-      id: diary.diaryId,
-      emotion: diary.emotion,
-      topics: diary.topics,
-      content: diary.content,
-      images,
+    const payload: CommunityPostUpsertRequest = {
+      diary_id: diary.id,
+      post_title: diary.title,
+      diary_date: diary.createdDate.split("T")[0],
+      conversation_duration: diary.conversationDurationSec,
+      post_emotion: diary.emotionCategory,
+      post_content: diary.content,
+      post_topics: diary.topic,
     };
 
     console.log("SAVE PAYLOAD", payload); // api 연동 시 삭제
@@ -86,9 +93,11 @@ const PostEdit = () => {
           <p className="text-sm font-extrabold text-[#4A4A4A] mb-2">
             {diary.title}
           </p>
-          <p className="text-xs text-[#4A4A4A]">작성 날짜: {diary.createdAt}</p>
           <p className="text-xs text-[#4A4A4A]">
-            총 대화 시간: {diary.totalTalkTime}
+            작성 날짜: {formatDate(diary.createdDate)}
+          </p>
+          <p className="text-xs text-[#4A4A4A]">
+            총 대화 시간: {formatElapsedTime(diary.conversationDurationSec)}
           </p>
         </div>
 
@@ -98,11 +107,9 @@ const PostEdit = () => {
           onEditClick={() => setEmotionModalOpen(true)}
         >
           <div className="flex items-center gap-1">
-            <span className="flex items-center">
-              {EMOTION_S_ICONS[diary.emotion]}
-            </span>
+            {EMOTION_S_ICONS[diary.emotionCategory]}
             <span>
-              오늘은 {EMOTION_SENTENCE[diary.emotion]} 하루를 보냈어요.
+              오늘은 {EMOTION_SENTENCE[diary.emotionCategory]} 하루를 보냈어요.
             </span>
           </div>
         </DiaryInfoBox>
@@ -112,7 +119,7 @@ const PostEdit = () => {
           type="edit"
           onEditClick={() => setTopicModalOpen(true)}
         >
-          {diary.topics.join(" / ")}
+          {diary.topic.join(" / ")}
         </DiaryInfoBox>
 
         <DiaryInfoBox
@@ -211,26 +218,26 @@ const PostEdit = () => {
 
       <EmotionModal
         isOpen={emotionModalOpen}
-        defaultEmotion={diary.emotion}
+        defaultEmotion={diary.emotionCategory}
         onClose={() => setEmotionModalOpen(false)}
-        onConfirm={nextEmotion => {
+        onConfirm={nextEmotion =>
           setDiary(prev => ({
             ...prev,
-            emotion: nextEmotion,
-          }));
-        }}
+            emotionCategory: nextEmotion,
+          }))
+        }
       />
 
       <TopicModal
         isOpen={topicModalOpen}
-        defaultTopics={diary.topics}
+        defaultTopics={diary.topic}
         onClose={() => setTopicModalOpen(false)}
-        onConfirm={nextTopics => {
+        onConfirm={nextTopics =>
           setDiary(prev => ({
             ...prev,
-            topics: nextTopics,
-          }));
-        }}
+            topic: nextTopics,
+          }))
+        }
       />
     </div>
   );

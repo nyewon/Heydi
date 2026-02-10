@@ -19,27 +19,32 @@ import {
   Comment,
   DeleteModal,
 } from "@components/index";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaTrashAlt } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { FaTrashAlt } from "react-icons/fa";
 import DefaultProfile from "@assets/icons/profile_s.svg";
-import { EMOTIONS, EMOTION_S_ICONS } from "@constants/emotions";
-import { POST_DETAIL_DUMMIES } from "@mocks/community";
+import { EMOTION_S_ICONS } from "@constants/emotions";
+import {
+  POST_DETAIL_DUMMIES,
+  COMMUNITY_COMMENT_DUMMIES,
+} from "@mocks/community";
 
 const PostDetail = () => {
   const currentUser = "Test";
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
 
-  const post = POST_DETAIL_DUMMIES.find(p => p.postId === postId);
+  const post = POST_DETAIL_DUMMIES.find(p => p.post_id === Number(postId));
 
   if (!post) return null;
 
+  const images = post.photos.map(p => p.imageUrl);
+
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(post.likes);
-  const [comments] = useState(post.comments);
+  const [isLiked, setIsLiked] = useState(post.is_liked);
+  const [likeCount, setLikeCount] = useState(post.like_count);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  const comments = COMMUNITY_COMMENT_DUMMIES.comments;
 
   const handleToggleLike = () => {
     setIsLiked(prev => !prev);
@@ -47,7 +52,7 @@ const PostDetail = () => {
   };
 
   const handleDeletePost = () => {
-    console.log("delete post:", post.postId);
+    console.log("delete post:", post.post_id);
     setIsDeleteOpen(false);
     navigate(-1);
   };
@@ -61,38 +66,42 @@ const PostDetail = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <img
-                src={post.profile || DefaultProfile}
+                src={post.author.profile_url || DefaultProfile}
                 className="w-7 h-7 rounded-full object-cover"
               />
               <span className="text-xs font-extrabold text-[#4A4A4A]">
-                {post.user}
+                {post.author.nickname}
               </span>
             </div>
-            <span className="text-[10px] text-[#4A4A4A]">{post.date}</span>
+            <span className="text-[10px] text-[#4A4A4A]">
+              {post.created_at.split("T")[0].replace(/-/g, ".")}
+            </span>
           </div>
 
-          <p className="text-sm font-bold text-[#4A4A4A] mb-3">{post.title}</p>
+          <p className="text-sm font-bold text-[#4A4A4A] mb-3">
+            {post.post_title}
+          </p>
 
           <p className="text-xs font-bold text-[#4A4A4A] mb-2 flex items-center gap-3">
             <span className="flex items-center">
               감정:
               <span className="flex items-center gap-0.5 ml-1">
-                {EMOTION_S_ICONS[post.emotion]}
-                {EMOTIONS[post.emotion]}
+                {EMOTION_S_ICONS[post.post_emotion]}
+                {post.post_emotion}
               </span>
             </span>
 
-            <span>주제: {post.topics.join(" / ")}</span>
+            <span>주제: {post.post_topics.join(" / ")}</span>
           </p>
 
           <p className="text-xs text-[#4A4A4A] whitespace-pre-line mb-4">
-            {post.content}
+            {post.post_content}
           </p>
 
-          {post.postImages.length > 0 && (
+          {images.length > 0 && (
             <div className="mb-4">
               <ImageSlider
-                images={post.postImages}
+                images={post.photos}
                 currentIndex={currentIndex}
                 onChangeIndex={setCurrentIndex}
               />
@@ -100,7 +109,7 @@ const PostDetail = () => {
           )}
 
           <p className="text-[10px] text-[#D9D9D9] mb-5">
-            {post.diaryDate}에 작성된 일기입니다.
+            {post.diary_date.replace(/-/g, ".")}에 작성된 일기입니다.
           </p>
 
           <div className="flex items-center gap-5 pl-1">
@@ -125,7 +134,7 @@ const PostDetail = () => {
               </span>
             </div>
 
-            {post.user === currentUser && (
+            {post.author.nickname === currentUser && (
               <button
                 onClick={() => setIsDeleteOpen(true)}
                 className="ml-auto cursor-pointer"
@@ -136,7 +145,7 @@ const PostDetail = () => {
           </div>
         </div>
 
-        <Comment initialComments={post.comments} currentUser={currentUser} />
+        <Comment initialComments={comments} currentUser={currentUser} />
       </Container>
 
       <DeleteModal

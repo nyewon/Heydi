@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import DefaultProfile from "@assets/icons/profile_s.svg";
-import { CommunityComment } from "@mocks/community";
+import { CommunityComment } from "@models/community";
 import { CommentDropdown } from "@components/index";
 
 interface CommentItemProps {
@@ -11,17 +11,13 @@ interface CommentItemProps {
   onDelete: () => void;
 }
 
-const CommentItem = ({
-  comment,
-  currentUser,
-  onEdit,
-  onDelete,
-}: CommentItemProps) => {
-  const isMine = comment.user === currentUser;
+const CommentItem = ({ comment, onEdit, onDelete }: CommentItemProps) => {
+  const isMine = comment.is_mine;
   const [open, setOpen] = useState(false);
 
   const handleEditComment = () => {
     onEdit();
+    setOpen(false);
   };
 
   const handleDeleteClick = () => {
@@ -32,7 +28,7 @@ const CommentItem = ({
   return (
     <div className="flex gap-3 w-full">
       <img
-        src={comment.profile || DefaultProfile}
+        src={comment.profile_url || DefaultProfile}
         className="w-7 h-7 rounded-full opacity-60 shrink-0 shadow-sm"
       />
 
@@ -43,7 +39,7 @@ const CommentItem = ({
               isMine ? "text-[#B28C7E]" : "text-[#4A4A4A]"
             }`}
           >
-            {comment.user}
+            {comment.nickname}
           </p>
 
           {isMine && (

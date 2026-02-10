@@ -9,34 +9,34 @@
 
 import { useNavigate } from "react-router-dom";
 import { Container, BackHeader, CommunityCard } from "@components/index";
-import { COMMUNITY_POST_DUMMIES, USER_DUMMY } from "@mocks/mypage";
+import { MY_POST_DUMMIES } from "@mocks/mypage";
 
 const SharedPost = () => {
   const navigate = useNavigate();
+
   return (
     <div className="w-full flex flex-col items-center">
       <BackHeader />
 
       <Container>
-        {[...COMMUNITY_POST_DUMMIES]
-          .filter(post => post.user === USER_DUMMY.nickname)
+        {[...MY_POST_DUMMIES]
           .sort(
             (a, b) =>
-              new Date(b.date.replace(/\./g, "-")).getTime() -
-              new Date(a.date.replace(/\./g, "-")).getTime(),
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           )
           .map(post => (
             <CommunityCard
               key={post.postId}
-              user={post.user}
-              date={post.date}
+              user={post.nickname}
+              profileImg={post.profileImageUrl}
+              date={post.createdAt}
               title={post.title}
               emotion={post.emotion}
               topics={post.topics}
-              content={post.content}
-              likes={post.likes}
-              comments={post.comments}
-              liked={post.liked}
+              content={post.preview}
+              likes={post.likeCount}
+              comments={post.commentCount}
+              liked={post.isLiked}
               onClick={() => navigate(`/community/detail/${post.postId}`)}
             />
           ))}

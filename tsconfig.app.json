@@ -31,10 +31,12 @@
       "@hooks/*": ["src/hooks/*"],
       "@pages/*": ["src/pages/*"],
       "@services/*": ["src/services/*"],
+      "@stores/*": ["src/stores/*"],
       "@utils/*": ["src/utils/*"],
       "@mocks/*": ["src/mocks/*"],
+      "@models/*": ["src/models/*"],
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "**/*.ts", "**/*.tsx"],
+  "include": ["src", "**/*.ts", "**/*.tsx"]
 }

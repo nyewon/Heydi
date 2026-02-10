@@ -15,39 +15,42 @@ import {
   Button,
 } from "@components/index";
 import { DIARY_LIST_DUMMIES } from "@mocks/diary";
+import { DiaryListItem } from "@models/diary";
 
 const SelectDiary = () => {
-  const [selectedDiaryId, setSelectedDiaryId] = useState<string | null>(null);
+  const [selectedDiaryId, setSelectedDiaryId] = useState<number | null>(null);
   const navigate = useNavigate();
 
-  const handleSelect = () => {
-    if (!selectedDiaryId) return;
+  const handleConfirm = () => {
+    if (selectedDiaryId === null) return;
     navigate(`/community/post-edit/${selectedDiaryId}`, { replace: true });
   };
+
+  const diaries: DiaryListItem[] = DIARY_LIST_DUMMIES;
 
   return (
     <div className="w-full flex flex-col items-center">
       <BackHeader />
 
       <Container className="pb-10">
-        {[...DIARY_LIST_DUMMIES]
-          .sort((a, b) => Number(b.diaryId) - Number(a.diaryId))
+        {diaries
+          .sort((a, b) => b.id - a.id)
           .map(item => (
             <SelectDiaryCard
-              key={item.diaryId}
+              key={item.id}
               title={item.title}
               emotion={item.emotion}
-              topics={item.topics}
-              selected={selectedDiaryId === item.diaryId}
-              onSelect={() => setSelectedDiaryId(item.diaryId)}
+              topics={item.topic}
+              selected={item.id === selectedDiaryId}
+              onSelect={() => setSelectedDiaryId(item.id)}
             />
           ))}
 
         <Button
           variant="full"
           className="w-full mt-8"
-          disabled={!selectedDiaryId}
-          onClick={handleSelect}
+          disabled={selectedDiaryId === null}
+          onClick={handleConfirm}
         >
           확인
         </Button>
