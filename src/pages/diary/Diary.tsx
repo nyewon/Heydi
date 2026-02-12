@@ -16,24 +16,27 @@ import {
   DiaryCard,
 } from "@components/index";
 import { DIARY_LIST_DUMMIES } from "@mocks/diary";
+import { DiaryListItem } from "@/models/diary";
 
 const Diary = () => {
   const navigate = useNavigate();
+
+  const diaries: DiaryListItem[] = [...DIARY_LIST_DUMMIES];
 
   return (
     <div className="w-full flex flex-col items-center">
       <DefaultHeader showIcon="diary" />
 
       <Container withBottomNav={true}>
-        {[...DIARY_LIST_DUMMIES]
-          .sort((a, b) => Number(b.diaryId) - Number(a.diaryId))
+        {diaries
+          .sort((a, b) => b.id - a.id)
           .map(item => (
             <DiaryCard
-              key={item.diaryId}
+              key={item.id}
               title={item.title}
               emotion={item.emotion}
-              topics={item.topics}
-              onClick={() => navigate(`/diary/detail/${item.diaryId}`)}
+              topics={item.topic}
+              onClick={() => navigate(`/diary/detail/${item.id}`)}
             />
           ))}
       </Container>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { EMOTION_S_ICONS } from "@constants/emotions";
-import type { EmotionChartItem } from "@mocks/report";
+import type { MonthlyEmotionResponse } from "@models/report";
 
-const EmotionChart = ({ data }: { data: EmotionChartItem[] }) => {
+const EmotionChart = ({ data }: { data: MonthlyEmotionResponse }) => {
   const location = useLocation();
   const [animate, setAnimate] = useState(false);
 
@@ -12,7 +12,15 @@ const EmotionChart = ({ data }: { data: EmotionChartItem[] }) => {
     requestAnimationFrame(() => setAnimate(true));
   }, [location.pathname]);
 
-  const percents = data.map(d => d.percent);
+  const weekCount = data.weeks.length;
+
+  const getBarWidthPx = () => {
+    if (weekCount <= 4) return 44;
+    if (weekCount === 5) return 38;
+    return 32;
+  };
+
+  const percents = data.weeks.map(w => w.emotionRate);
   const max = Math.max(...percents);
   const min = Math.min(...percents);
 
@@ -24,22 +32,25 @@ const EmotionChart = ({ data }: { data: EmotionChartItem[] }) => {
 
   return (
     <div className="w-full border border-[#E0CFC5] rounded-2xl p-2 bg-white mb-6">
-      <div className="flex justify-between px-1">
-        {data.map((item, idx) => {
-          const barHeight = (item.percent / 100) * 90;
+      <div className="flex justify-center gap-6 px-1">
+        {data.weeks.map(week => {
+          const barHeight = (week.emotionRate / 100) * 90 + 20;
 
           return (
-            <div key={idx} className="flex flex-col items-center">
-              <div className="relative w-9 h-[90px] mb-1 flex items-end">
+            <div key={week.weekIndex} className="flex flex-col items-center">
+              <div
+                className="relative h-[100px] mb-1 flex items-end"
+                style={{ width: `${getBarWidthPx()}px` }}
+              >
                 <div
                   className="w-full rounded-t-xl flex items-end justify-center transition-[height] duration-400 ease-out"
                   style={{
                     height: animate ? `${barHeight - 6}px` : "0px",
-                    backgroundColor: getBarColor(item.percent),
+                    backgroundColor: getBarColor(week.emotionRate),
                   }}
                 >
                   <span className="text-[10px] text-white font-bold pb-1">
-                    {item.percent}%
+                    {week.emotionRate}%
                   </span>
                 </div>
 
@@ -49,12 +60,12 @@ const EmotionChart = ({ data }: { data: EmotionChartItem[] }) => {
                     bottom: animate ? `${barHeight}px` : "0px",
                   }}
                 >
-                  {EMOTION_S_ICONS[item.emotion]}
+                  {EMOTION_S_ICONS[week.topEmotion]}
                 </div>
               </div>
 
               <span className="text-[10px] font-bold text-[#76615A]">
-                {item.week}
+                {week.weekIndex}주차
               </span>
             </div>
           );

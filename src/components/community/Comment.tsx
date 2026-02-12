@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import CommentItem from "./CommentItem";
 import Send from "@assets/icons/send.svg?react";
-import { CommunityComment } from "@mocks/community";
+import {
+  CommunityComment,
+  CommunityCommentMutationResult,
+} from "@models/community";
 import { Toast } from "@components/index";
 
 interface CommentProps {
@@ -23,9 +26,25 @@ const Comment = ({ initialComments, currentUser }: CommentProps) => {
 
     // Edit
     if (editingIndex !== null) {
+      const updatedResult: CommunityCommentMutationResult = {
+        ...comments[editingIndex],
+        content: inputValue,
+        updated_at: new Date().toISOString(),
+      };
+
       setComments(prev =>
         prev.map((comment, idx) =>
-          idx === editingIndex ? { ...comment, content: inputValue } : comment,
+          idx === editingIndex
+            ? {
+                comment_id: updatedResult.comment_id,
+                user_id: updatedResult.user_id,
+                nickname: updatedResult.nickname,
+                profile_url: updatedResult.profile_url,
+                content: updatedResult.content,
+                is_mine: updatedResult.is_mine,
+                created_at: updatedResult.created_at,
+              }
+            : comment,
         ),
       );
 
@@ -37,12 +56,27 @@ const Comment = ({ initialComments, currentUser }: CommentProps) => {
     // Add
     isAddedByMe.current = true;
 
+    const createdResult: CommunityCommentMutationResult = {
+      comment_id: Date.now(),
+      user_id: 0,
+      nickname: currentUser,
+      profile_url: "",
+      content: inputValue,
+      is_mine: true,
+      created_at: new Date().toISOString(),
+      updated_at: null,
+    };
+
     setComments(prev => [
       ...prev,
       {
-        user: currentUser,
-        profile: "",
-        content: inputValue,
+        comment_id: createdResult.comment_id,
+        user_id: createdResult.user_id,
+        nickname: createdResult.nickname,
+        profile_url: createdResult.profile_url,
+        content: createdResult.content,
+        is_mine: createdResult.is_mine,
+        created_at: createdResult.created_at,
       },
     ]);
 

@@ -7,12 +7,12 @@
  * - 선택 상태 표시 (한 개만 선택 가능)
  */
 
-import { EMOTION_S_ICONS, EmotionKey, EMOTIONS } from "@constants/emotions";
+import { EMOTION_S_ICONS } from "@constants/emotions";
 import { FaRegCircleCheck, FaCircleCheck } from "react-icons/fa6";
 
 interface DiaryCardProps {
   title: string;
-  emotion: EmotionKey;
+  emotion: string;
   topics: string[];
   selected: boolean;
   onSelect: () => void;
@@ -45,7 +45,7 @@ const SelectDiaryCard = ({
             감정:
             <span className="flex items-center gap-0.5 ml-1">
               {EMOTION_S_ICONS[emotion]}
-              {EMOTIONS[emotion]}
+              {emotion}
             </span>
           </span>
           <span>주제: {topics.join(" / ")}</span>

@@ -7,6 +7,7 @@
  * - 아이디 중복 확인, 회원가입 가이드 모달
  * - 유효성 검사
  * - 회원가입 완료 후 Login으로 이동
+ * - username 중복확인 및 회원가입 api 연동 완료
  */
 
 import { useState } from "react";
@@ -28,6 +29,8 @@ import {
 import Profile from "@assets/icons/profile.svg?react";
 import Plus from "@assets/icons/plus.svg?react";
 import { IoMdInformationCircle } from "react-icons/io";
+import { SignupRequest, UsernameCheckRequest } from "@models/auths";
+import { signup, usernameCheck } from "@services/auth";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -44,12 +47,37 @@ const Signup = () => {
   const { profileImg, fileInputRef, handleSelectImage, openFileDialog } =
     useProfileImage();
 
-  const handleCheckId = () => {
-    setModalType("success");
-    setIsIdChecked(true);
+  const isDisabled =
+    !isIdChecked ||
+    !validatePassword(pw) ||
+    !validatePassword(pwCheck) ||
+    !validateNickname(nickname);
+
+  const handleCheckId = async () => {
+    if (!validateId(id)) return;
+
+    try {
+      const payload: UsernameCheckRequest = {
+        username: id,
+      };
+
+      const res = await usernameCheck(payload);
+
+      if (res.result?.duplicate === false) {
+        setModalType("success");
+        setIsIdChecked(true);
+        return;
+      }
+
+      setModalType("fail");
+      setIsIdChecked(false);
+    } catch {
+      setModalType("fail");
+      setIsIdChecked(false);
+    }
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     setError("");
 
     if (!id || !pw || !pwCheck || !nickname) {
@@ -71,15 +99,27 @@ const Signup = () => {
       return;
     }
 
-    alert("회원가입 성공!");
-    navigate(-1);
-  };
+    const signupPayload: SignupRequest = {
+      username: id,
+      password: pw,
+      nickname,
+      profileImage: fileInputRef.current?.files?.[0] ?? null,
+    };
 
-  const isDisabled =
-    !isIdChecked ||
-    !validatePassword(pw) ||
-    pw !== pwCheck ||
-    !validateNickname(nickname);
+    try {
+      const res = await signup(signupPayload);
+
+      if (res.success) {
+        alert("회원가입 성공!");
+        navigate(-1);
+        return;
+      }
+
+      setError(res.message || "회원가입에 실패했습니다.");
+    } catch {
+      setError("서버와 통신 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className="w-full flex flex-col items-center">

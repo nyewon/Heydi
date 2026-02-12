@@ -8,11 +8,11 @@
  */
 
 import Note from "@assets/icons/note.svg?react";
-import { EmotionKey, EMOTIONS, EMOTION_S_ICONS } from "@constants/emotions";
+import { EMOTION_S_ICONS } from "@constants/emotions";
 
 interface DiaryCardProps {
   title: string;
-  emotion: EmotionKey;
+  emotion: string;
   topics: string[];
   onClick?: () => void;
 }
@@ -36,7 +36,7 @@ const DiaryCard = ({ title, emotion, topics, onClick }: DiaryCardProps) => {
             감정:
             <span className="flex items-center gap-0.5 ml-1">
               {EMOTION_S_ICONS[emotion]}
-              {EMOTIONS[emotion]}
+              {emotion}
             </span>
           </span>
           <span>주제: {topics.join(" / ")}</span>

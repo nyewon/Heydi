@@ -1,10 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { getTopicIcon } from "@/constants/topics";
-import type { Topic } from "@mocks/report";
+import type { MonthlyTopicsResponse } from "@models/report";
 
-const TopTopics = ({ topics }: { topics: Topic[] }) => {
-  const main = topics[0];
-  const subs = topics.slice(1, 4);
+const TopTopics = ({ data }: { data: MonthlyTopicsResponse }) => {
+  const main = {
+    rank: 1,
+    title: data.top1.name,
+    percent: data.top1.ratio,
+    description: data.top1.description,
+  };
+
+  const subs = data.top2to4.map((t, idx) => ({
+    rank: idx + 2,
+    title: t.name,
+    percent: t.ratio,
+  }));
 
   const subBgMap: Record<number, string> = {
     2: "bg-[#EFE8E1]/80",
@@ -21,22 +31,12 @@ const TopTopics = ({ topics }: { topics: Topic[] }) => {
         <div className="text-[13px] opacity-80 mt-1">
           전체 일기 중 {main.percent}%
         </div>
-        {main.description && (
-          <p className="text-[13px] leading-relaxed mt-2">{main.description}</p>
-        )}
+        <p className="text-[13px] leading-relaxed mt-2">{main.description}</p>
       </div>
 
       <div className="grid grid-cols-3 gap-2">
         {subs.map(topic => {
           const [open, setOpen] = useState(false);
-          const [isOverflow, setIsOverflow] = useState(false);
-          const buttonRef = useRef<HTMLButtonElement | null>(null);
-
-          useEffect(() => {
-            if (!buttonRef.current) return;
-            const el = buttonRef.current;
-            setIsOverflow(el.scrollWidth > el.offsetWidth);
-          }, []);
 
           useEffect(() => {
             if (!open) return;
@@ -56,20 +56,17 @@ const TopTopics = ({ topics }: { topics: Topic[] }) => {
               <span className="shrink-0 opacity-70">#{topic.rank}</span>
 
               <button
-                ref={buttonRef}
-                onClick={() => {
-                  if (isOverflow) setOpen(true);
-                }}
-                className={[
-                  "flex-1 min-w-0",
-                  "truncate whitespace-nowrap text-left px-1",
-                  isOverflow ? "cursor-pointer" : "cursor-default",
-                ].join(" ")}
+                onClick={() => setOpen(true)}
+                className="
+                  flex-1 min-w-0
+                  truncate whitespace-nowrap text-left px-1
+                  cursor-pointer
+                "
               >
                 {getTopicIcon(topic.title)} {topic.title}
               </button>
 
-              {open && isOverflow && (
+              {open && (
                 <div
                   className="
                     absolute left-1/2 top-full mt-1 -translate-x-1/2

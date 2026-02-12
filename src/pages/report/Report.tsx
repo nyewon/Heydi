@@ -25,7 +25,12 @@ import {
   MonthModal,
 } from "@components/index";
 import { IoCalendarNumberOutline } from "react-icons/io5";
-import { REPORT_DUMMY } from "@mocks/report";
+import {
+  MONTHLY_EMOTION_DUMMY,
+  MONTHLY_TOPICS_DUMMY,
+  CALENDAR_DUMMY,
+  MONTHLY_REPORT_DUMMY,
+} from "@mocks/report";
 
 const Report = () => {
   const navigate = useNavigate();
@@ -55,12 +60,12 @@ const Report = () => {
             이번달의 감정 변화
           </p>
         </div>
-        <EmotionChart data={REPORT_DUMMY.emotionChart} />
+        <EmotionChart data={MONTHLY_EMOTION_DUMMY} />
 
         <div className="w-full flex flex-col mb-3">
           <p className="text-base font-bold text-[#4A4A4A]">자주 나온 주제</p>
         </div>
-        <TopTopics topics={REPORT_DUMMY.topTopics} />
+        <TopTopics data={MONTHLY_TOPICS_DUMMY} />
 
         <div className="w-full mb-6">
           <div className="flex justify-between">
@@ -74,7 +79,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {REPORT_DUMMY.likes}
+                {MONTHLY_REPORT_DUMMY.preferences.like}
               </div>
             </div>
 
@@ -88,7 +93,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {REPORT_DUMMY.dislikes}
+                {MONTHLY_REPORT_DUMMY.preferences.dislike}
               </div>
             </div>
           </div>
@@ -101,7 +106,7 @@ const Report = () => {
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
           <p className="text-xs text-[#4A4A4A] leading-5">
-            {REPORT_DUMMY.activitySummary}
+            {MONTHLY_REPORT_DUMMY.activity.summary}
           </p>
         </div>
 
@@ -112,7 +117,7 @@ const Report = () => {
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
           <p className="text-xs leading-5 text-[#4A4A4A]">
-            {REPORT_DUMMY.insight}
+            {MONTHLY_REPORT_DUMMY.insight.content}
           </p>
         </div>
 
@@ -120,7 +125,11 @@ const Report = () => {
           <p className="text-base font-bold text-[#4A4A4A]">캘린더</p>
         </div>
 
-        <Calendar year={year} month={month} calendars={REPORT_DUMMY.calendar} />
+        <Calendar
+          year={year}
+          month={month}
+          calendars={CALENDAR_DUMMY.entries}
+        />
 
         <div className="w-full mt-6 mb-2">
           <p className="text-base font-bold text-[#4A4A4A] mb-2">
@@ -128,9 +137,11 @@ const Report = () => {
           </p>
 
           <DiaryCard
-            {...REPORT_DUMMY.lastMonthDiary}
+            {...MONTHLY_REPORT_DUMMY.lastMonthReminder}
             onClick={() =>
-              navigate(`/diary/detail/${REPORT_DUMMY.lastMonthDiary.diaryId}`)
+              navigate(
+                `/diary/detail/${MONTHLY_REPORT_DUMMY.lastMonthReminder.diaryId}`,
+              )
             }
           />
         </div>

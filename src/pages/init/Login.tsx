@@ -7,6 +7,7 @@
  * - 회원가입 페이지 이동 링크
  * - 유효성 검사
  * - 로그인 완료 후 Diary Page로 이동
+ * - api 연동 완료
  */
 
 import { useState } from "react";
@@ -16,33 +17,46 @@ import Logo from "@assets/logo.svg?react";
 import KakaoIcon from "@assets/login/kakao.svg?react";
 import GoogleIcon from "@assets/login/google.svg?react";
 import { validateId, validatePassword } from "@utils/validate";
+import { useFCM } from "@hooks/useFCM";
+import { LoginRequest } from "@models/auths";
+import { login, socialLogin } from "@services/auth";
+import { useAuthStore } from "@stores/useAuthStore";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const loginSuccess = useAuthStore(state => state.loginSuccess);
+
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
   const [error, setError] = useState("");
+  const fcmToken = useFCM();
 
-  const handleLogin = () => {
-    if (id === "test123" && pw === "test123!") {
-      navigate("/diary");
-      setError("");
-      return;
-    }
-
+  const handleLogin = async () => {
     if (!validateId(id) || !validatePassword(pw)) {
       setError("로그인 양식이 일치하지 않습니다.");
       return;
     }
 
-    if (id !== "test123") {
-      setError("존재하지 않는 사용자입니다.");
-      return;
-    }
+    try {
+      const loginPayload: LoginRequest = {
+        username: id,
+        password: pw,
+        fcm_token: fcmToken,
+      };
 
-    if (pw !== "1234") {
-      setError("아이디 또는 비밀번호가 일치하지 않습니다.");
-      return;
+      const res = await login(loginPayload);
+
+      if (res.success) {
+        setError("");
+        loginSuccess(null);
+        navigate("/diary");
+      } else {
+        setError(res.message || "로그인에 실패했습니다.");
+      }
+    } catch (e: any) {
+      setError(
+        e?.response?.data?.message || "서버와 통신 중 오류가 발생했습니다.",
+      );
     }
   };
 
@@ -83,8 +97,15 @@ const LoginPage = () => {
         <div className="flex-1 h-[1px] bg-[#D9D9D9]" />
 
         <div className="flex items-center gap-4 mx-4">
-          <KakaoIcon className="cursor-pointer" />
-          <GoogleIcon className="cursor-pointer" />
+          <KakaoIcon
+            className="cursor-pointer"
+            onClick={() => socialLogin("kakao")}
+          />
+
+          <GoogleIcon
+            className="cursor-pointer"
+            onClick={() => socialLogin("google")}
+          />
         </div>
 
         <div className="flex-1 h-[1px] bg-[#D9D9D9]" />

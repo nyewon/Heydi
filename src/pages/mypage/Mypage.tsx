@@ -19,44 +19,99 @@ import {
 } from "@components/index";
 import DefaultProfile from "@assets/icons/profile.svg";
 import { IoChevronForward } from "react-icons/io5";
-import { MYPAGE_DUMMY } from "@mocks/mypage";
+import { MYPAGE_INFO_DUMMY, ALARM_DUMMY } from "@mocks/mypage";
+import { AlarmResponseRequest } from "@models/mypage";
+import { logout, withdraw } from "@services/auth";
+import { useAuthStore } from "@stores/useAuthStore";
 
 const Mypage = () => {
-  const nevigate = useNavigate();
+  const navigate = useNavigate();
+  const clearAuth = useAuthStore(state => state.logout);
 
-  const { user, likedPosts, sharedPosts, alarm } = MYPAGE_DUMMY;
+  const { nickname, profileImageUrl, likedPostCount, sharedPostCount, alarm } =
+    MYPAGE_INFO_DUMMY;
 
   const [alarmEnabled, setAlarmEnabled] = useState(alarm.enabled);
-  const [alarmTime, setAlarmTime] = useState<{
-    ampm: "AM" | "PM";
-    hour: number;
-    minute: number;
-  } | null>(alarm.enabled ? alarm : null);
+  const [alarmSetting, setAlarmSetting] = useState<AlarmResponseRequest | null>(
+    null,
+  );
   const [isAlarmModalOpen, setIsAlarmModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"logout" | "withdraw" | null>(
     null,
   );
 
-  const profileImage = user.profile_url || DefaultProfile;
+  const profileImage = profileImageUrl || DefaultProfile;
 
-  const handleConfirm = () => {
+  const handleOpenAlarmModal = () => {
+    if (alarmEnabled) {
+      setAlarmSetting(ALARM_DUMMY);
+    } else {
+      setAlarmSetting(null);
+    }
+    setIsAlarmModalOpen(true);
+  };
+
+  const handleConfirmAlarm = (
+    meridiem: "AM" | "PM",
+    hour: number,
+    minute: number,
+  ) => {
+    const payload: AlarmResponseRequest = {
+      enabled: true,
+      meridiem,
+      hour,
+      minute,
+    };
+
+    setAlarmEnabled(true);
+    setAlarmSetting(payload);
+    setIsAlarmModalOpen(false);
+  };
+
+  const handleDisableAlarm = () => {
+    setAlarmEnabled(false);
+    setAlarmSetting(null);
+    setIsAlarmModalOpen(false);
+  };
+
+  const handleConfirmAccount = async () => {
     if (modalType === "logout") {
-      console.log("logout");
-    } else if (modalType === "withdraw") {
-      console.log("signout");
+      try {
+        const res = await logout();
+
+        if (res.success) {
+          clearAuth();
+          navigate("/", { replace: true });
+        }
+      } catch (e) {
+        console.error("로그아웃 실패", e);
+      }
+    }
+
+    if (modalType === "withdraw") {
+      try {
+        const res = await withdraw();
+
+        if (res.success) {
+          clearAuth();
+          navigate("/", { replace: true });
+        }
+      } catch (e) {
+        console.error("회원탈퇴 실패", e);
+      }
     }
     setModalType(null);
   };
 
   const handleProfileEdit = () => {
-    nevigate("/mypage/edit");
+    navigate("/mypage/edit");
   };
 
   return (
     <div className="w-full flex flex-col items-center">
       <DefaultHeader />
 
-      <Container withBottomNav={true}>
+      <Container withBottomNav>
         <div className="flex flex-col items-center mt-2 mb-10">
           <img
             src={profileImage}
@@ -64,32 +119,32 @@ const Mypage = () => {
             className="w-[124px] h-[124px] rounded-full object-cover mb-2"
           />
           <span className="text-lg font-extrabold text-[#4A4A4A]">
-            {user.nickname}
+            {nickname}
           </span>
         </div>
 
         <div className="flex justify-between gap-6 w-full mb-10">
           <div
             className="flex-1 h-22 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => nevigate("/mypage/like-posts")}
+            onClick={() => navigate("/mypage/like-posts")}
           >
             <span className="text-sm font-bold text-[#4A4A4A] mb-2">
               내가 좋아요 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {likedPosts}
+              {likedPostCount}
             </span>
           </div>
 
           <div
             className="flex-1 h-22 border border-[#D4B6A6] bg-[#EFE8E1] rounded-xl flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => nevigate("/mypage/shared-posts")}
+            onClick={() => navigate("/mypage/shared-posts")}
           >
             <span className="text-sm font-bold text-[#4A4A4A] mb-2">
               내가 공유 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {sharedPosts}
+              {sharedPostCount}
             </span>
           </div>
         </div>
@@ -106,7 +161,7 @@ const Mypage = () => {
 
         <div
           className="w-full flex justify-between items-center py-4 cursor-pointer"
-          onClick={() => setIsAlarmModalOpen(true)}
+          onClick={handleOpenAlarmModal}
         >
           <span className="text-base font-bold text-[#4A4A4A]">알림 설정</span>
 
@@ -148,21 +203,13 @@ const Mypage = () => {
 
       {isAlarmModalOpen && (
         <AlarmModal
-          isOpen={true}
+          isOpen
           onClose={() => setIsAlarmModalOpen(false)}
-          defaultAmPm={alarmTime?.ampm}
-          defaultHour={alarmTime?.hour}
-          defaultMinute={alarmTime?.minute}
-          onConfirm={(ampm, hour, minute) => {
-            setAlarmEnabled(true);
-            setAlarmTime({ ampm, hour, minute });
-            setIsAlarmModalOpen(false);
-          }}
-          onDisable={() => {
-            setAlarmEnabled(false);
-            setAlarmTime(null);
-            setIsAlarmModalOpen(false);
-          }}
+          defaultAmPm={alarmSetting?.meridiem}
+          defaultHour={alarmSetting?.hour}
+          defaultMinute={alarmSetting?.minute}
+          onConfirm={handleConfirmAlarm}
+          onDisable={handleDisableAlarm}
         />
       )}
 
@@ -170,7 +217,7 @@ const Mypage = () => {
         isOpen={modalType !== null}
         type={modalType as "logout" | "withdraw"}
         onClose={() => setModalType(null)}
-        onConfirm={handleConfirm}
+        onConfirm={handleConfirmAccount}
       />
     </div>
   );

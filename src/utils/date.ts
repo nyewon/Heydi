@@ -34,3 +34,10 @@ export const formatElapsedTime = (sec: number) => {
 
   return `${paddedMin}:${paddedSec}`;
 };
+
+// ISO 날짜 문자열을 YYYY.MM.DD 형식으로 변환
+export const formatDate = (isoDate: string): string => {
+  const [date] = isoDate.split("T");
+  const [year, month, day] = date.split("-");
+  return `${year}.${month}.${day}`;
+};

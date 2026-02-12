@@ -10,8 +10,8 @@ interface EmotionModalProps {
   isOpen: boolean;
   onClose: () => void;
   // eslint-disable-next-line no-unused-vars
-  onConfirm?: (emotion: EmotionKey) => void;
-  defaultEmotion?: EmotionKey;
+  onConfirm?: (emotion: string) => void;
+  defaultEmotion?: string;
 }
 
 const EmotionModal = ({
@@ -20,7 +20,7 @@ const EmotionModal = ({
   onConfirm,
   defaultEmotion,
 }: EmotionModalProps) => {
-  const [selected, setSelected] = useState<EmotionKey | null>(
+  const [selected, setSelected] = useState<string | null>(
     defaultEmotion ?? null,
   );
 

@@ -23,7 +23,7 @@ const DiaryWaiting = () => {
   }, []);
 
   const handleStartChat = () => {
-    navigate("/diary/chat/:sessionId");
+    navigate("/diary/chat/:sessionId", { replace: true });
   };
 
   return (
