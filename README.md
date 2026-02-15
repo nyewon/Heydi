@@ -114,6 +114,7 @@ src/
 - zustand: 5.0.11
 - axios: 1.13.2
 - react-router-dom: 7.9.6
+- @tanstack/react-query: 5.90.21
 
 ### 실시간 통신
 - WebSocket
