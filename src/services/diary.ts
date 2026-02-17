@@ -32,3 +32,10 @@ export const getDiaryConversation = async (diaryId: number) => {
   );
   return res.data;
 };
+
+// 일기 삭제
+export const deleteDiary = async (diaryId: number) => {
+  const res = await instance.delete(`/api/diaries/${diaryId}`);
+
+  return res.data;
+};

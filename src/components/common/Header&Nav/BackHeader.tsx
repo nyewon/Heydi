@@ -5,6 +5,7 @@ import { useState } from "react";
 import Logo from "@assets/logo_txt.svg?react";
 import SaveIcon from "@assets/icons/save.svg?react";
 import { MenuDropdown, DeleteModal, PdfModal } from "@components/index";
+import { deleteDiary } from "@services/diary";
 
 interface BackHeaderProps {
   rightIcon?: "none" | "save" | "menu";
@@ -38,9 +39,20 @@ const BackHeader = ({
     setPdfOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    console.log("diary deleted");
-    setDeleteOpen(false);
+  const handleDeleteConfirm = async () => {
+    if (!diaryId) return;
+
+    try {
+      await deleteDiary(Number(diaryId));
+
+      setDeleteOpen(false);
+      setOpen(false);
+
+      navigate("/diary", { replace: true });
+    } catch (e) {
+      console.error("일기 삭제 실패", e);
+      setDeleteOpen(false);
+    }
   };
 
   const handlePdfConfirm = () => {
