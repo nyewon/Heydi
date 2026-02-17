@@ -5,9 +5,10 @@
  * - Header Icon 클릭 시 대화 대기 페이지로 이동
  * - DiaryCard 리스트 표시
  * - DiaryCard 클릭 시 DiaryDetail page로 이동
- * - 임시 더미 데이터 사용
+ * - api 임시 연동, 연동 실패 시 더미 데이터 사용
  */
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BottomNav,
@@ -17,11 +18,26 @@ import {
 } from "@components/index";
 import { DIARY_LIST_DUMMIES } from "@mocks/diary";
 import { DiaryListItem } from "@/models/diary";
+import { getDiaryList } from "@services/diary";
 
 const Diary = () => {
   const navigate = useNavigate();
 
-  const diaries: DiaryListItem[] = [...DIARY_LIST_DUMMIES];
+  const [diaries, setDiaries] = useState<DiaryListItem[]>([]);
+
+  useEffect(() => {
+    const fetchDiaries = async () => {
+      try {
+        const res = await getDiaryList(0, 20);
+        setDiaries(res.content);
+      } catch (e) {
+        console.error("일기 목록 조회 실패", e);
+        setDiaries([...DIARY_LIST_DUMMIES]);
+      }
+    };
+
+    fetchDiaries();
+  }, []);
 
   return (
     <div className="w-full flex flex-col items-center">
