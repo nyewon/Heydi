@@ -19,32 +19,55 @@ import {
 import { DIARY_LIST_DUMMIES } from "@mocks/diary";
 import { DiaryListItem } from "@/models/diary";
 import { getDiaryList } from "@services/diary";
+import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
 
 const Diary = () => {
   const navigate = useNavigate();
 
   const [diaries, setDiaries] = useState<DiaryListItem[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState<number | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     const fetchDiaries = async () => {
+      if (isFetching) return;
+      if (totalPages !== null && page >= totalPages - 1) return;
+
       try {
-        const res = await getDiaryList(0, 20);
-        setDiaries(res.content);
+        setIsFetching(true);
+        const res = await getDiaryList(page, 20);
+
+        setDiaries(prev => [...prev, ...res.content]);
+        setTotalPages(res.totalPages);
       } catch (e) {
         console.error("일기 목록 조회 실패", e);
-        setDiaries([...DIARY_LIST_DUMMIES]);
+        if (page === 0) {
+          setDiaries([...DIARY_LIST_DUMMIES]);
+          setTotalPages(1);
+        }
+      } finally {
+        setIsFetching(false);
       }
     };
 
     fetchDiaries();
-  }, []);
+  }, [page]);
+
+  const hasMore = totalPages === null || page < totalPages - 1;
+
+  const observerRef = useInfiniteScroll({
+    hasMore,
+    isFetching,
+    onLoadMore: () => setPage(prev => prev + 1),
+  });
 
   return (
     <div className="w-full flex flex-col items-center">
       <DefaultHeader showIcon="diary" />
 
       <Container withBottomNav={true}>
-        {diaries
+        {[...diaries]
           .sort((a, b) => b.id - a.id)
           .map(item => (
             <DiaryCard
@@ -55,6 +78,8 @@ const Diary = () => {
               onClick={() => navigate(`/diary/detail/${item.id}`)}
             />
           ))}
+
+        <div ref={observerRef} className="h-10" />
       </Container>
 
       <BottomNav />
