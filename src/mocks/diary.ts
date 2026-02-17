@@ -203,7 +203,18 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
       "크리스마스를 맞아 가족과 함께 시간을 보냈어요. 오랜만에 모두 모여 식사를 하며 이야기를 나눴고, 소소한 농담에도 웃음이 끊이지 않았어요. 바쁘다는 이유로 미뤄왔던 시간들이 얼마나 소중한지 다시 느끼게 된 하루였어요.",
     conversationSessionId: "conv_8",
     conversationDurationSec: 602,
-    photos: [],
+    photos: [
+      {
+        id: 1,
+        imageUrl: "https://picsum.photos/400/300?random=1",
+        order: 1,
+      },
+      {
+        id: 2,
+        imageUrl: "https://picsum.photos/400/300?random=2",
+        order: 2,
+      },
+    ],
     report: { included: true, month: "2025-12" },
   },
 ];
