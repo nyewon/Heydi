@@ -39,3 +39,10 @@ export const deleteDiary = async (diaryId: number) => {
 
   return res.data;
 };
+
+// 일기 PDF 내보내기
+export const exportDiaryPdf = async (diaryId: number) => {
+  const res = await instance.post(`/api/diaries/${diaryId}/export/pdf`);
+
+  return res.data;
+};
