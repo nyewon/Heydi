@@ -27,7 +27,11 @@ import {
   ConversationMessagesResponse,
   DiaryDetailResponse,
 } from "@models/diary";
-import { getDiaryDetail, getDiaryConversation } from "@services/diary";
+import {
+  getDiaryDetail,
+  getDiaryConversation,
+  sendDiaryToMonthlyReport,
+} from "@services/diary";
 
 const DiaryDetail = () => {
   const { diaryId } = useParams<{ diaryId: string }>();
@@ -89,9 +93,33 @@ const DiaryDetail = () => {
     );
   }
 
-  const handleSendToReport = () => {
-    if (isSending) return;
-    setIsSending(true);
+  const handleSendToReport = async () => {
+    if (!diary || isSending) return;
+
+    try {
+      setIsSending(true);
+
+      await sendDiaryToMonthlyReport(diary.report.month, {
+        diaryId: diary.id,
+      });
+
+      setDiary(prev =>
+        prev
+          ? {
+              ...prev,
+              report: {
+                ...prev.report,
+                included: true,
+              },
+            }
+          : prev,
+      );
+    } catch (e) {
+      console.error("리포트 전송 실패", e);
+      alert("리포트 전송에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (

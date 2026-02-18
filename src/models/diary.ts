@@ -63,3 +63,8 @@ export interface DiaryEditRequest {
   oneLineDiary: string;
   content: string;
 }
+
+// Send To Report
+export interface SendToReportRequest {
+  diaryId: number;
+}
