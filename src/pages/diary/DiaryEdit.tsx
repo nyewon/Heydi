@@ -23,9 +23,14 @@ import {
   DIARY_DETAIL_DUMMIES,
   CONVERSATION_MESSAGES_DUMMIES,
 } from "@mocks/diary";
-import { DiaryDetailResponse, DiaryEditRequest } from "@models/diary";
+import {
+  DiaryDetailResponse,
+  DiaryEditRequest,
+  ConversationMessagesResponse,
+} from "@models/diary";
 import { formatDate, formatElapsedTime } from "@utils/date";
 import { useImageUploader } from "@hooks/useImageUploader";
+import { getDiaryDetail, getDiaryConversation } from "@services/diary";
 import Plus from "@assets/icons/plus.svg?react";
 
 const DiaryEdit = () => {
@@ -33,16 +38,14 @@ const DiaryEdit = () => {
   const { diaryId } = useParams<{ diaryId: string }>();
   const diaryData = DIARY_DETAIL_DUMMIES.find(d => d.id === Number(diaryId));
 
-  if (!diaryData) {
-    return (
-      <div className="w-full flex justify-center items-center text-center p-10 text-sm font-bold text-[#76615A]">
-        Error <br />
-        일기를 찾을 수 없습니다.
-      </div>
-    );
-  }
+  const [diary, setDiary] = useState<DiaryDetailResponse>(
+    diaryData as DiaryDetailResponse,
+  );
 
-  const [diary, setDiary] = useState<DiaryDetailResponse>(diaryData);
+  const [messages, setMessages] = useState<ConversationMessagesResponse | null>(
+    null,
+  );
+
   const [emotionModalOpen, setEmotionModalOpen] = useState(false);
   const [topicModalOpen, setTopicModalOpen] = useState(false);
   const [editingField, setEditingField] = useState<
@@ -50,9 +53,6 @@ const DiaryEdit = () => {
   >(null);
   const [tempValue, setTempValue] = useState("");
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
-  const messages = CONVERSATION_MESSAGES_DUMMIES.find(
-    m => m.sessionId === diary.conversationSessionId,
-  );
 
   const {
     images,
@@ -71,6 +71,48 @@ const DiaryEdit = () => {
   });
 
   useEffect(() => {
+    const fetchDiaryDetail = async () => {
+      try {
+        const detail = await getDiaryDetail(Number(diaryId));
+        setDiary(detail);
+
+        try {
+          const conversation = await getDiaryConversation(Number(diaryId));
+          setMessages(conversation);
+        } catch (conversationError) {
+          console.error("대화 조회 실패", conversationError);
+
+          const dummyConversation =
+            CONVERSATION_MESSAGES_DUMMIES.find(
+              m => m.sessionId === detail.conversationSessionId,
+            ) ?? null;
+
+          setMessages(dummyConversation);
+        }
+      } catch (detailError) {
+        console.error("일기 상세 조회 실패", detailError);
+
+        const dummyDiary = DIARY_DETAIL_DUMMIES.find(
+          d => d.id === Number(diaryId),
+        );
+
+        if (dummyDiary) {
+          setDiary(dummyDiary);
+
+          const dummyConversation =
+            CONVERSATION_MESSAGES_DUMMIES.find(
+              m => m.sessionId === dummyDiary.conversationSessionId,
+            ) ?? null;
+
+          setMessages(dummyConversation);
+        }
+      }
+    };
+
+    fetchDiaryDetail();
+  }, [diaryId]);
+
+  useEffect(() => {
     if (editingField === "content" && contentRef.current) {
       const el = contentRef.current;
 
@@ -81,6 +123,15 @@ const DiaryEdit = () => {
       el.setSelectionRange(length, length);
     }
   }, [editingField, tempValue]);
+
+  if (!diaryData && !diary) {
+    return (
+      <div className="w-full flex justify-center items-center text-center p-10 text-sm font-bold text-[#76615A]">
+        Error <br />
+        일기를 찾을 수 없습니다.
+      </div>
+    );
+  }
 
   const handleSave = () => {
     const payload: DiaryEditRequest = {
@@ -198,13 +249,7 @@ const DiaryEdit = () => {
                 }));
                 setEditingField(null);
               }}
-              className="
-                w-full
-                text-xs leading-5
-                resize-none
-                overflow-hidden
-                focus:outline-none
-              "
+              className="w-full text-xs leading-5 resize-none overflow-hidden focus:outline-none"
             />
           ) : (
             <p className="text-xs leading-5">{diary.content}</p>
@@ -239,14 +284,7 @@ const DiaryEdit = () => {
             <>
               <label
                 onClick={openFilePicker}
-                className="
-                  w-full h-[120px]
-                  bg-[#EFE8E1]
-                  rounded-xl
-                  border border-[#E0CFC5]
-                  flex items-center justify-center
-                  cursor-pointer
-                "
+                className="w-full h-[120px] bg-[#EFE8E1] rounded-xl border border-[#E0CFC5] flex items-center justify-center cursor-pointer"
               >
                 <Plus />
               </label>
