@@ -5,7 +5,7 @@
  * - 일기 수정 내용 표시
  * - 감정 상태, 주제, 한 줄 일기, 일기 내용 수정 기능
  * - 사진 업로드 및 삭제 기능
- * - 임시 더미 데이터 사용
+ * - - api 임시 연동, 연동 실패 시 상세보기 더미 데이터 사용
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -30,7 +30,11 @@ import {
 } from "@models/diary";
 import { formatDate, formatElapsedTime } from "@utils/date";
 import { useImageUploader } from "@hooks/useImageUploader";
-import { getDiaryDetail, getDiaryConversation } from "@services/diary";
+import {
+  getDiaryDetail,
+  getDiaryConversation,
+  updateDiary,
+} from "@services/diary";
 import Plus from "@assets/icons/plus.svg?react";
 
 const DiaryEdit = () => {
@@ -133,7 +137,7 @@ const DiaryEdit = () => {
     );
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const payload: DiaryEditRequest = {
       emotionCategory: diary.emotionCategory,
       topic: diary.topic,
@@ -143,9 +147,16 @@ const DiaryEdit = () => {
 
     console.log("SAVE PAYLOAD", payload);
 
-    navigate(`/diary/detail/${diary.id}`, {
-      replace: true,
-    });
+    try {
+      await updateDiary(diary.id, payload);
+
+      navigate(`/diary/detail/${diary.id}`, {
+        replace: true,
+      });
+    } catch (error) {
+      console.error("일기 수정 실패", error);
+      alert("일기 수정에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (

@@ -4,6 +4,7 @@ import {
   DiaryDetailResponse,
   ConversationMessagesResponse,
   SendToReportRequest,
+  DiaryEditRequest,
 } from "@models/diary";
 
 // 일기 목록 조회 (메인 리스트)
@@ -31,6 +32,12 @@ export const getDiaryConversation = async (diaryId: number) => {
   const res = await instance.get<ConversationMessagesResponse>(
     `/api/diaries/${diaryId}/conversation`,
   );
+  return res.data;
+};
+
+// 일기 수정
+export const updateDiary = async (diaryId: number, data: DiaryEditRequest) => {
+  const res = await instance.put(`/api/diaries/${diaryId}`, data);
   return res.data;
 };
 
