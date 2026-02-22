@@ -5,3 +5,9 @@ export const getMonthlyReport = async (yearMonth: string) => {
   const res = await instance.get(`/reports/monthly/${yearMonth}`);
   return res.data;
 };
+
+// 월간 캘린더 데이터 조회
+export const getMonthlyCalendar = async (yearMonth: string) => {
+  const res = await instance.get(`/reports/monthly/${yearMonth}/calendar`);
+  return res.data;
+};

@@ -31,8 +31,8 @@ import {
   CALENDAR_DUMMY,
   MONTHLY_REPORT_DUMMY,
 } from "@mocks/report";
-import { getMonthlyReport } from "@services/report";
-import { MonthlyReportResponse } from "@models/report";
+import { getMonthlyCalendar, getMonthlyReport } from "@services/report";
+import { CalendarResponse, MonthlyReportResponse } from "@models/report";
 
 const Report = () => {
   const navigate = useNavigate();
@@ -42,6 +42,9 @@ const Report = () => {
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [isMonthModalOpen, setIsMonthModalOpen] = useState(false);
   const [report, setReport] = useState<MonthlyReportResponse | null>(null);
+  const [calendar, setCalendar] = useState<CalendarResponse["entries"] | null>(
+    null,
+  );
   const yearMonth = `${year}-${String(month).padStart(2, "0")}`;
 
   useEffect(() => {
@@ -60,10 +63,26 @@ const Report = () => {
       }
     };
 
+    const fetchCalendar = async () => {
+      try {
+        const res = await getMonthlyCalendar(yearMonth);
+
+        if (res.isSuccess) {
+          setCalendar(res.result.entries);
+        } else {
+          setCalendar(CALENDAR_DUMMY.entries);
+        }
+      } catch (error) {
+        console.error("캘린더 조회 실패", error);
+        setCalendar(CALENDAR_DUMMY.entries);
+      }
+    };
+
     fetchReport();
+    fetchCalendar();
   }, [yearMonth]);
 
-  if (!report) return null;
+  if (!report || !calendar) return null;
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -150,11 +169,7 @@ const Report = () => {
           <p className="text-base font-bold text-[#4A4A4A]">캘린더</p>
         </div>
 
-        <Calendar
-          year={year}
-          month={month}
-          calendars={CALENDAR_DUMMY.entries}
-        />
+        <Calendar year={year} month={month} calendars={calendar} />
 
         <div className="w-full mt-6 mb-2">
           <p className="text-base font-bold text-[#4A4A4A] mb-2">
