@@ -9,10 +9,10 @@
  * - 인사이트 & 피드백
  * - 캘린더
  * - 한 달 전 하루 일기 카드
- * - 임시 더미 데이터 사용
+ * - api 임시 연동, 연동 실패 시 임시 더미 데이터 사용
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -31,6 +31,8 @@ import {
   CALENDAR_DUMMY,
   MONTHLY_REPORT_DUMMY,
 } from "@mocks/report";
+import { getMonthlyReport } from "@services/report";
+import { MonthlyReportResponse } from "@models/report";
 
 const Report = () => {
   const navigate = useNavigate();
@@ -39,6 +41,29 @@ const Report = () => {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [isMonthModalOpen, setIsMonthModalOpen] = useState(false);
+  const [report, setReport] = useState<MonthlyReportResponse | null>(null);
+  const yearMonth = `${year}-${String(month).padStart(2, "0")}`;
+
+  useEffect(() => {
+    const fetchReport = async () => {
+      try {
+        const res = await getMonthlyReport(yearMonth);
+
+        if (res.isSuccess) {
+          setReport(res.result);
+        } else {
+          setReport(MONTHLY_REPORT_DUMMY);
+        }
+      } catch (error) {
+        console.error("월간 리포트 조회 실패", error);
+        setReport(MONTHLY_REPORT_DUMMY);
+      }
+    };
+
+    fetchReport();
+  }, [yearMonth]);
+
+  if (!report) return null;
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -79,7 +104,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {MONTHLY_REPORT_DUMMY.preferences.like}
+                {report.preferences.like}
               </div>
             </div>
 
@@ -93,7 +118,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {MONTHLY_REPORT_DUMMY.preferences.dislike}
+                {report.preferences.dislike}
               </div>
             </div>
           </div>
@@ -106,7 +131,7 @@ const Report = () => {
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
           <p className="text-xs text-[#4A4A4A] leading-5">
-            {MONTHLY_REPORT_DUMMY.activity.summary}
+            {report.activity.summary}
           </p>
         </div>
 
@@ -117,7 +142,7 @@ const Report = () => {
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
           <p className="text-xs leading-5 text-[#4A4A4A]">
-            {MONTHLY_REPORT_DUMMY.insight.content}
+            {report.insight.content}
           </p>
         </div>
 
@@ -137,11 +162,9 @@ const Report = () => {
           </p>
 
           <DiaryCard
-            {...MONTHLY_REPORT_DUMMY.lastMonthReminder}
+            {...report.lastMonthReminder}
             onClick={() =>
-              navigate(
-                `/diary/detail/${MONTHLY_REPORT_DUMMY.lastMonthReminder.diaryId}`,
-              )
+              navigate(`/diary/detail/${report.lastMonthReminder.diaryId}`)
             }
           />
         </div>
