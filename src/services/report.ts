@@ -11,3 +11,9 @@ export const getMonthlyCalendar = async (yearMonth: string) => {
   const res = await instance.get(`/reports/monthly/${yearMonth}/calendar`);
   return res.data;
 };
+
+// 월간 자주 나온 주제 조회
+export const getMonthlyTopics = async (yearMonth: string) => {
+  const res = await instance.get(`/reports/monthly/${yearMonth}/topics`);
+  return res.data;
+};

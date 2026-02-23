@@ -31,8 +31,16 @@ import {
   CALENDAR_DUMMY,
   MONTHLY_REPORT_DUMMY,
 } from "@mocks/report";
-import { getMonthlyCalendar, getMonthlyReport } from "@services/report";
-import { CalendarResponse, MonthlyReportResponse } from "@models/report";
+import {
+  getMonthlyCalendar,
+  getMonthlyReport,
+  getMonthlyTopics,
+} from "@services/report";
+import {
+  CalendarResponse,
+  MonthlyReportResponse,
+  MonthlyTopicsResponse,
+} from "@models/report";
 
 const Report = () => {
   const navigate = useNavigate();
@@ -45,6 +53,7 @@ const Report = () => {
   const [calendar, setCalendar] = useState<CalendarResponse["entries"] | null>(
     null,
   );
+  const [topics, setTopics] = useState<MonthlyTopicsResponse | null>(null);
   const yearMonth = `${year}-${String(month).padStart(2, "0")}`;
 
   useEffect(() => {
@@ -78,11 +87,27 @@ const Report = () => {
       }
     };
 
+    const fetchTopics = async () => {
+      try {
+        const res = await getMonthlyTopics(yearMonth);
+
+        if (res.isSuccess) {
+          setTopics(res.result);
+        } else {
+          setTopics(MONTHLY_TOPICS_DUMMY);
+        }
+      } catch (error) {
+        console.error("주제 조회 실패", error);
+        setTopics(MONTHLY_TOPICS_DUMMY);
+      }
+    };
+
     fetchReport();
     fetchCalendar();
+    fetchTopics();
   }, [yearMonth]);
 
-  if (!report || !calendar) return null;
+  if (!report || !calendar || !topics) return null;
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -109,7 +134,7 @@ const Report = () => {
         <div className="w-full flex flex-col mb-3">
           <p className="text-base font-bold text-[#4A4A4A]">자주 나온 주제</p>
         </div>
-        <TopTopics data={MONTHLY_TOPICS_DUMMY} />
+        <TopTopics data={topics} />
 
         <div className="w-full mb-6">
           <div className="flex justify-between">
