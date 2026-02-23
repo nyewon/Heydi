@@ -33,11 +33,13 @@ import {
 } from "@mocks/report";
 import {
   getMonthlyCalendar,
+  getMonthlyEmotions,
   getMonthlyReport,
   getMonthlyTopics,
 } from "@services/report";
 import {
   CalendarResponse,
+  MonthlyEmotionResponse,
   MonthlyReportResponse,
   MonthlyTopicsResponse,
 } from "@models/report";
@@ -54,6 +56,7 @@ const Report = () => {
     null,
   );
   const [topics, setTopics] = useState<MonthlyTopicsResponse | null>(null);
+  const [emotions, setEmotions] = useState<MonthlyEmotionResponse | null>(null);
   const yearMonth = `${year}-${String(month).padStart(2, "0")}`;
 
   useEffect(() => {
@@ -102,12 +105,28 @@ const Report = () => {
       }
     };
 
+    const fetchEmotions = async () => {
+      try {
+        const res = await getMonthlyEmotions(yearMonth);
+
+        if (res.isSuccess) {
+          setEmotions(res.result);
+        } else {
+          setEmotions(MONTHLY_EMOTION_DUMMY);
+        }
+      } catch (error) {
+        console.error("감정 조회 실패", error);
+        setEmotions(MONTHLY_EMOTION_DUMMY);
+      }
+    };
+
     fetchReport();
     fetchCalendar();
     fetchTopics();
+    fetchEmotions();
   }, [yearMonth]);
 
-  if (!report || !calendar || !topics) return null;
+  if (!report || !calendar || !topics || !emotions) return null;
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -129,7 +148,7 @@ const Report = () => {
             이번달의 감정 변화
           </p>
         </div>
-        <EmotionChart data={MONTHLY_EMOTION_DUMMY} />
+        <EmotionChart data={emotions} />
 
         <div className="w-full flex flex-col mb-3">
           <p className="text-base font-bold text-[#4A4A4A]">자주 나온 주제</p>

@@ -17,3 +17,9 @@ export const getMonthlyTopics = async (yearMonth: string) => {
   const res = await instance.get(`/reports/monthly/${yearMonth}/topics`);
   return res.data;
 };
+
+// 월간 감정 변화 조회
+export const getMonthlyEmotions = async (yearMonth: string) => {
+  const res = await instance.get(`/reports/monthly/${yearMonth}/emotions`);
+  return res.data;
+};
