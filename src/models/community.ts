@@ -72,6 +72,11 @@ export interface CommunityCommentMutationResult {
   updated_at: string | null;
 }
 
+// select diary for post id creation
+export interface SelectDiaryRequest {
+  diary_id: number;
+}
+
 // Community Post Creation / Editing
 export interface CommunityPostUpsertRequest {
   diary_id: number;

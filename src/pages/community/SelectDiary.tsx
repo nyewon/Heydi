@@ -6,6 +6,7 @@
  * - SelectDiaryCard 클릭 시 선택 상태 표시
  * - 확인 버튼 클릭 시 PostEdit page로 이동 (선택한 일기 id 전달)
  * - api 임시 연동. 연동 실패 시 더미 데이터 사용
+ * - post id 생성 api 연동 완료
  */
 
 import { useEffect, useState } from "react";
@@ -20,6 +21,7 @@ import { DIARY_LIST_DUMMIES } from "@mocks/diary";
 import { DiaryListItem } from "@models/diary";
 import { getDiaryList } from "@services/diary";
 import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
+import { selectDiaryForPost } from "@services/community";
 
 const SelectDiary = () => {
   const [selectedDiaryId, setSelectedDiaryId] = useState<number | null>(null);
@@ -64,9 +66,22 @@ const SelectDiary = () => {
     onLoadMore: () => setPage(prev => prev + 1),
   });
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (selectedDiaryId === null) return;
-    navigate(`/community/post-edit/${selectedDiaryId}`, { replace: true });
+
+    try {
+      const res = await selectDiaryForPost(selectedDiaryId);
+
+      if (res.success) {
+        const postId = res.result.post_id;
+
+        navigate(`/community/post-edit/${postId}`, {
+          replace: true,
+        });
+      }
+    } catch (error) {
+      console.error("게시글 생성 실패", error);
+    }
   };
 
   return (
