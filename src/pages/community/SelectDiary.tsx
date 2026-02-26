@@ -80,7 +80,11 @@ const SelectDiary = () => {
         });
       }
     } catch (error) {
-      console.error("게시글 생성 실패", error);
+      console.error("post id 생성 실패", error);
+
+      navigate(`/community/post-edit/${selectedDiaryId}`, {
+        replace: true,
+      });
     }
   };
 
