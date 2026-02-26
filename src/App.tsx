@@ -98,7 +98,7 @@ const App = () => {
                   element={<SelectDiary />}
                 />
                 <Route
-                  path="/community/post-edit/:postId"
+                  path="/community/post-edit/:diaryId"
                   element={<PostEdit />}
                 />
 
