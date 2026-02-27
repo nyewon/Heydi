@@ -16,6 +16,8 @@ export interface PostListItem {
 
 export interface PostListResponse {
   posts: PostListItem[];
+  next_cursor: number | null;
+  has_next: boolean;
 }
 
 // Community Post Detail

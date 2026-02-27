@@ -52,6 +52,8 @@ export const COMMUNITY_POST_LIST_DUMMY: PostListResponse = {
       created_at: "2025-12-01T08:45:00",
     },
   ],
+  next_cursor: null,
+  has_next: false,
 };
 
 // Post Detail
