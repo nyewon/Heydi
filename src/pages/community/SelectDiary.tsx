@@ -93,6 +93,25 @@ const SelectDiary = () => {
       <BackHeader />
 
       <Container className="pb-10">
+        {diaries.length === 0 && !isFetching && (
+          <div className="w-full flex flex-col items-center mt-20 text-center">
+            <p className="text-base font-extrabold text-[#7C7C7C]">
+              아직 작성된 일기가 없어요🥲
+            </p>
+
+            <p className="text-sm font-bold text-[#A1A1A1] mt-4">
+              지금 일기를 작성해보세요!
+            </p>
+
+            <button
+              className="mt-6 px-5 py-2 bg-[#76615A] text-white rounded-lg text-sm"
+              onClick={() => navigate("/diary")}
+            >
+              일기 작성하러 가기
+            </button>
+          </div>
+        )}
+
         {[...diaries]
           .sort((a, b) => b.id - a.id)
           .map(item => (
@@ -108,14 +127,16 @@ const SelectDiary = () => {
 
         <div ref={observerRef} className="h-10" />
 
-        <Button
-          variant="full"
-          className="w-full mt-8"
-          disabled={selectedDiaryId === null}
-          onClick={handleConfirm}
-        >
-          확인
-        </Button>
+        {diaries.length > 0 && (
+          <Button
+            variant="full"
+            className="w-full mt-8"
+            disabled={selectedDiaryId === null}
+            onClick={handleConfirm}
+          >
+            확인
+          </Button>
+        )}
       </Container>
     </div>
   );
