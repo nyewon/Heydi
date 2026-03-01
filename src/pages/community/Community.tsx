@@ -73,6 +73,18 @@ const Community = () => {
       <DefaultHeader showIcon="community" />
 
       <Container withBottomNav={true}>
+        {posts.length === 0 && !isFetching && (
+          <div className="w-full flex flex-col items-center mt-20 text-center">
+            <p className="text-base font-extrabold text-[#7C7C7C]">
+              아직 작성된 게시글이 없어요🥲
+            </p>
+
+            <p className="text-sm font-bold text-[#A1A1A1] mt-4">
+              제일 먼저 일기를 공유해보세요!
+            </p>
+          </div>
+        )}
+
         {[...posts]
           .sort(
             (a, b) =>
