@@ -126,18 +126,22 @@ const SelectDiary = () => {
           ))}
 
         <div ref={observerRef} className="h-10" />
-
-        {diaries.length > 0 && (
-          <Button
-            variant="full"
-            className="w-full mt-8"
-            disabled={selectedDiaryId === null}
-            onClick={handleConfirm}
-          >
-            확인
-          </Button>
-        )}
       </Container>
+
+      {diaries.length > 0 && (
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[425px] bg-white">
+          <div className="px-5 py-4">
+            <Button
+              variant="full"
+              className="w-full"
+              disabled={selectedDiaryId === null}
+              onClick={handleConfirm}
+            >
+              확인
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
