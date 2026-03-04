@@ -1,5 +1,5 @@
 /*
- * CommunityDetail - 커뮤니티 글 상세보기 화면
+ * postDetail - 커뮤니티 글 상세보기 화면
  *
  * 세부사항:
  * - 글 작성자 프로필, 작성일, 제목, 감정, 주제, 내용, 작성된 일기 날짜 표시
@@ -7,10 +7,10 @@
  * - 댓글 목록 표시 및 댓글 작성 기능 구현
  * - 글 작성자일 경우 글 삭제 기능 제공
  * - 현재 사용자는 "Test"로 가정
- * - 더미 데이터 사용
+ * - 상세보기 api 연동, 연동 실패 시 더미 데이터 사용
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Container,
@@ -27,22 +27,44 @@ import {
   POST_DETAIL_DUMMIES,
   COMMUNITY_COMMENT_DUMMIES,
 } from "@mocks/community";
+import { getPostDetail } from "@services/community";
+import { PostDetailResponse } from "@models/community";
 
 const PostDetail = () => {
   const currentUser = "Test";
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
 
-  const post = POST_DETAIL_DUMMIES.find(p => p.post_id === Number(postId));
+  const [post, setPost] = useState<PostDetailResponse | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const data = await getPostDetail(Number(postId));
+        setPost(data);
+        setIsLiked(data.is_liked);
+        setLikeCount(data.like_count);
+      } catch (e) {
+        console.error("게시물 상세 조회 실패", e);
+
+        const dummy =
+          POST_DETAIL_DUMMIES.find(p => p.post_id === Number(postId)) ||
+          POST_DETAIL_DUMMIES[0];
+
+        setPost(dummy);
+        setIsLiked(dummy.is_liked);
+        setLikeCount(dummy.like_count);
+      }
+    };
+
+    fetchDetail();
+  }, [postId]);
 
   if (!post) return null;
-
-  const images = post.photos.map(p => p.imageUrl);
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(post.is_liked);
-  const [likeCount, setLikeCount] = useState(post.like_count);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const comments = COMMUNITY_COMMENT_DUMMIES.comments;
 
@@ -98,7 +120,7 @@ const PostDetail = () => {
             {post.post_content}
           </p>
 
-          {images.length > 0 && (
+          {post.photos.length > 0 && (
             <div className="mb-4">
               <ImageSlider
                 images={post.photos}
