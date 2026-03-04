@@ -8,6 +8,7 @@
  * - 글 작성자일 경우 글 삭제 기능 제공
  * - 현재 사용자는 "Test"로 가정
  * - 상세보기 api 연동, 연동 실패 시 더미 데이터 사용
+ * - 좋아요 api 연동, 연동 실패 시 alert로 오류 메시지 표시
  */
 
 import { useEffect, useState } from "react";
@@ -27,7 +28,7 @@ import {
   POST_DETAIL_DUMMIES,
   COMMUNITY_COMMENT_DUMMIES,
 } from "@mocks/community";
-import { getPostDetail } from "@services/community";
+import { getPostDetail, togglePostLike } from "@services/community";
 import { PostDetailResponse } from "@models/community";
 
 const PostDetail = () => {
@@ -68,9 +69,20 @@ const PostDetail = () => {
 
   const comments = COMMUNITY_COMMENT_DUMMIES.comments;
 
-  const handleToggleLike = () => {
-    setIsLiked(prev => !prev);
-    setLikeCount(prev => (isLiked ? prev - 1 : prev + 1));
+  const handleToggleLike = async () => {
+    try {
+      const res = await togglePostLike(post.post_id);
+
+      if (res.success) {
+        setIsLiked(prev => !prev);
+        setLikeCount(prev => (isLiked ? prev - 1 : prev + 1));
+      } else {
+        alert("좋아요 처리에 실패했습니다.");
+      }
+    } catch (e) {
+      console.error("좋아요 API 실패", e);
+      alert("좋아요 처리 중 오류가 발생했습니다.");
+    }
   };
 
   const handleDeletePost = () => {

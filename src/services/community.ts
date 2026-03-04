@@ -30,3 +30,10 @@ export const getPostDetail = async (postId: number) => {
 
   return res.data.result as PostDetailResponse;
 };
+
+// 게시글 좋아요 토글
+export const togglePostLike = async (postId: number) => {
+  const res = await instance.post(`/community/posts/${postId}/likes`);
+
+  return res.data;
+};

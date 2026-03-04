@@ -5,6 +5,7 @@
  * - CommunityCard 컴포넌트를 사용
  * - 게시글 클릭 시 해당 게시글 상세 페이지로 이동
  * - api 연동, 연동 실패 시 더미 데이터 사용
+ * - 좋아요 api 연동, 연동 실패 시 alert로 오류 메시지 표시
  */
 
 import { useEffect, useState } from "react";
@@ -17,7 +18,7 @@ import {
 } from "@components/index";
 import { COMMUNITY_POST_LIST_DUMMY } from "@mocks/community";
 import { PostListItem } from "@models/community";
-import { getPostList } from "@services/community";
+import { getPostList, togglePostLike } from "@services/community";
 import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
 
 const Community = () => {
@@ -57,6 +58,29 @@ const Community = () => {
 
     fetchPosts();
   }, [cursor]);
+
+  const handleToggleLike = async (postId: number) => {
+    try {
+      await togglePostLike(postId);
+
+      setPosts(prev =>
+        prev.map(post =>
+          post.post_id === postId
+            ? {
+                ...post,
+                is_liked: !post.is_liked,
+                like_count: post.is_liked
+                  ? post.like_count - 1
+                  : post.like_count + 1,
+              }
+            : post,
+        ),
+      );
+    } catch (e) {
+      console.error("좋아요 토글 실패", e);
+      alert("좋아요 처리 중 오류가 발생했습니다.");
+    }
+  };
 
   const observerRef = useInfiniteScroll({
     hasMore: hasNext,
@@ -103,6 +127,7 @@ const Community = () => {
               likes={post.like_count}
               comments={post.comment_count}
               liked={post.is_liked}
+              onLike={() => handleToggleLike(post.post_id)}
               onClick={() => navigate(`/community/detail/${post.post_id}`)}
             />
           ))}
