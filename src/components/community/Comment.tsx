@@ -6,13 +6,15 @@ import {
   CommunityCommentMutationResult,
 } from "@models/community";
 import { Toast } from "@components/index";
+import { createPostComment } from "@services/community";
 
 interface CommentProps {
+  postId: number;
   initialComments: CommunityComment[];
   currentUser: string;
 }
 
-const Comment = ({ initialComments, currentUser }: CommentProps) => {
+const Comment = ({ postId, initialComments, currentUser }: CommentProps) => {
   const [comments, setComments] = useState<CommunityComment[]>(initialComments);
   const [inputValue, setInputValue] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -21,7 +23,11 @@ const Comment = ({ initialComments, currentUser }: CommentProps) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const isAddedByMe = useRef(false);
 
-  const handleAddOrEditComment = () => {
+  useEffect(() => {
+    setComments(initialComments);
+  }, [initialComments]);
+
+  const handleAddOrEditComment = async () => {
     if (!inputValue.trim()) return;
 
     // Edit
@@ -56,31 +62,15 @@ const Comment = ({ initialComments, currentUser }: CommentProps) => {
     // Add
     isAddedByMe.current = true;
 
-    const createdResult: CommunityCommentMutationResult = {
-      comment_id: Date.now(),
-      user_id: 0,
-      nickname: currentUser,
-      profile_url: "",
-      content: inputValue,
-      is_mine: true,
-      created_at: new Date().toISOString(),
-      updated_at: null,
-    };
+    try {
+      const created = await createPostComment(postId, inputValue);
 
-    setComments(prev => [
-      ...prev,
-      {
-        comment_id: createdResult.comment_id,
-        user_id: createdResult.user_id,
-        nickname: createdResult.nickname,
-        profile_url: createdResult.profile_url,
-        content: createdResult.content,
-        is_mine: createdResult.is_mine,
-        created_at: createdResult.created_at,
-      },
-    ]);
-
-    setInputValue("");
+      setComments(prev => [...prev, created]);
+      setInputValue("");
+    } catch (e) {
+      console.error("댓글 작성 실패", e);
+      alert("댓글 작성 중 오류가 발생했습니다.");
+    }
   };
 
   const handleDeleteComment = (index: number) => {
@@ -105,7 +95,7 @@ const Comment = ({ initialComments, currentUser }: CommentProps) => {
       <div className="flex flex-col gap-6 w-full mb-20">
         {comments.map((comment, idx) => (
           <CommentItem
-            key={idx}
+            key={comment.comment_id}
             comment={comment}
             currentUser={currentUser}
             onDelete={() => handleDeleteComment(idx)}

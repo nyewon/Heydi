@@ -53,3 +53,12 @@ export const getPostComments = async (
 
   return res.data.result;
 };
+
+// 댓글 작성
+export const createPostComment = async (postId: number, content: string) => {
+  const res = await instance.post(`/community/posts/${postId}/comments`, {
+    content,
+  });
+
+  return res.data.result;
+};

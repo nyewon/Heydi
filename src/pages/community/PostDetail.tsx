@@ -194,7 +194,11 @@ const PostDetail = () => {
           </div>
         </div>
 
-        <Comment initialComments={comments} currentUser={currentUser} />
+        <Comment
+          postId={post.post_id}
+          initialComments={comments}
+          currentUser={currentUser}
+        />
       </Container>
 
       <DeleteModal

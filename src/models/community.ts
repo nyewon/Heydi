@@ -63,6 +63,10 @@ export interface CommunityCommentListResponse {
   has_next: boolean;
 }
 
+export interface CreateCommentRequest {
+  content: string;
+}
+
 export interface CommunityCommentMutationResult {
   comment_id: number;
   user_id: number;
