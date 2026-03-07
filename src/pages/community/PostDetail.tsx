@@ -9,6 +9,7 @@
  * - 현재 사용자는 "Test"로 가정
  * - 상세보기 api 연동, 연동 실패 시 더미 데이터 사용
  * - 좋아요 api 연동, 연동 실패 시 alert로 오류 메시지 표시
+ * - 댓글 목록 api 연동, 연동 실패 시 더미 데이터 사용 (무한 스크롤 미적용)
  */
 
 import { useEffect, useState } from "react";
@@ -28,8 +29,12 @@ import {
   POST_DETAIL_DUMMIES,
   COMMUNITY_COMMENT_DUMMIES,
 } from "@mocks/community";
-import { getPostDetail, togglePostLike } from "@services/community";
-import { PostDetailResponse } from "@models/community";
+import {
+  getPostComments,
+  getPostDetail,
+  togglePostLike,
+} from "@services/community";
+import { CommunityComment, PostDetailResponse } from "@models/community";
 
 const PostDetail = () => {
   const currentUser = "Test";
@@ -41,6 +46,7 @@ const PostDetail = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [comments, setComments] = useState<CommunityComment[]>([]);
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -62,12 +68,21 @@ const PostDetail = () => {
       }
     };
 
+    const fetchComments = async () => {
+      try {
+        const data = await getPostComments(Number(postId), null, 10);
+        setComments(data.comments);
+      } catch (e) {
+        console.error("댓글 조회 실패", e);
+        setComments(COMMUNITY_COMMENT_DUMMIES.comments);
+      }
+    };
+
     fetchDetail();
+    fetchComments();
   }, [postId]);
 
   if (!post) return null;
-
-  const comments = COMMUNITY_COMMENT_DUMMIES.comments;
 
   const handleToggleLike = async () => {
     try {

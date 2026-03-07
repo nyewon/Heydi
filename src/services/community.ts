@@ -37,3 +37,19 @@ export const togglePostLike = async (postId: number) => {
 
   return res.data;
 };
+
+// 댓글 목록 조회
+export const getPostComments = async (
+  postId: number,
+  cursor?: number | null,
+  size: number = 10,
+) => {
+  const res = await instance.get(`/community/posts/${postId}/comments`, {
+    params: {
+      cursor,
+      size,
+    },
+  });
+
+  return res.data.result;
+};
