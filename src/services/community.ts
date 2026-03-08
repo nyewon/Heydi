@@ -62,3 +62,12 @@ export const createPostComment = async (postId: number, content: string) => {
 
   return res.data.result;
 };
+
+// 댓글 수정
+export const updatePostComment = async (commentId: number, content: string) => {
+  const res = await instance.put(`/community/comments/${commentId}`, {
+    content,
+  });
+
+  return res.data.result;
+};

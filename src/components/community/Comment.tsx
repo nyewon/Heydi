@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import CommentItem from "./CommentItem";
 import Send from "@assets/icons/send.svg?react";
-import {
-  CommunityComment,
-  CommunityCommentMutationResult,
-} from "@models/community";
+import { CommunityComment } from "@models/community";
 import { Toast } from "@components/index";
-import { createPostComment } from "@services/community";
+import { createPostComment, updatePostComment } from "@services/community";
 
 interface CommentProps {
   postId: number;
@@ -32,30 +29,23 @@ const Comment = ({ postId, initialComments, currentUser }: CommentProps) => {
 
     // Edit
     if (editingIndex !== null) {
-      const updatedResult: CommunityCommentMutationResult = {
-        ...comments[editingIndex],
-        content: inputValue,
-        updated_at: new Date().toISOString(),
-      };
+      try {
+        const target = comments[editingIndex];
 
-      setComments(prev =>
-        prev.map((comment, idx) =>
-          idx === editingIndex
-            ? {
-                comment_id: updatedResult.comment_id,
-                user_id: updatedResult.user_id,
-                nickname: updatedResult.nickname,
-                profile_url: updatedResult.profile_url,
-                content: updatedResult.content,
-                is_mine: updatedResult.is_mine,
-                created_at: updatedResult.created_at,
-              }
-            : comment,
-        ),
-      );
+        const updated = await updatePostComment(target.comment_id, inputValue);
 
-      setEditingIndex(null);
-      setInputValue("");
+        setComments(prev =>
+          prev.map((comment, idx) =>
+            idx === editingIndex ? updated : comment,
+          ),
+        );
+
+        setEditingIndex(null);
+        setInputValue("");
+      } catch (e) {
+        console.error("댓글 수정 실패", e);
+        alert("댓글 수정 중 오류가 발생했습니다.");
+      }
       return;
     }
 
