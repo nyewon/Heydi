@@ -3,7 +3,11 @@ import CommentItem from "./CommentItem";
 import Send from "@assets/icons/send.svg?react";
 import { CommunityComment } from "@models/community";
 import { Toast } from "@components/index";
-import { createPostComment, updatePostComment } from "@services/community";
+import {
+  createPostComment,
+  deletePostComment,
+  updatePostComment,
+} from "@services/community";
 
 interface CommentProps {
   postId: number;
@@ -63,9 +67,22 @@ const Comment = ({ postId, initialComments, currentUser }: CommentProps) => {
     }
   };
 
-  const handleDeleteComment = (index: number) => {
-    setComments(prev => prev.filter((_, i) => i !== index));
-    setToastOpen(true);
+  const handleDeleteComment = async (index: number) => {
+    const target = comments[index];
+
+    try {
+      const res = await deletePostComment(target.comment_id);
+
+      if (res.success) {
+        setComments(prev => prev.filter((_, i) => i !== index));
+        setToastOpen(true);
+      } else {
+        alert("댓글 삭제에 실패했습니다.");
+      }
+    } catch (e) {
+      console.error("댓글 삭제 실패", e);
+      alert("댓글 삭제 중 오류가 발생했습니다.");
+    }
   };
 
   const handleEditComment = (index: number) => {

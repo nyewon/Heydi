@@ -71,3 +71,10 @@ export const updatePostComment = async (commentId: number, content: string) => {
 
   return res.data.result;
 };
+
+// 댓글 삭제
+export const deletePostComment = async (commentId: number) => {
+  const res = await instance.delete(`/community/comments/${commentId}`);
+
+  return res.data;
+};
