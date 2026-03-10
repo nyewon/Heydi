@@ -25,6 +25,7 @@ import { useImageUploader } from "@hooks/useImageUploader";
 import { formatDate, formatElapsedTime } from "@utils/date";
 import { DiaryDetailResponse } from "@models/diary";
 import { CommunityPostUpsertRequest } from "@models/community";
+import { uploadPostPhoto } from "@services/community";
 import Plus from "@assets/icons/plus.svg?react";
 
 const PostEdit = () => {
@@ -65,7 +66,7 @@ const PostEdit = () => {
     }
   }, [editingField]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const payload: CommunityPostUpsertRequest = {
       diary_id: diary.id,
       post_title: diary.title,
@@ -76,10 +77,25 @@ const PostEdit = () => {
       post_topics: diary.topic,
     };
 
-    console.log("SAVE PAYLOAD", payload); // api 연동 시 삭제
+    console.log("SAVE PAYLOAD", payload);
 
-    // api 호출 시 반환되는 postId로 이동. 지금은 임시로 1 고정
-    navigate(`/community/detail/1`, {
+    const postId = 1;
+
+    try {
+      if (images.length > 0) {
+        await Promise.all(
+          images
+            .filter(img => img.file)
+            .map(img => uploadPostPhoto(postId, img.file as File)),
+        );
+      }
+    } catch (error) {
+      console.error("사진 업로드 실패", error);
+      alert("사진 업로드에 실패했습니다.");
+      return;
+    }
+
+    navigate(`/community/detail/${postId}`, {
       replace: true,
     });
   };

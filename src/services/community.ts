@@ -78,3 +78,21 @@ export const deletePostComment = async (commentId: number) => {
 
   return res.data;
 };
+
+// 게시글 사진 업로드
+export const uploadPostPhoto = async (postId: number, photo: File) => {
+  const formData = new FormData();
+  formData.append("photo", photo);
+
+  const res = await instance.post(
+    `/community/posts/${postId}/photos`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+
+  return res.data.result;
+};
