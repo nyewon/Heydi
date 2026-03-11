@@ -25,7 +25,7 @@ import { useImageUploader } from "@hooks/useImageUploader";
 import { formatDate, formatElapsedTime } from "@utils/date";
 import { DiaryDetailResponse } from "@models/diary";
 import { CommunityPostUpsertRequest } from "@models/community";
-import { uploadPostPhoto } from "@services/community";
+import { uploadPostPhoto, deletePostPhoto } from "@services/community";
 import Plus from "@assets/icons/plus.svg?react";
 
 const PostEdit = () => {
@@ -98,6 +98,22 @@ const PostEdit = () => {
     navigate(`/community/detail/${postId}`, {
       replace: true,
     });
+  };
+
+  const handleRemoveImage = async (index: number) => {
+    const image = images[index];
+
+    try {
+      if (image.id) {
+        const postId = 1;
+        await deletePostPhoto(postId, image.id);
+      }
+
+      removeImage(index);
+    } catch (error) {
+      console.error("사진 삭제 실패", error);
+      alert("사진 삭제에 실패했습니다.");
+    }
   };
 
   return (
@@ -213,7 +229,7 @@ const PostEdit = () => {
               images={images}
               currentIndex={currentIndex}
               onChangeIndex={setCurrentIndex}
-              onRemove={removeImage}
+              onRemove={handleRemoveImage}
             />
           )}
 

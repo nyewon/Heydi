@@ -96,3 +96,12 @@ export const uploadPostPhoto = async (postId: number, photo: File) => {
 
   return res.data.result;
 };
+
+// 게시글 사진 삭제
+export const deletePostPhoto = async (postId: number, fileId: number) => {
+  const res = await instance.delete(
+    `/community/posts/${postId}/photos/${fileId}`,
+  );
+
+  return res.data;
+};
