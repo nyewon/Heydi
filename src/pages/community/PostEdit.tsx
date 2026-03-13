@@ -68,13 +68,13 @@ const PostEdit = () => {
 
   const handleSave = async () => {
     const payload: CommunityPostUpsertRequest = {
-      diary_id: diary.id,
-      post_title: diary.title,
-      diary_date: diary.createdDate.split("T")[0],
-      conversation_duration: diary.conversationDurationSec,
-      post_emotion: diary.emotionCategory,
-      post_content: diary.content,
-      post_topics: diary.topic,
+      diaryId: diary.id,
+      postTitle: diary.title,
+      diaryDate: diary.createdDate.split("T")[0],
+      conversationDuration: diary.conversationDurationSec,
+      postEmotion: diary.emotionCategory,
+      postContent: diary.content,
+      postTopics: diary.topic,
     };
 
     console.log("SAVE PAYLOAD", payload);
