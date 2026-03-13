@@ -1,23 +1,23 @@
 // Community Post List
 export interface PostListItem {
-  post_id: number;
-  user_id: number;
+  postId: number;
+  userId: number;
   nickname: string;
-  profile_url: string;
-  post_title: string;
-  post_topics: string[];
-  post_emotion: string;
-  post_content: string;
-  like_count: number;
-  comment_count: number;
-  is_liked: boolean;
-  created_at: string;
+  profileUrl: string;
+  postTitle: string;
+  postTopics: string[];
+  postEmotion: string;
+  postContent: string;
+  likeCount: number;
+  commentCount: number;
+  isLiked: boolean;
+  createdAt: string;
 }
 
 export interface PostListResponse {
   posts: PostListItem[];
-  next_cursor: number | null;
-  has_next: boolean;
+  nextCursor: number | null;
+  hasNext: boolean;
 }
 
 // Community Post Detail

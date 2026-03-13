@@ -65,13 +65,13 @@ const Community = () => {
 
       setPosts(prev =>
         prev.map(post =>
-          post.post_id === postId
+          post.postId === postId
             ? {
                 ...post,
-                is_liked: !post.is_liked,
-                like_count: post.is_liked
-                  ? post.like_count - 1
-                  : post.like_count + 1,
+                isLiked: !post.isLiked,
+                likeCount: post.isLiked
+                  ? post.likeCount - 1
+                  : post.likeCount + 1,
               }
             : post,
         ),
@@ -112,23 +112,22 @@ const Community = () => {
         {[...posts]
           .sort(
             (a, b) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime(),
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           )
           .map(post => (
             <CommunityCard
-              key={post.post_id}
+              key={post.postId}
               user={post.nickname}
-              date={post.created_at.split("T")[0].replace(/-/g, ".")}
-              title={post.post_title}
-              emotion={post.post_emotion}
-              topics={post.post_topics}
-              content={post.post_content}
-              likes={post.like_count}
-              comments={post.comment_count}
-              liked={post.is_liked}
-              onLike={() => handleToggleLike(post.post_id)}
-              onClick={() => navigate(`/community/detail/${post.post_id}`)}
+              date={post.createdAt.split("T")[0].replace(/-/g, ".")}
+              title={post.postTitle}
+              emotion={post.postEmotion}
+              topics={post.postTopics}
+              content={post.postContent}
+              likes={post.likeCount}
+              comments={post.commentCount}
+              liked={post.isLiked}
+              onLike={() => handleToggleLike(post.postId)}
+              onClick={() => navigate(`/community/detail/${post.postId}`)}
             />
           ))}
 
