@@ -80,7 +80,7 @@ export interface CommunityCommentMutationResult {
 
 // select diary for post id creation
 export interface SelectDiaryRequest {
-  diary_id: number;
+  diaryId: number;
 }
 
 // Community Post Creation / Editing

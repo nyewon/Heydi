@@ -73,7 +73,7 @@ const SelectDiary = () => {
       const res = await selectDiaryForPost(selectedDiaryId);
 
       if (res.success) {
-        const postId = res.result.post_id;
+        const postId = res.result.postId;
 
         navigate(`/community/post-edit/${postId}`, {
           replace: true,
