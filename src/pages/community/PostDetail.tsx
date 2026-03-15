@@ -53,18 +53,18 @@ const PostDetail = () => {
       try {
         const data = await getPostDetail(Number(postId));
         setPost(data);
-        setIsLiked(data.is_liked);
-        setLikeCount(data.like_count);
+        setIsLiked(data.isLiked);
+        setLikeCount(data.likeCount);
       } catch (e) {
         console.error("게시물 상세 조회 실패", e);
 
         const dummy =
-          POST_DETAIL_DUMMIES.find(p => p.post_id === Number(postId)) ||
+          POST_DETAIL_DUMMIES.find(p => p.postId === Number(postId)) ||
           POST_DETAIL_DUMMIES[0];
 
         setPost(dummy);
-        setIsLiked(dummy.is_liked);
-        setLikeCount(dummy.like_count);
+        setIsLiked(dummy.isLiked);
+        setLikeCount(dummy.likeCount);
       }
     };
 
@@ -86,7 +86,7 @@ const PostDetail = () => {
 
   const handleToggleLike = async () => {
     try {
-      const res = await togglePostLike(post.post_id);
+      const res = await togglePostLike(post.postId);
 
       if (res.success) {
         setIsLiked(prev => !prev);
@@ -101,7 +101,7 @@ const PostDetail = () => {
   };
 
   const handleDeletePost = () => {
-    console.log("delete post:", post.post_id);
+    console.log("delete post:", post.postId);
     setIsDeleteOpen(false);
     navigate(-1);
   };
@@ -115,7 +115,7 @@ const PostDetail = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <img
-                src={post.author.profile_url || DefaultProfile}
+                src={post.author.profileUrl || DefaultProfile}
                 className="w-7 h-7 rounded-full object-cover"
               />
               <span className="text-xs font-extrabold text-[#4A4A4A]">
@@ -123,28 +123,28 @@ const PostDetail = () => {
               </span>
             </div>
             <span className="text-[10px] text-[#4A4A4A]">
-              {post.created_at.split("T")[0].replace(/-/g, ".")}
+              {post.createdAt.split("T")[0].replace(/-/g, ".")}
             </span>
           </div>
 
           <p className="text-sm font-bold text-[#4A4A4A] mb-3">
-            {post.post_title}
+            {post.postTitle}
           </p>
 
           <p className="text-xs font-bold text-[#4A4A4A] mb-2 flex items-center gap-3">
             <span className="flex items-center">
               감정:
               <span className="flex items-center gap-0.5 ml-1">
-                {EMOTION_S_ICONS[post.post_emotion]}
-                {post.post_emotion}
+                {EMOTION_S_ICONS[post.postEmotion]}
+                {post.postEmotion}
               </span>
             </span>
 
-            <span>주제: {post.post_topics.join(" / ")}</span>
+            <span>주제: {post.postTopics.join(" / ")}</span>
           </p>
 
           <p className="text-xs text-[#4A4A4A] whitespace-pre-line mb-4">
-            {post.post_content}
+            {post.postContent}
           </p>
 
           {post.photos.length > 0 && (
@@ -158,7 +158,7 @@ const PostDetail = () => {
           )}
 
           <p className="text-[10px] text-[#D9D9D9] mb-5">
-            {post.diary_date.replace(/-/g, ".")}에 작성된 일기입니다.
+            {post.diaryDate.replace(/-/g, ".")}에 작성된 일기입니다.
           </p>
 
           <div className="flex items-center gap-5 pl-1">
@@ -195,7 +195,7 @@ const PostDetail = () => {
         </div>
 
         <Comment
-          postId={post.post_id}
+          postId={post.postId}
           initialComments={comments}
           currentUser={currentUser}
         />

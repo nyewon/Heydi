@@ -22,29 +22,29 @@ export interface PostListResponse {
 
 // Community Post Detail
 export interface PostAuthor {
-  user_id: number;
+  userId: number;
   nickname: string;
-  profile_url: string;
+  profileUrl: string;
 }
 
 export interface PostDetailResponse {
-  post_id: number;
+  postId: number;
   author: PostAuthor;
-  diary_id: number;
-  diary_date: string;
-  post_title: string;
-  post_topics: string[];
-  post_emotion: string;
-  post_content: string;
+  diaryId: number;
+  diaryDate: string;
+  postTitle: string;
+  postTopics: string[];
+  postEmotion: string;
+  postContent: string;
   photos: {
     id: number;
     imageUrl: string;
     order: number;
   }[];
-  like_count: number;
-  comment_count: number;
-  is_liked: boolean;
-  created_at: string;
+  likeCount: number;
+  commentCount: number;
+  isLiked: boolean;
+  createdAt: string;
 }
 
 export interface CommunityComment {
