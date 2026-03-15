@@ -48,19 +48,19 @@ export interface PostDetailResponse {
 }
 
 export interface CommunityComment {
-  comment_id: number;
-  user_id: number;
+  commentId: number;
+  userId: number;
   nickname: string;
-  profile_url: string;
+  profileUrl: string;
   content: string;
-  is_mine: boolean;
-  created_at: string;
+  isMine: boolean;
+  createdAt: string;
 }
 
 export interface CommunityCommentListResponse {
   comments: CommunityComment[];
-  next_cursor: number | null;
-  has_next: boolean;
+  nextCursor: number | null;
+  hasNext: boolean;
 }
 
 export interface CreateCommentRequest {
@@ -68,14 +68,14 @@ export interface CreateCommentRequest {
 }
 
 export interface CommunityCommentMutationResult {
-  comment_id: number;
-  user_id: number;
+  commentId: number;
+  userId: number;
   nickname: string;
-  profile_url: string;
+  profileUrl: string;
   content: string;
-  is_mine: boolean;
-  created_at: string;
-  updated_at: string | null;
+  isMine: boolean;
+  createdAt: string;
+  updatedAt: string | null;
 }
 
 // select diary for post id creation

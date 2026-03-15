@@ -65,7 +65,7 @@ export const createPostComment = async (postId: number, content: string) => {
 
 // 댓글 수정
 export const updatePostComment = async (commentId: number, content: string) => {
-  const res = await instance.put(`/community/comments/${commentId}`, {
+  const res = await instance.patch(`/community/comments/${commentId}`, {
     content,
   });
 
