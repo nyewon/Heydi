@@ -14,7 +14,7 @@ export const login = async (payload: LoginRequest) => {
 
 // 아이디 중복 체크
 export const usernameCheck = async (payload: UsernameCheckRequest) => {
-  const res = await instance.post("/auth/check-username?username=", payload);
+  const res = await instance.post("/auth/check-username", payload);
   return res.data;
 };
 
