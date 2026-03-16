@@ -64,17 +64,26 @@ export const createPostComment = async (postId: number, content: string) => {
 };
 
 // 댓글 수정
-export const updatePostComment = async (commentId: number, content: string) => {
-  const res = await instance.patch(`/community/comments/${commentId}`, {
-    content,
-  });
+export const updatePostComment = async (
+  postId: number,
+  commentId: number,
+  content: string,
+) => {
+  const res = await instance.patch(
+    `/community/post/${postId}/comments/${commentId}`,
+    {
+      content,
+    },
+  );
 
   return res.data.result;
 };
 
 // 댓글 삭제
-export const deletePostComment = async (commentId: number) => {
-  const res = await instance.delete(`/community/comments/${commentId}`);
+export const deletePostComment = async (postId: number, commentId: number) => {
+  const res = await instance.delete(
+    `/community/post/${postId}/comments/${commentId}`,
+  );
 
   return res.data;
 };

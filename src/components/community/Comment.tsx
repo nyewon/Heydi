@@ -36,7 +36,11 @@ const Comment = ({ postId, initialComments, currentUser }: CommentProps) => {
       try {
         const target = comments[editingIndex];
 
-        const updated = await updatePostComment(target.comment_id, inputValue);
+        const updated = await updatePostComment(
+          postId,
+          target.commentId,
+          inputValue,
+        );
 
         setComments(prev =>
           prev.map((comment, idx) =>
@@ -71,7 +75,7 @@ const Comment = ({ postId, initialComments, currentUser }: CommentProps) => {
     const target = comments[index];
 
     try {
-      const res = await deletePostComment(target.comment_id);
+      const res = await deletePostComment(postId, target.commentId);
 
       if (res.success) {
         setComments(prev => prev.filter((_, i) => i !== index));
@@ -102,7 +106,7 @@ const Comment = ({ postId, initialComments, currentUser }: CommentProps) => {
       <div className="flex flex-col gap-6 w-full mb-20">
         {comments.map((comment, idx) => (
           <CommentItem
-            key={comment.comment_id}
+            key={comment.commentId}
             comment={comment}
             currentUser={currentUser}
             onDelete={() => handleDeleteComment(idx)}
