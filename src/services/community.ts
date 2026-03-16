@@ -1,5 +1,17 @@
-import { PostDetailResponse } from "@models/community";
+import {
+  CommunityPostUpsertRequest,
+  PostDetailResponse,
+} from "@models/community";
 import instance from "./axios";
+
+// 커뮤니티 포스트 생성
+export const updatePost = async (
+  postId: number,
+  data: CommunityPostUpsertRequest,
+) => {
+  const res = await instance.put(`/community/posts/${postId}`, data);
+  return res.data;
+};
 
 // 커뮤니티 게시글 작성용 일기 선택
 export const selectDiaryForPost = async (diary_id: number) => {

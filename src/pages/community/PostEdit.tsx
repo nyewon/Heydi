@@ -25,7 +25,11 @@ import { useImageUploader } from "@hooks/useImageUploader";
 import { formatDate, formatElapsedTime } from "@utils/date";
 import { DiaryDetailResponse } from "@models/diary";
 import { CommunityPostUpsertRequest } from "@models/community";
-import { uploadPostPhoto, deletePostPhoto } from "@services/community";
+import {
+  uploadPostPhoto,
+  deletePostPhoto,
+  updatePost,
+} from "@services/community";
 import Plus from "@assets/icons/plus.svg?react";
 
 const PostEdit = () => {
@@ -67,6 +71,8 @@ const PostEdit = () => {
   }, [editingField]);
 
   const handleSave = async () => {
+    const postId = 1;
+
     const payload: CommunityPostUpsertRequest = {
       diaryId: diary.id,
       postTitle: diary.title,
@@ -75,13 +81,19 @@ const PostEdit = () => {
       postEmotion: diary.emotionCategory,
       postContent: diary.content,
       postTopics: diary.topic,
+      existingPhotos: images
+        .filter(img => !img.file)
+        .map(img => ({ imageUrl: img.imageUrl })),
     };
 
-    console.log("SAVE PAYLOAD", payload);
-
-    const postId = 1;
-
     try {
+      const res = await updatePost(postId, payload);
+
+      if (!res.success) {
+        alert("게시글 수정에 실패했습니다.");
+        return;
+      }
+
       if (images.length > 0) {
         await Promise.all(
           images
@@ -89,15 +101,14 @@ const PostEdit = () => {
             .map(img => uploadPostPhoto(postId, img.file as File)),
         );
       }
-    } catch (error) {
-      console.error("사진 업로드 실패", error);
-      alert("사진 업로드에 실패했습니다.");
-      return;
-    }
 
-    navigate(`/community/detail/${postId}`, {
-      replace: true,
-    });
+      navigate(`/community/detail/${postId}`, {
+        replace: true,
+      });
+    } catch (error) {
+      console.error("게시글 수정 실패", error);
+      alert("게시글 저장 중 오류가 발생했습니다.");
+    }
   };
 
   const handleRemoveImage = async (index: number) => {

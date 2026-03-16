@@ -92,4 +92,7 @@ export interface CommunityPostUpsertRequest {
   postEmotion: string;
   postContent: string;
   postTopics: string[];
+  existingPhotos: {
+    imageUrl: string;
+  }[];
 }
