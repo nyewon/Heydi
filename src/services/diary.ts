@@ -1,6 +1,5 @@
 import instance from "./axios";
 import {
-  DiaryListResponse,
   DiaryDetailResponse,
   ConversationMessagesResponse,
   SendToReportRequest,
@@ -8,15 +7,15 @@ import {
 } from "@models/diary";
 
 // 일기 목록 조회 (메인 리스트)
-export const getDiaryList = async (page: number = 0, size: number = 20) => {
-  const res = await instance.get<DiaryListResponse>("/api/diaries", {
+export const getDiaryList = async (page: number = 0, size: number = 10) => {
+  const res = await instance.get("/api/diaries", {
     params: {
-      page,
-      size,
+      pageNumber: page,
+      pageSize: size,
     },
   });
 
-  return res.data;
+  return res.data.result;
 };
 
 // 일기 상세 조회
