@@ -5,8 +5,7 @@
  * - SelectDiaryCard 리스트 표시
  * - SelectDiaryCard 클릭 시 선택 상태 표시
  * - 확인 버튼 클릭 시 PostEdit page로 이동 (선택한 일기 id 전달)
- * - api 임시 연동. 연동 실패 시 더미 데이터 사용
- * - post id 생성 api 연동 완료
+ * - api 연동 완료, 연동 실패 시 더미 데이터 사용
  */
 
 import { useEffect, useState } from "react";
@@ -24,13 +23,13 @@ import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
 import { selectDiaryForPost } from "@services/community";
 
 const SelectDiary = () => {
+  const navigate = useNavigate();
+
   const [selectedDiaryId, setSelectedDiaryId] = useState<number | null>(null);
   const [diaries, setDiaries] = useState<DiaryListItem[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState<number | null>(null);
   const [isFetching, setIsFetching] = useState(false);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDiaries = async () => {
@@ -104,8 +103,8 @@ const SelectDiary = () => {
             </p>
 
             <button
-              className="mt-6 px-5 py-2 bg-[#76615A] text-white rounded-lg text-sm"
-              onClick={() => navigate("/diary")}
+              className="mt-6 px-5 py-2 bg-[#76615A] font-semibold text-white rounded-lg text-sm"
+              onClick={() => navigate("/diary/wait", { replace: true })}
             >
               일기 작성하러 가기
             </button>
