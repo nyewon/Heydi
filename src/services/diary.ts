@@ -1,10 +1,5 @@
 import instance from "./axios";
-import {
-  DiaryDetailResponse,
-  ConversationMessagesResponse,
-  SendToReportRequest,
-  DiaryEditRequest,
-} from "@models/diary";
+import { SendToReportRequest, DiaryEditRequest } from "@models/diary";
 
 // 일기 목록 조회 (메인 리스트)
 export const getDiaryList = async (page: number = 0, size: number = 10) => {
@@ -20,18 +15,14 @@ export const getDiaryList = async (page: number = 0, size: number = 10) => {
 
 // 일기 상세 조회
 export const getDiaryDetail = async (diaryId: number) => {
-  const res = await instance.get<DiaryDetailResponse>(
-    `/api/diaries/${diaryId}`,
-  );
-  return res.data;
+  const res = await instance.get(`/api/diaries/${diaryId}`);
+  return res.data.result;
 };
 
 // 일기 대화 조회
 export const getDiaryConversation = async (diaryId: number) => {
-  const res = await instance.get<ConversationMessagesResponse>(
-    `/api/diaries/${diaryId}/conversation`,
-  );
-  return res.data;
+  const res = await instance.get(`/api/diaries/${diaryId}/conversation`);
+  return res.data.result;
 };
 
 // 일기 수정

@@ -24,7 +24,6 @@ export interface DiaryDetailResponse {
   topic: string[];
   oneLineDiary: string;
   content: string;
-  conversationSessionId: string;
   conversationDurationSec: number;
   photos: {
     id: number;
@@ -38,7 +37,6 @@ export interface DiaryDetailResponse {
 }
 
 export interface ConversationMessagesResponse {
-  sessionId: string;
   messages: ConversationMessage[];
 }
 

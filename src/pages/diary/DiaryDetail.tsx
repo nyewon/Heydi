@@ -35,6 +35,8 @@ import {
 
 const DiaryDetail = () => {
   const { diaryId } = useParams<{ diaryId: string }>();
+  const id = Number(diaryId);
+
   const [diary, setDiary] = useState<DiaryDetailResponse | null>(null);
   const [messages, setMessages] = useState<ConversationMessagesResponse | null>(
     null,
@@ -43,38 +45,32 @@ const DiaryDetail = () => {
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
+    if (!id) return;
+
     const fetchDiaryDetail = async () => {
       try {
-        const detail = await getDiaryDetail(Number(diaryId));
+        const detail = await getDiaryDetail(id);
         setDiary(detail);
 
         try {
-          const conversation = await getDiaryConversation(Number(diaryId));
+          const conversation = await getDiaryConversation(id);
           setMessages(conversation);
         } catch (conversationError) {
           console.error("대화 조회 실패", conversationError);
 
-          const dummyConversation =
-            CONVERSATION_MESSAGES_DUMMIES.find(
-              m => m.sessionId === detail.conversationSessionId,
-            ) ?? null;
+          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
 
           setMessages(dummyConversation);
         }
       } catch (detailError) {
         console.error("일기 상세 조회 실패", detailError);
 
-        const dummyDiary = DIARY_DETAIL_DUMMIES.find(
-          d => d.id === Number(diaryId),
-        );
+        const dummyDiary = DIARY_DETAIL_DUMMIES.find(d => d.id === id);
 
         if (dummyDiary) {
           setDiary(dummyDiary);
 
-          const dummyConversation =
-            CONVERSATION_MESSAGES_DUMMIES.find(
-              m => m.sessionId === dummyDiary.conversationSessionId,
-            ) ?? null;
+          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
 
           setMessages(dummyConversation);
         }
@@ -82,7 +78,7 @@ const DiaryDetail = () => {
     };
 
     fetchDiaryDetail();
-  }, [diaryId]);
+  }, [id]);
 
   if (!diary) {
     return (
@@ -162,7 +158,7 @@ const DiaryDetail = () => {
 
         <DiaryInfoBox label="오늘의 대화 내용">
           <div className="w-full flex flex-col gap-2 max-h-[300px] overflow-y-auto pt-2 scrollbar-none [&::-webkit-scrollbar]:hidden">
-            {messages?.messages.map((msg, idx) => (
+            {messages?.messages?.map((msg, idx) => (
               <div
                 key={idx}
                 className={`text-[10px] p-2 px-3 rounded-lg break-words inline-block w-fit min-w-[60px] ${
