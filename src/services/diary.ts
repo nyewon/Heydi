@@ -27,7 +27,7 @@ export const getDiaryConversation = async (diaryId: number) => {
 
 // 일기 수정
 export const updateDiary = async (diaryId: number, data: DiaryEditRequest) => {
-  const res = await instance.put(`/api/diaries/${diaryId}`, data);
+  const res = await instance.patch(`/api/diaries/${diaryId}`, data);
   return res.data;
 };
 
