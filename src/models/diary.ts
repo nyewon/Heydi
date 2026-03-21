@@ -1,9 +1,9 @@
 // Diary List
 export interface DiaryListItem {
-  id: number;
+  diaryId: number;
   date: string;
   title: string;
-  topic: string[];
+  topics: string[];
   emotion: string;
 }
 

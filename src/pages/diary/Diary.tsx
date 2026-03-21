@@ -80,14 +80,14 @@ const Diary = () => {
         )}
 
         {[...diaries]
-          .sort((a, b) => b.id - a.id)
+          .sort((a, b) => b.diaryId - a.diaryId)
           .map(item => (
             <DiaryCard
-              key={item.id}
+              key={item.diaryId}
               title={item.title}
               emotion={item.emotion}
-              topics={item.topic}
-              onClick={() => navigate(`/diary/detail/${item.id}`)}
+              topics={item.topics}
+              onClick={() => navigate(`/diary/detail/${item.diaryId}`)}
             />
           ))}
 
