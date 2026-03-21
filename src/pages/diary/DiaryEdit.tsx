@@ -75,38 +75,33 @@ const DiaryEdit = () => {
   });
 
   useEffect(() => {
+    const id = Number(diaryId);
+    if (!id) return;
+
     const fetchDiaryDetail = async () => {
       try {
-        const detail = await getDiaryDetail(Number(diaryId));
+        const detail = await getDiaryDetail(id);
         setDiary(detail);
 
         try {
-          const conversation = await getDiaryConversation(Number(diaryId));
+          const conversation = await getDiaryConversation(id);
           setMessages(conversation);
         } catch (conversationError) {
           console.error("대화 조회 실패", conversationError);
 
-          const dummyConversation =
-            CONVERSATION_MESSAGES_DUMMIES.find(
-              m => m.sessionId === detail.conversationSessionId,
-            ) ?? null;
+          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
 
           setMessages(dummyConversation);
         }
       } catch (detailError) {
         console.error("일기 상세 조회 실패", detailError);
 
-        const dummyDiary = DIARY_DETAIL_DUMMIES.find(
-          d => d.id === Number(diaryId),
-        );
+        const dummyDiary = DIARY_DETAIL_DUMMIES.find(d => d.id === id);
 
         if (dummyDiary) {
           setDiary(dummyDiary);
 
-          const dummyConversation =
-            CONVERSATION_MESSAGES_DUMMIES.find(
-              m => m.sessionId === dummyDiary.conversationSessionId,
-            ) ?? null;
+          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
 
           setMessages(dummyConversation);
         }
