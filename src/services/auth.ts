@@ -97,3 +97,9 @@ export const withdraw = async () => {
   const res = await instance.delete("/auth/withdraw");
   return res.data;
 };
+
+// 마이페이지 메인 조회
+export const getMypageMain = async () => {
+  const res = await instance.get("/users/me");
+  return res.data;
+};

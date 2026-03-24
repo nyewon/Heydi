@@ -6,9 +6,10 @@
  * - 프로필 수정, 알림 설정, 로그아웃, 회원탈퇴 기능 제공
  * - AccountModal: 로그아웃 및 회원탈퇴 확인 모달 표시
  * - AlarmModal: 알림 설정 모달 표시 (알림 활성화/비활성화 토글), 선택된 시간 없을 시 기본값 현재 시간
+ * - api 임시 연동 완료, 연동 실패 시 더미데이터 출력
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -20,18 +21,16 @@ import {
 import DefaultProfile from "@assets/icons/profile.svg";
 import { IoChevronForward } from "react-icons/io5";
 import { MYPAGE_INFO_DUMMY, ALARM_DUMMY } from "@mocks/mypage";
-import { AlarmResponseRequest } from "@models/mypage";
-import { logout, withdraw } from "@services/auth";
+import { AlarmResponseRequest, MypageInfoResponse } from "@models/mypage";
+import { getMypageMain, logout, withdraw } from "@services/auth";
 import { useAuthStore } from "@stores/useAuthStore";
 
 const Mypage = () => {
   const navigate = useNavigate();
   const clearAuth = useAuthStore(state => state.logout);
 
-  const { nickname, profileImageUrl, likedPostCount, sharedPostCount, alarm } =
-    MYPAGE_INFO_DUMMY;
-
-  const [alarmEnabled, setAlarmEnabled] = useState(alarm.enabled);
+  const [mypageInfo, setMypageInfo] = useState<MypageInfoResponse | null>(null);
+  const [alarmEnabled, setAlarmEnabled] = useState(false);
   const [alarmSetting, setAlarmSetting] = useState<AlarmResponseRequest | null>(
     null,
   );
@@ -40,7 +39,29 @@ const Mypage = () => {
     null,
   );
 
-  const profileImage = profileImageUrl || DefaultProfile;
+  const profileImage = mypageInfo?.profileImageUrl || DefaultProfile;
+
+  useEffect(() => {
+    const fetchMypage = async () => {
+      try {
+        const res = await getMypageMain();
+
+        if (res.isSuccess) {
+          setMypageInfo(res.result);
+          setAlarmEnabled(res.result.alarm.enabled);
+        } else {
+          setMypageInfo(MYPAGE_INFO_DUMMY);
+          setAlarmEnabled(MYPAGE_INFO_DUMMY.alarm.enabled);
+        }
+      } catch (e) {
+        console.error("마이페이지 조회 실패", e);
+        setMypageInfo(MYPAGE_INFO_DUMMY);
+        setAlarmEnabled(MYPAGE_INFO_DUMMY.alarm.enabled);
+      }
+    };
+
+    fetchMypage();
+  }, []);
 
   const handleOpenAlarmModal = () => {
     if (alarmEnabled) {
@@ -119,7 +140,7 @@ const Mypage = () => {
             className="w-[124px] h-[124px] rounded-full object-cover mb-2"
           />
           <span className="text-lg font-extrabold text-[#4A4A4A]">
-            {nickname}
+            {mypageInfo?.nickname}
           </span>
         </div>
 
@@ -132,7 +153,7 @@ const Mypage = () => {
               내가 좋아요 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {likedPostCount}
+              {mypageInfo?.likedPostCount}
             </span>
           </div>
 
@@ -144,7 +165,7 @@ const Mypage = () => {
               내가 공유 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {sharedPostCount}
+              {mypageInfo?.sharedPostCount}
             </span>
           </div>
         </div>
