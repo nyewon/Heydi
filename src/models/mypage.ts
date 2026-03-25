@@ -29,7 +29,7 @@ export interface UserInfoUpdateRequest {
 }
 
 // Like Posts & Shared Posts List Response
-export interface MypagePostListResponse {
+export interface MypagePost {
   userId: number;
   nickname: string;
   profileImageUrl: string;
@@ -43,6 +43,13 @@ export interface MypagePostListResponse {
   likeCount: number;
   commentCount: number;
   isLiked: boolean;
+}
+
+export interface MypagePostListResponse {
+  totalCount: number;
+  page: number;
+  size: number;
+  posts: MypagePost[];
 }
 
 // Alarm Response & Request

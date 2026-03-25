@@ -103,3 +103,12 @@ export const getMypageMain = async () => {
   const res = await instance.get("/users/me");
   return res.data;
 };
+
+// 내가 공유한 글 목록 조회
+export const getSharedPosts = async (page = 0, size = 10) => {
+  const res = await instance.get("/mypage/shared", {
+    params: { page, size },
+  });
+
+  return res.data;
+};

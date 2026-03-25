@@ -4,22 +4,46 @@
  * 세부사항:
  * - CommunityCard 컴포넌트를 사용
  * - 게시글 클릭 시 해당 게시글 상세 페이지로 이동
- * - 더미 데이터로 공유한 게시글 목록 표시
+ * - api 임시 연동 완료, 연동 실패 시 더미데이터 표시
  */
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, BackHeader, CommunityCard } from "@components/index";
 import { MY_POST_DUMMIES } from "@mocks/mypage";
+import { getSharedPosts } from "@services/auth";
+import { MypagePost } from "@models/mypage";
 
 const SharedPost = () => {
   const navigate = useNavigate();
+
+  const [posts, setPosts] = useState<MypagePost[]>([]);
+
+  useEffect(() => {
+    const fetchSharedPosts = async () => {
+      try {
+        const res = await getSharedPosts(0, 10);
+
+        if (res.isSuccess) {
+          setPosts(res.result.posts);
+        } else {
+          setPosts(MY_POST_DUMMIES);
+        }
+      } catch (e) {
+        console.error("공유 게시글 조회 실패", e);
+        setPosts(MY_POST_DUMMIES);
+      }
+    };
+
+    fetchSharedPosts();
+  }, []);
 
   return (
     <div className="w-full flex flex-col items-center">
       <BackHeader />
 
       <Container>
-        {[...MY_POST_DUMMIES]
+        {[...posts]
           .sort(
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
