@@ -2,7 +2,6 @@ import {
   AlarmResponseRequest,
   MypageInfoResponse,
   MypagePost,
-  MypagePostListResponse,
   UserInfoResponse,
 } from "@models/mypage";
 
@@ -27,7 +26,7 @@ export const MYPAGE_INFO_DUMMY: MypageInfoResponse = {
   },
 };
 
-export const LIKE_POST_DUMMIES: MypagePostListResponse[] = [
+export const LIKE_POST_DUMMIES: MypagePost[] = [
   {
     userId: 1,
     nickname: "Test",

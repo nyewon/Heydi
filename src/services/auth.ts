@@ -112,3 +112,12 @@ export const getSharedPosts = async (page = 0, size = 10) => {
 
   return res.data;
 };
+
+// 내가 좋아요 한 글 목록 조회
+export const getLikedPosts = async (page = 0, size = 10) => {
+  const res = await instance.get("/mypage/likes", {
+    params: { page, size },
+  });
+
+  return res.data;
+};
