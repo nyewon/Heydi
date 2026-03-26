@@ -13,36 +13,72 @@ import { Container, BackHeader, CommunityCard } from "@components/index";
 import { MY_POST_DUMMIES } from "@mocks/mypage";
 import { getSharedPosts } from "@services/auth";
 import { MypagePost } from "@models/mypage";
+import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
 
 const SharedPost = () => {
   const navigate = useNavigate();
 
   const [posts, setPosts] = useState<MypagePost[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     const fetchSharedPosts = async () => {
+      if (isFetching) return;
+
       try {
-        const res = await getSharedPosts(0, 10);
+        setIsFetching(true);
+
+        const res = await getSharedPosts(page, 10);
 
         if (res.isSuccess) {
-          setPosts(res.result.posts);
+          const newPosts = res.result.posts;
+
+          setPosts(prev => [...prev, ...newPosts]);
+          setTotalCount(res.result.totalCount);
         } else {
-          setPosts(MY_POST_DUMMIES);
+          if (page === 0) {
+            setPosts(MY_POST_DUMMIES);
+            setTotalCount(MY_POST_DUMMIES.length);
+          }
         }
       } catch (e) {
         console.error("공유 게시글 조회 실패", e);
-        setPosts(MY_POST_DUMMIES);
+
+        if (page === 0) {
+          setPosts(MY_POST_DUMMIES);
+          setTotalCount(MY_POST_DUMMIES.length);
+        }
+      } finally {
+        setIsFetching(false);
       }
     };
 
     fetchSharedPosts();
-  }, []);
+  }, [page]);
+
+  const hasMore = totalCount === null || posts.length < totalCount;
+
+  const observerRef = useInfiniteScroll({
+    hasMore,
+    isFetching,
+    onLoadMore: () => setPage(prev => prev + 1),
+  });
 
   return (
     <div className="w-full flex flex-col items-center">
       <BackHeader />
 
       <Container>
+        {posts.length === 0 && !isFetching && (
+          <div className="w-full flex flex-col items-center mt-20 text-center">
+            <p className="text-base font-extrabold text-[#7C7C7C]">
+              아직 공유한 글이 없어요🥲
+            </p>
+          </div>
+        )}
+
         {[...posts]
           .sort(
             (a, b) =>
@@ -64,6 +100,8 @@ const SharedPost = () => {
               onClick={() => navigate(`/community/detail/${post.postId}`)}
             />
           ))}
+
+        <div ref={observerRef} className="h-10" />
       </Container>
     </div>
   );
