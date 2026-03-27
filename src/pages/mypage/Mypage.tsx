@@ -22,7 +22,12 @@ import DefaultProfile from "@assets/icons/profile.svg";
 import { IoChevronForward } from "react-icons/io5";
 import { MYPAGE_INFO_DUMMY, ALARM_DUMMY } from "@mocks/mypage";
 import { AlarmResponseRequest, MypageInfoResponse } from "@models/mypage";
-import { getMypageMain, logout, withdraw } from "@services/auth";
+import {
+  disableReminder,
+  getMypageMain,
+  logout,
+  withdraw,
+} from "@services/auth";
 import { useAuthStore } from "@stores/useAuthStore";
 
 const Mypage = () => {
@@ -89,10 +94,18 @@ const Mypage = () => {
     setIsAlarmModalOpen(false);
   };
 
-  const handleDisableAlarm = () => {
-    setAlarmEnabled(false);
-    setAlarmSetting(null);
-    setIsAlarmModalOpen(false);
+  const handleDisableAlarm = async () => {
+    try {
+      const res = await disableReminder();
+
+      if (res.isSuccess) {
+        setAlarmEnabled(false);
+        setAlarmSetting(null);
+        setIsAlarmModalOpen(false);
+      }
+    } catch (e) {
+      console.error("알림 비활성화 실패", e);
+    }
   };
 
   const handleConfirmAccount = async () => {

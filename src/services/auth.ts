@@ -121,3 +121,9 @@ export const getLikedPosts = async (page = 0, size = 10) => {
 
   return res.data;
 };
+
+// 알림 비활성화
+export const disableReminder = async () => {
+  const res = await instance.put("/settings/reminder/disable");
+  return res.data;
+};
