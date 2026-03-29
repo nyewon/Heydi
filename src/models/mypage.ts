@@ -59,3 +59,7 @@ export interface AlarmResponseRequest {
   hour: number;
   minute: number;
 }
+
+export interface GetReminderResponse {
+  reminder: AlarmResponseRequest;
+}

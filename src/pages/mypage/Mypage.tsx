@@ -25,6 +25,7 @@ import { AlarmResponseRequest, MypageInfoResponse } from "@models/mypage";
 import {
   disableReminder,
   getMypageMain,
+  getReminder,
   logout,
   withdraw,
 } from "@services/auth";
@@ -65,7 +66,23 @@ const Mypage = () => {
       }
     };
 
+    const fetchReminder = async () => {
+      try {
+        const res = await getReminder();
+
+        if (res.isSuccess) {
+          const reminder = res.result.reminder;
+
+          setAlarmEnabled(reminder.enabled);
+          setAlarmSetting(reminder);
+        }
+      } catch (e) {
+        console.error("알림 설정 조회 실패", e);
+      }
+    };
+
     fetchMypage();
+    fetchReminder();
   }, []);
 
   const handleOpenAlarmModal = () => {

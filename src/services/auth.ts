@@ -127,3 +127,9 @@ export const disableReminder = async () => {
   const res = await instance.put("/settings/reminder/disable");
   return res.data;
 };
+
+// 알림 설정 조회
+export const getReminder = async () => {
+  const res = await instance.get("/settings/reminder");
+  return res.data;
+};
