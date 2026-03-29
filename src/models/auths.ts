@@ -1,7 +1,7 @@
 export interface LoginRequest {
   username: string;
   password: string;
-  fcm_token: string | null;
+  fcmToken: string | null;
 }
 
 export interface SignupRequest {
