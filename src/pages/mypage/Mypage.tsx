@@ -27,6 +27,7 @@ import {
   getMypageMain,
   getReminder,
   logout,
+  updateReminder,
   withdraw,
 } from "@services/auth";
 import { useAuthStore } from "@stores/useAuthStore";
@@ -94,7 +95,7 @@ const Mypage = () => {
     setIsAlarmModalOpen(true);
   };
 
-  const handleConfirmAlarm = (
+  const handleConfirmAlarm = async (
     meridiem: "AM" | "PM",
     hour: number,
     minute: number,
@@ -106,9 +107,17 @@ const Mypage = () => {
       minute,
     };
 
-    setAlarmEnabled(true);
-    setAlarmSetting(payload);
-    setIsAlarmModalOpen(false);
+    try {
+      const res = await updateReminder(payload);
+
+      if (res.isSuccess) {
+        setAlarmEnabled(true);
+        setAlarmSetting(payload);
+        setIsAlarmModalOpen(false);
+      }
+    } catch (e) {
+      console.error("알림 설정 변경 실패", e);
+    }
   };
 
   const handleDisableAlarm = async () => {

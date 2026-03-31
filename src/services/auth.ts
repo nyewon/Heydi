@@ -4,7 +4,7 @@ import {
   SignupRequest,
   UsernameCheckRequest,
 } from "@models/auths";
-import { UserInfoUpdateRequest } from "@models/mypage";
+import { AlarmResponseRequest, UserInfoUpdateRequest } from "@models/mypage";
 
 // 자체 로그인
 export const login = async (payload: LoginRequest) => {
@@ -131,5 +131,11 @@ export const disableReminder = async () => {
 // 알림 설정 조회
 export const getReminder = async () => {
   const res = await instance.get("/settings/reminder");
+  return res.data;
+};
+
+// 알림 설정 변경
+export const updateReminder = async (payload: AlarmResponseRequest) => {
+  const res = await instance.put("/settings/reminder", payload);
   return res.data;
 };
