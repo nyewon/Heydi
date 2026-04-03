@@ -4,7 +4,7 @@
  * 세부사항:
  * - CommunityCard 컴포넌트를 사용
  * - 게시글 클릭 시 해당 게시글 상세 페이지로 이동
- * - api 임시 연동 완료, 연동 실패 시 더미데이터 표시
+ * - api 연동 완료, 연동 실패 시 더미데이터 표시
  */
 
 import { useEffect, useState } from "react";
@@ -32,11 +32,15 @@ const SharedPost = () => {
 
         const res = await getSharedPosts(page, 10);
 
-        if (res.isSuccess) {
-          const newPosts = res.result.posts;
+        if (res.success) {
+          const newPosts = Array.isArray(res.result)
+            ? res.result
+            : (res.result?.posts ?? []);
 
           setPosts(prev => [...prev, ...newPosts]);
-          setTotalCount(res.result.totalCount);
+
+          const total = res.result?.totalCount ?? newPosts.length;
+          setTotalCount(total);
         } else {
           if (page === 0) {
             setPosts(MY_POST_DUMMIES);
