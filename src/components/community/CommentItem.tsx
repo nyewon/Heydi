@@ -12,7 +12,7 @@ interface CommentItemProps {
 }
 
 const CommentItem = ({ comment, onEdit, onDelete }: CommentItemProps) => {
-  const isMine = comment.is_mine;
+  const isMine = comment.isMine;
   const [open, setOpen] = useState(false);
 
   const handleEditComment = () => {
@@ -28,7 +28,7 @@ const CommentItem = ({ comment, onEdit, onDelete }: CommentItemProps) => {
   return (
     <div className="flex gap-3 w-full">
       <img
-        src={comment.profile_url || DefaultProfile}
+        src={comment.profileUrl || DefaultProfile}
         className="w-7 h-7 rounded-full opacity-60 shrink-0 shadow-sm"
       />
 
