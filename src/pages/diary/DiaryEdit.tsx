@@ -70,7 +70,6 @@ const DiaryEdit = () => {
     initialImages: diary.photos.map(photo => ({
       id: photo.id,
       imageUrl: photo.imageUrl,
-      order: photo.order,
     })),
   });
 

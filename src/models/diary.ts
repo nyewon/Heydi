@@ -50,7 +50,6 @@ export interface ConversationMessage {
 export interface PhotoItem {
   id?: number;
   imageUrl: string;
-  order: number;
   file?: File;
 }
 
