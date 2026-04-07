@@ -1,5 +1,6 @@
 import instance from "./axios";
 import {
+  FcmTokenRequest,
   LoginRequest,
   SignupRequest,
   UsernameCheckRequest,
@@ -41,6 +42,7 @@ export const signup = async (payload: SignupRequest) => {
 
 // 소셜 로그인
 export const socialLogin = (provider: "google" | "kakao") => {
+  sessionStorage.setItem("socialLogin", "true");
   window.location.href = `${import.meta.env.VITE_SERVER_URL}/oauth2/authorization/${provider}`;
 };
 
@@ -137,5 +139,11 @@ export const getReminder = async () => {
 // 알림 설정 변경
 export const updateReminder = async (payload: AlarmResponseRequest) => {
   const res = await instance.put("/settings/reminder", payload);
+  return res.data;
+};
+
+// FCM 토큰 등록
+export const registerFcmToken = async (payload: FcmTokenRequest) => {
+  const res = await instance.post("/settings/fcmtoken", payload);
   return res.data;
 };

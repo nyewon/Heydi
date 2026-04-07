@@ -14,3 +14,7 @@ export interface SignupRequest {
 export interface UsernameCheckRequest {
   username: string;
 }
+
+export interface FcmTokenRequest {
+  fcmToken: string;
+}
