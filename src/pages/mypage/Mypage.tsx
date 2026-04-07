@@ -6,7 +6,7 @@
  * - 프로필 수정, 알림 설정, 로그아웃, 회원탈퇴 기능 제공
  * - AccountModal: 로그아웃 및 회원탈퇴 확인 모달 표시
  * - AlarmModal: 알림 설정 모달 표시 (알림 활성화/비활성화 토글), 선택된 시간 없을 시 기본값 현재 시간
- * - api 임시 연동 완료, 연동 실패 시 더미데이터 출력
+ * - api 연동 완료, 연동 실패 시 더미데이터 출력
  */
 
 import { useEffect, useState } from "react";
@@ -52,8 +52,7 @@ const Mypage = () => {
     const fetchMypage = async () => {
       try {
         const res = await getMypageMain();
-
-        if (res.isSuccess) {
+        if (res.success) {
           setMypageInfo(res.result);
           setAlarmEnabled(res.result.alarm.enabled);
         } else {
@@ -71,9 +70,8 @@ const Mypage = () => {
       try {
         const res = await getReminder();
 
-        if (res.isSuccess) {
+        if (res.success) {
           const reminder = res.result.reminder;
-
           setAlarmEnabled(reminder.enabled);
           setAlarmSetting(reminder);
         }
@@ -110,7 +108,7 @@ const Mypage = () => {
     try {
       const res = await updateReminder(payload);
 
-      if (res.isSuccess) {
+      if (res.success) {
         setAlarmEnabled(true);
         setAlarmSetting(payload);
         setIsAlarmModalOpen(false);
@@ -120,11 +118,30 @@ const Mypage = () => {
     }
   };
 
+  const handleToggleAlarm = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (alarmEnabled) {
+      try {
+        const res = await disableReminder();
+
+        if (res.success) {
+          setAlarmEnabled(false);
+          setAlarmSetting(null);
+        }
+      } catch (e) {
+        console.error("토글 비활성화 실패", e);
+      }
+    } else {
+      setIsAlarmModalOpen(true);
+    }
+  };
+
   const handleDisableAlarm = async () => {
     try {
       const res = await disableReminder();
 
-      if (res.isSuccess) {
+      if (res.success) {
         setAlarmEnabled(false);
         setAlarmSetting(null);
         setIsAlarmModalOpen(false);
@@ -230,10 +247,7 @@ const Mypage = () => {
               w-13 h-7 flex items-center rounded-full p-1 transition-all
               ${alarmEnabled ? "bg-[#B28C7E]" : "bg-[#EFE8E1]"}
             `}
-            onClick={e => {
-              e.stopPropagation();
-              setAlarmEnabled(prev => !prev);
-            }}
+            onClick={handleToggleAlarm}
           >
             <div
               className={`
