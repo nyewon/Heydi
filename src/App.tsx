@@ -77,7 +77,7 @@ const App = () => {
                 {/* Diary */}
                 <Route path="/diary" element={<Diary />} />
                 <Route path="/diary/wait" element={<DiaryWaiting />} />
-                <Route path="/diary/chat/:sessionId" element={<DiaryChat />} />
+                <Route path="/diary/chat/:diaryId" element={<DiaryChat />} />
                 <Route
                   path="/diary/detail/:diaryId"
                   element={<DiaryDetail />}

@@ -57,3 +57,13 @@ export const sendDiaryToMonthlyReport = async (
 
   return res.data;
 };
+
+// 대화 세션 시작
+export const startConversationSession = async (targetDate?: string) => {
+  const res = await instance.post(
+    "/api/conversations/sessions",
+    targetDate ? { targetDate } : {},
+  );
+
+  return res.data;
+};
