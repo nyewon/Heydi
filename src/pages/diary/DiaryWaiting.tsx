@@ -4,6 +4,7 @@
  * 세부사항:
  * - 현재 날짜와 시간 표시
  * - 대화 시작하기 버튼 클릭 시 대화 시작 화면으로 이동
+ * - 대화 세션 시작 API 임시 연동
  */
 
 import { useEffect, useState } from "react";
