@@ -67,3 +67,16 @@ export const startConversationSession = async (targetDate?: string) => {
 
   return res.data;
 };
+
+// 대화 세션 종료 + 일기 생성
+export const endConversationSession = async (
+  diaryId: number,
+  data: { generateDiary?: boolean } = { generateDiary: true },
+) => {
+  const res = await instance.post(
+    `/api/conversations/sessions/${diaryId}/end`,
+    data,
+  );
+
+  return res.data;
+};
