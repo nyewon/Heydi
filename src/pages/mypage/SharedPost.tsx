@@ -4,22 +4,86 @@
  * 세부사항:
  * - CommunityCard 컴포넌트를 사용
  * - 게시글 클릭 시 해당 게시글 상세 페이지로 이동
- * - 더미 데이터로 공유한 게시글 목록 표시
+ * - api 연동 완료, 연동 실패 시 더미데이터 표시
  */
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, BackHeader, CommunityCard } from "@components/index";
 import { MY_POST_DUMMIES } from "@mocks/mypage";
+import { getSharedPosts } from "@services/auth";
+import { MypagePost } from "@models/mypage";
+import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
 
 const SharedPost = () => {
   const navigate = useNavigate();
+
+  const [posts, setPosts] = useState<MypagePost[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    const fetchSharedPosts = async () => {
+      if (isFetching) return;
+
+      try {
+        setIsFetching(true);
+
+        const res = await getSharedPosts(page, 10);
+
+        if (res.success) {
+          const newPosts = Array.isArray(res.result)
+            ? res.result
+            : (res.result?.posts ?? []);
+
+          setPosts(prev => [...prev, ...newPosts]);
+
+          const total = res.result?.totalCount ?? newPosts.length;
+          setTotalCount(total);
+        } else {
+          if (page === 0) {
+            setPosts(MY_POST_DUMMIES);
+            setTotalCount(MY_POST_DUMMIES.length);
+          }
+        }
+      } catch (e) {
+        console.error("공유 게시글 조회 실패", e);
+
+        if (page === 0) {
+          setPosts(MY_POST_DUMMIES);
+          setTotalCount(MY_POST_DUMMIES.length);
+        }
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    fetchSharedPosts();
+  }, [page]);
+
+  const hasMore = totalCount === null || posts.length < totalCount;
+
+  const observerRef = useInfiniteScroll({
+    hasMore,
+    isFetching,
+    onLoadMore: () => setPage(prev => prev + 1),
+  });
 
   return (
     <div className="w-full flex flex-col items-center">
       <BackHeader />
 
       <Container>
-        {[...MY_POST_DUMMIES]
+        {posts.length === 0 && !isFetching && (
+          <div className="w-full flex flex-col items-center mt-20 text-center">
+            <p className="text-base font-extrabold text-[#7C7C7C]">
+              아직 공유한 글이 없어요🥲
+            </p>
+          </div>
+        )}
+
+        {[...posts]
           .sort(
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -40,6 +104,8 @@ const SharedPost = () => {
               onClick={() => navigate(`/community/detail/${post.postId}`)}
             />
           ))}
+
+        <div ref={observerRef} className="h-10" />
       </Container>
     </div>
   );

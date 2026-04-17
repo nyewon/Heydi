@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import CommentItem from "./CommentItem";
 import Send from "@assets/icons/send.svg?react";
-import {
-  CommunityComment,
-  CommunityCommentMutationResult,
-} from "@models/community";
+import { CommunityComment } from "@models/community";
 import { Toast } from "@components/index";
+import {
+  createPostComment,
+  deletePostComment,
+  updatePostComment,
+} from "@services/community";
 
 interface CommentProps {
+  postId: number;
   initialComments: CommunityComment[];
   currentUser: string;
 }
 
-const Comment = ({ initialComments, currentUser }: CommentProps) => {
+const Comment = ({ postId, initialComments, currentUser }: CommentProps) => {
   const [comments, setComments] = useState<CommunityComment[]>(initialComments);
   const [inputValue, setInputValue] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -21,71 +24,69 @@ const Comment = ({ initialComments, currentUser }: CommentProps) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const isAddedByMe = useRef(false);
 
-  const handleAddOrEditComment = () => {
+  useEffect(() => {
+    setComments(initialComments);
+  }, [initialComments]);
+
+  const handleAddOrEditComment = async () => {
     if (!inputValue.trim()) return;
 
     // Edit
     if (editingIndex !== null) {
-      const updatedResult: CommunityCommentMutationResult = {
-        ...comments[editingIndex],
-        content: inputValue,
-        updated_at: new Date().toISOString(),
-      };
+      try {
+        const target = comments[editingIndex];
 
-      setComments(prev =>
-        prev.map((comment, idx) =>
-          idx === editingIndex
-            ? {
-                comment_id: updatedResult.comment_id,
-                user_id: updatedResult.user_id,
-                nickname: updatedResult.nickname,
-                profile_url: updatedResult.profile_url,
-                content: updatedResult.content,
-                is_mine: updatedResult.is_mine,
-                created_at: updatedResult.created_at,
-              }
-            : comment,
-        ),
-      );
+        const updated = await updatePostComment(
+          postId,
+          target.commentId,
+          inputValue,
+        );
 
-      setEditingIndex(null);
-      setInputValue("");
+        setComments(prev =>
+          prev.map((comment, idx) =>
+            idx === editingIndex ? updated : comment,
+          ),
+        );
+
+        setEditingIndex(null);
+        setInputValue("");
+      } catch (e) {
+        console.error("댓글 수정 실패", e);
+        alert("댓글 수정 중 오류가 발생했습니다.");
+      }
       return;
     }
 
     // Add
     isAddedByMe.current = true;
 
-    const createdResult: CommunityCommentMutationResult = {
-      comment_id: Date.now(),
-      user_id: 0,
-      nickname: currentUser,
-      profile_url: "",
-      content: inputValue,
-      is_mine: true,
-      created_at: new Date().toISOString(),
-      updated_at: null,
-    };
+    try {
+      const created = await createPostComment(postId, inputValue);
 
-    setComments(prev => [
-      ...prev,
-      {
-        comment_id: createdResult.comment_id,
-        user_id: createdResult.user_id,
-        nickname: createdResult.nickname,
-        profile_url: createdResult.profile_url,
-        content: createdResult.content,
-        is_mine: createdResult.is_mine,
-        created_at: createdResult.created_at,
-      },
-    ]);
-
-    setInputValue("");
+      setComments(prev => [...prev, created]);
+      setInputValue("");
+    } catch (e) {
+      console.error("댓글 작성 실패", e);
+      alert("댓글 작성 중 오류가 발생했습니다.");
+    }
   };
 
-  const handleDeleteComment = (index: number) => {
-    setComments(prev => prev.filter((_, i) => i !== index));
-    setToastOpen(true);
+  const handleDeleteComment = async (index: number) => {
+    const target = comments[index];
+
+    try {
+      const res = await deletePostComment(postId, target.commentId);
+
+      if (res.success) {
+        setComments(prev => prev.filter((_, i) => i !== index));
+        setToastOpen(true);
+      } else {
+        alert("댓글 삭제에 실패했습니다.");
+      }
+    } catch (e) {
+      console.error("댓글 삭제 실패", e);
+      alert("댓글 삭제 중 오류가 발생했습니다.");
+    }
   };
 
   const handleEditComment = (index: number) => {
@@ -105,7 +106,7 @@ const Comment = ({ initialComments, currentUser }: CommentProps) => {
       <div className="flex flex-col gap-6 w-full mb-20">
         {comments.map((comment, idx) => (
           <CommentItem
-            key={idx}
+            key={comment.commentId}
             comment={comment}
             currentUser={currentUser}
             onDelete={() => handleDeleteComment(idx)}

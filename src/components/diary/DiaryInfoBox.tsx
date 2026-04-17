@@ -17,7 +17,6 @@ interface DiaryInfoBoxProps {
   children: ReactNode;
   type?: DiaryInfoBoxType;
   onEditClick?: () => void;
-
   imageCount?: number;
   maxImageCount?: number;
   onImageAddClick?: () => void;

@@ -4,11 +4,11 @@
  * 세부사항:
  * - 일기 세부내용 표시
  * - 리포트로 보내기 버튼
- * - 임시 더미 데이터 사용
  * - 사진 데이터가 있을 때만 오늘의 사진 보이기
+ * - api 임시 연동, 연동 실패 시 더미 데이터 사용
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Container,
@@ -23,13 +23,62 @@ import {
 } from "@mocks/diary";
 import { EMOTION_S_ICONS, EMOTION_SENTENCE } from "@constants/emotions";
 import { formatDate, formatElapsedTime } from "@utils/date";
+import {
+  ConversationMessagesResponse,
+  DiaryDetailResponse,
+} from "@models/diary";
+import {
+  getDiaryDetail,
+  getDiaryConversation,
+  sendDiaryToMonthlyReport,
+} from "@services/diary";
 
 const DiaryDetail = () => {
   const { diaryId } = useParams<{ diaryId: string }>();
+  const id = Number(diaryId);
+
+  const [diary, setDiary] = useState<DiaryDetailResponse | null>(null);
+  const [messages, setMessages] = useState<ConversationMessagesResponse | null>(
+    null,
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSending, setIsSending] = useState(false);
 
-  const diary = DIARY_DETAIL_DUMMIES.find(d => d.id === Number(diaryId));
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchDiaryDetail = async () => {
+      try {
+        const detail = await getDiaryDetail(id);
+        setDiary(detail);
+
+        try {
+          const conversation = await getDiaryConversation(id);
+          setMessages(conversation);
+        } catch (conversationError) {
+          console.error("대화 조회 실패", conversationError);
+
+          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
+
+          setMessages(dummyConversation);
+        }
+      } catch (detailError) {
+        console.error("일기 상세 조회 실패", detailError);
+
+        const dummyDiary = DIARY_DETAIL_DUMMIES.find(d => d.id === id);
+
+        if (dummyDiary) {
+          setDiary(dummyDiary);
+
+          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
+
+          setMessages(dummyConversation);
+        }
+      }
+    };
+
+    fetchDiaryDetail();
+  }, [id]);
 
   if (!diary) {
     return (
@@ -40,15 +89,33 @@ const DiaryDetail = () => {
     );
   }
 
-  const messages = CONVERSATION_MESSAGES_DUMMIES.find(
-    m => m.sessionId === diary.conversationSessionId,
-  );
+  const handleSendToReport = async () => {
+    if (!diary || isSending) return;
 
-  const handleSendToReport = () => {
-    if (isSending) return;
+    try {
+      setIsSending(true);
 
-    console.log("send to report");
-    setIsSending(true);
+      await sendDiaryToMonthlyReport(diary.report.month, {
+        diaryId: diary.id,
+      });
+
+      setDiary(prev =>
+        prev
+          ? {
+              ...prev,
+              report: {
+                ...prev.report,
+                included: true,
+              },
+            }
+          : prev,
+      );
+    } catch (e) {
+      console.error("리포트 전송 실패", e);
+      alert("리포트 전송에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -70,9 +137,7 @@ const DiaryDetail = () => {
 
         <DiaryInfoBox label="오늘의 감정상태">
           <div className="flex items-center gap-1">
-            <span className="flex items-center">
-              {EMOTION_S_ICONS[diary.emotionCategory]}
-            </span>
+            <span>{EMOTION_S_ICONS[diary.emotionCategory]}</span>
             <span>
               오늘은 {EMOTION_SENTENCE[diary.emotionCategory]} 하루를 보냈어요.
             </span>
@@ -93,7 +158,7 @@ const DiaryDetail = () => {
 
         <DiaryInfoBox label="오늘의 대화 내용">
           <div className="w-full flex flex-col gap-2 max-h-[300px] overflow-y-auto pt-2 scrollbar-none [&::-webkit-scrollbar]:hidden">
-            {messages?.messages.map((msg, idx) => (
+            {messages?.messages?.map((msg, idx) => (
               <div
                 key={idx}
                 className={`text-[10px] p-2 px-3 rounded-lg break-words inline-block w-fit min-w-[60px] ${

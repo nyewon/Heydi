@@ -41,7 +41,7 @@ const LoginPage = () => {
       const loginPayload: LoginRequest = {
         username: id,
         password: pw,
-        fcm_token: fcmToken,
+        fcmToken: fcmToken,
       };
 
       const res = await login(loginPayload);

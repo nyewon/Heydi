@@ -9,10 +9,10 @@
  * - 인사이트 & 피드백
  * - 캘린더
  * - 한 달 전 하루 일기 카드
- * - 임시 더미 데이터 사용
+ * - api 임시 연동, 연동 실패 시 임시 더미 데이터 사용
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -31,6 +31,18 @@ import {
   CALENDAR_DUMMY,
   MONTHLY_REPORT_DUMMY,
 } from "@mocks/report";
+import {
+  getMonthlyCalendar,
+  getMonthlyEmotions,
+  getMonthlyReport,
+  getMonthlyTopics,
+} from "@services/report";
+import {
+  CalendarResponse,
+  MonthlyEmotionResponse,
+  MonthlyReportResponse,
+  MonthlyTopicsResponse,
+} from "@models/report";
 
 const Report = () => {
   const navigate = useNavigate();
@@ -39,6 +51,82 @@ const Report = () => {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [isMonthModalOpen, setIsMonthModalOpen] = useState(false);
+  const [report, setReport] = useState<MonthlyReportResponse | null>(null);
+  const [calendar, setCalendar] = useState<CalendarResponse["entries"] | null>(
+    null,
+  );
+  const [topics, setTopics] = useState<MonthlyTopicsResponse | null>(null);
+  const [emotions, setEmotions] = useState<MonthlyEmotionResponse | null>(null);
+  const yearMonth = `${year}-${String(month).padStart(2, "0")}`;
+
+  useEffect(() => {
+    const fetchReport = async () => {
+      try {
+        const res = await getMonthlyReport(yearMonth);
+
+        if (res.isSuccess) {
+          setReport(res.result);
+        } else {
+          setReport(MONTHLY_REPORT_DUMMY);
+        }
+      } catch (error) {
+        console.error("월간 리포트 조회 실패", error);
+        setReport(MONTHLY_REPORT_DUMMY);
+      }
+    };
+
+    const fetchCalendar = async () => {
+      try {
+        const res = await getMonthlyCalendar(yearMonth);
+
+        if (res.isSuccess) {
+          setCalendar(res.result.entries);
+        } else {
+          setCalendar(CALENDAR_DUMMY.entries);
+        }
+      } catch (error) {
+        console.error("캘린더 조회 실패", error);
+        setCalendar(CALENDAR_DUMMY.entries);
+      }
+    };
+
+    const fetchTopics = async () => {
+      try {
+        const res = await getMonthlyTopics(yearMonth);
+
+        if (res.isSuccess) {
+          setTopics(res.result);
+        } else {
+          setTopics(MONTHLY_TOPICS_DUMMY);
+        }
+      } catch (error) {
+        console.error("주제 조회 실패", error);
+        setTopics(MONTHLY_TOPICS_DUMMY);
+      }
+    };
+
+    const fetchEmotions = async () => {
+      try {
+        const res = await getMonthlyEmotions(yearMonth);
+
+        if (res.isSuccess) {
+          setEmotions(res.result);
+        } else {
+          setEmotions(MONTHLY_EMOTION_DUMMY);
+        }
+      } catch (error) {
+        console.error("감정 조회 실패", error);
+        setEmotions(MONTHLY_EMOTION_DUMMY);
+      }
+    };
+
+    fetchReport();
+    fetchCalendar();
+    fetchTopics();
+    fetchEmotions();
+  }, [yearMonth]);
+
+  if (!report || !calendar || !topics || !emotions) return null;
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -60,12 +148,12 @@ const Report = () => {
             이번달의 감정 변화
           </p>
         </div>
-        <EmotionChart data={MONTHLY_EMOTION_DUMMY} />
+        <EmotionChart data={emotions} />
 
         <div className="w-full flex flex-col mb-3">
           <p className="text-base font-bold text-[#4A4A4A]">자주 나온 주제</p>
         </div>
-        <TopTopics data={MONTHLY_TOPICS_DUMMY} />
+        <TopTopics data={topics} />
 
         <div className="w-full mb-6">
           <div className="flex justify-between">
@@ -79,7 +167,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {MONTHLY_REPORT_DUMMY.preferences.like}
+                {report.preferences.like}
               </div>
             </div>
 
@@ -93,7 +181,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {MONTHLY_REPORT_DUMMY.preferences.dislike}
+                {report.preferences.dislike}
               </div>
             </div>
           </div>
@@ -106,7 +194,7 @@ const Report = () => {
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
           <p className="text-xs text-[#4A4A4A] leading-5">
-            {MONTHLY_REPORT_DUMMY.activity.summary}
+            {report.activity.summary}
           </p>
         </div>
 
@@ -117,7 +205,7 @@ const Report = () => {
         </div>
         <div className="w-full bg-[#EFE8E1] rounded-xl p-4 mb-6">
           <p className="text-xs leading-5 text-[#4A4A4A]">
-            {MONTHLY_REPORT_DUMMY.insight.content}
+            {report.insight.content}
           </p>
         </div>
 
@@ -125,11 +213,7 @@ const Report = () => {
           <p className="text-base font-bold text-[#4A4A4A]">캘린더</p>
         </div>
 
-        <Calendar
-          year={year}
-          month={month}
-          calendars={CALENDAR_DUMMY.entries}
-        />
+        <Calendar year={year} month={month} calendars={calendar} />
 
         <div className="w-full mt-6 mb-2">
           <p className="text-base font-bold text-[#4A4A4A] mb-2">
@@ -137,11 +221,9 @@ const Report = () => {
           </p>
 
           <DiaryCard
-            {...MONTHLY_REPORT_DUMMY.lastMonthReminder}
+            {...report.lastMonthReminder}
             onClick={() =>
-              navigate(
-                `/diary/detail/${MONTHLY_REPORT_DUMMY.lastMonthReminder.diaryId}`,
-              )
+              navigate(`/diary/detail/${report.lastMonthReminder.diaryId}`)
             }
           />
         </div>
