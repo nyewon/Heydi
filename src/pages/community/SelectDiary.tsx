@@ -112,15 +112,15 @@ const SelectDiary = () => {
         )}
 
         {[...diaries]
-          .sort((a, b) => b.id - a.id)
+          .sort((a, b) => b.diaryId - a.diaryId)
           .map(item => (
             <SelectDiaryCard
-              key={item.id}
+              key={item.diaryId}
               title={item.title}
               emotion={item.emotion}
-              topics={item.topic}
-              selected={item.id === selectedDiaryId}
-              onSelect={() => setSelectedDiaryId(item.id)}
+              topics={item.topics}
+              selected={item.diaryId === selectedDiaryId}
+              onSelect={() => setSelectedDiaryId(item.diaryId)}
             />
           ))}
 
