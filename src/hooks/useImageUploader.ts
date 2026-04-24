@@ -26,12 +26,9 @@ export const useImageUploader = ({
       return;
     }
 
-    const startOrder = images.length;
-
-    const newImages: PhotoItem[] = Array.from(files).map((file, index) => ({
+    const newImages: PhotoItem[] = Array.from(files).map(file => ({
       file,
       imageUrl: URL.createObjectURL(file),
-      order: startOrder + index,
     }));
 
     setImages(prev => [...prev, ...newImages]);
@@ -39,12 +36,7 @@ export const useImageUploader = ({
 
   const removeImage = (index: number) => {
     setImages(prev => {
-      const next = prev
-        .filter((_, i) => i !== index)
-        .map((img, idx) => ({
-          ...img,
-          order: idx,
-        }));
+      const next = prev.filter((_, i) => i !== index);
 
       if (currentIndex >= next.length) {
         setCurrentIndex(Math.max(0, next.length - 1));

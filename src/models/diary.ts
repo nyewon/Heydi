@@ -1,9 +1,9 @@
 // Diary List
 export interface DiaryListItem {
-  id: number;
+  diaryId: number;
   date: string;
   title: string;
-  topic: string[];
+  topics: string[];
   emotion: string;
 }
 
@@ -24,7 +24,6 @@ export interface DiaryDetailResponse {
   topic: string[];
   oneLineDiary: string;
   content: string;
-  conversationSessionId: string;
   conversationDurationSec: number;
   photos: {
     id: number;
@@ -38,7 +37,6 @@ export interface DiaryDetailResponse {
 }
 
 export interface ConversationMessagesResponse {
-  sessionId: string;
   messages: ConversationMessage[];
 }
 
@@ -52,7 +50,6 @@ export interface ConversationMessage {
 export interface PhotoItem {
   id?: number;
   imageUrl: string;
-  order: number;
   file?: File;
 }
 
@@ -62,4 +59,9 @@ export interface DiaryEditRequest {
   topic: string[];
   oneLineDiary: string;
   content: string;
+}
+
+// Send To Report
+export interface SendToReportRequest {
+  diaryId: number;
 }

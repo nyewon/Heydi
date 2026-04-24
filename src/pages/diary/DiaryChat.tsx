@@ -5,10 +5,11 @@
  * - 현재 날짜와 대화 경과 시간 표시
  * - 대화 종료하기 버튼 클릭 시 일기 메인 페이지로 이동
  * - 정식 연결 전 WebSocket을 통해 GeminiAPI와 실시간 음성 대화 처리 (임시. 추후 수정 예정)
+ * - 세션 종료 api 임시 연결
  */
 
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { BackHeader, Container, Button, VoiceWave } from "@components/index";
 import { getFormattedDate, formatElapsedTime } from "@/utils/date";
 import { useAudioStream } from "@hooks/useAudioStream";
@@ -17,6 +18,7 @@ import {
   StreamingAudioPlayer,
   Microphone,
 } from "@services/gemini-client";
+import { endConversationSession } from "@services/diary";
 
 const WS_SCHEME = window.location.protocol === "https:" ? "wss" : "ws";
 const WS_HOST =
@@ -36,6 +38,7 @@ type Message = {
 
 const DiaryChat = () => {
   const navigate = useNavigate();
+  const { diaryId } = useParams<{ diaryId: string }>();
 
   const [today, setToday] = useState("");
   const [elapsed, setElapsed] = useState(0);
@@ -125,9 +128,19 @@ const DiaryChat = () => {
     geminiRef.current?.close();
   };
 
-  const handleExitChat = () => {
-    stopAll();
-    navigate("/diary", { replace: true });
+  const handleExitChat = async () => {
+    try {
+      stopAll();
+
+      if (!diaryId) return;
+      const res = await endConversationSession(Number(diaryId));
+
+      if (res.success) {
+        navigate(`/diary`, { replace: true });
+      }
+    } catch (e) {
+      console.error("세션 종료 실패", e);
+    }
   };
 
   return (

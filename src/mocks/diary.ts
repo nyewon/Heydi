@@ -15,67 +15,67 @@ export interface DiaryListDummy {
 
 export const DIARY_LIST_DUMMIES: DiaryListItem[] = [
   {
-    id: 0,
+    diaryId: 0,
     date: "2025.11.20",
     title: "11월 20일의 일기",
     emotion: "짜증",
-    topic: ["친구"],
+    topics: ["친구"],
   },
   {
-    id: 1,
+    diaryId: 1,
     date: "2025.12.03",
     title: "12월 3일의 일기",
     emotion: "무난함",
-    topic: ["일상"],
+    topics: ["일상"],
   },
   {
-    id: 2,
+    diaryId: 2,
     date: "2025.12.05",
     title: "12월 5일의 일기",
     emotion: "슬픔",
-    topic: ["감정", "휴식"],
+    topics: ["감정", "휴식"],
   },
   {
-    id: 3,
+    diaryId: 3,
     date: "2025.12.06",
     title: "12월 6일의 일기",
     emotion: "무난함",
-    topic: ["일상"],
+    topics: ["일상"],
   },
   {
-    id: 4,
+    diaryId: 4,
     date: "2025.12.07",
     title: "12월 7일의 일기",
     emotion: "슬픔",
-    topic: ["감정"],
+    topics: ["감정"],
   },
   {
-    id: 5,
+    diaryId: 5,
     date: "2025.12.20",
     title: "12월 20일의 일기",
     emotion: "행복",
-    topic: ["취미"],
+    topics: ["취미"],
   },
   {
-    id: 6,
+    diaryId: 6,
     date: "2025.12.21",
     title: "12월 21일의 일기",
     emotion: "무난함",
-    topic: ["휴식"],
+    topics: ["휴식"],
   },
   {
-    id: 7,
+    diaryId: 7,
     date: "2025.12.22",
     title: "12월 22일의 일기",
     emotion: "행복",
-    topic: ["여행", "맛집"],
+    topics: ["여행", "맛집"],
   },
   {
-    id: 8,
+    diaryId: 8,
     date: "2025.12.25",
     title: "12월 25일의 일기",
     emotion: "행복",
-    topic: ["가족", "기념일"],
+    topics: ["가족", "기념일"],
   },
 ];
 
@@ -89,7 +89,6 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
     oneLineDiary: "친구와의 일로 괜히 예민해졌던 하루였어요.",
     content:
       "오늘은 친구와 나눈 대화 때문에 하루 종일 마음이 불편했어요. 큰 말다툼은 아니었지만, 사소한 말 한마디가 계속 신경 쓰였어요. 이해하려고 해도 감정이 쉽게 가라앉지 않았고, 혼자서 계속 곱씹게 됐어요. 시간이 지나면 괜찮아질 거라고 스스로를 달래봤지만, 하루가 끝날 때까지 찜찜한 기분이 남아 있었어요.",
-    conversationSessionId: "conv_0",
     conversationDurationSec: 521,
     photos: [],
     report: { included: false, month: "2025-11" },
@@ -103,7 +102,6 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
     oneLineDiary: "조용하지만 생각이 많았던 하루였어요.",
     content:
       "오늘은 특별한 일정은 없었지만 하루 종일 머릿속이 복잡했어요. 해야 할 일들을 정리하면서도 마음이 쉽게 가라앉지 않았어요. 점심 이후에는 잠시 산책을 하며 생각을 정리했고, 저녁에는 따뜻한 차를 마시며 하루를 마무리했어요. 크지 않은 하루였지만 나를 돌아보는 시간이 된 것 같아 의미가 있었어요.",
-    conversationSessionId: "conv_1",
     conversationDurationSec: 388,
     photos: [],
     report: { included: false, month: "2025-12" },
@@ -117,7 +115,6 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
     oneLineDiary: "조금은 지쳤던 하루였어요.",
     content:
       "생각이 많아지고 몸도 마음도 조금 지친 하루였어요. 그래서 오늘은 일찍 잠자리에 들기로 했어요.",
-    conversationSessionId: "conv_2",
     conversationDurationSec: 585,
     photos: [],
     report: { included: false, month: "2025-12" },
@@ -131,7 +128,6 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
     oneLineDiary: "평범하지만 차분하게 흘러간 하루였어요.",
     content:
       "특별한 일은 없었지만 해야 할 일들을 하나씩 정리한 하루였어요. 커피를 마시며 잠시 여유를 느낄 수 있었어요.",
-    conversationSessionId: "conv_3",
     conversationDurationSec: 310,
     photos: [],
     report: { included: false, month: "2025-12" },
@@ -145,7 +141,6 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
     oneLineDiary: "감정이 쉽게 가라앉지 않았던 하루였어요.",
     content:
       "하루 종일 기분이 무거웠어요. 별다른 사건은 없었지만 사소한 말이나 생각에도 마음이 흔들렸어요. 밤이 되어서도 쉽게 잠들지 못했고, 감정을 어떻게 정리해야 할지에 대한 고민이 많았어요.",
-    conversationSessionId: "conv_4",
     conversationDurationSec: 541,
     photos: [],
     report: { included: false, month: "2025-12" },
@@ -159,7 +154,6 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
     oneLineDiary: "오랜만에 온전히 나에게 집중한 하루였어요.",
     content:
       "오늘은 특별한 일정은 없었지만 하루 종일 머릿속이 복잡했어요. 해야 할 일들을 정리하면서도 마음이 쉽게 가라앉지 않았어요. 점심 이후에는 잠시 산책을 하며 생각을 정리했고, 저녁에는 따뜻한 차를 마시며 하루를 마무리했어요. 크지 않은 하루였지만 나를 돌아보는 시간이 된 것 같아 의미가 있었어요.",
-    conversationSessionId: "conv_5",
     conversationDurationSec: 483,
     photos: [],
     report: { included: true, month: "2025-12" },
@@ -173,7 +167,6 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
     oneLineDiary: "아무것도 하지 않기로 한 하루였어요.",
     content:
       "오늘은 의도적으로 아무 일정도 잡지 않았어요. 늦잠을 자고 밀린 영상들을 보며 시간을 보냈어요. 생산적인 하루는 아니었지만, 그만큼 몸과 마음이 느슨해졌어요. 이런 날도 필요하다는 걸 다시 느꼈어요.",
-    conversationSessionId: "conv_6",
     conversationDurationSec: 322,
     photos: [],
     report: { included: false, month: "2025-12" },
@@ -187,7 +180,6 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
     oneLineDiary: "일본 여행을 시작한 첫 날이었어요.",
     content:
       "오늘은 일본 여행 1일차였어요. 아침 일찍 비행기를 타고 인천공항에서 간사이 공항으로 이동했어요. 오랜만에 하는 여행이라서 매우 설렜어요. 공항에 도착한 뒤에는 짐을 찾고 바로 숙소로 이동했어요. 저녁에는 숙소 주변에서 간단하게 라멘을 먹었는데, 진한 국물 향이 피곤함을 싹 날려줬어요. 오랜 이동으로 몸은 조금 피곤했지만, 드디어 여행이 시작됐다는 설렘이 더 컸어요. 이제 내일부터는 본격적으로 여러 곳을 돌아다닐 예정이라 벌써부터 기대돼요.",
-    conversationSessionId: "conv_7",
     conversationDurationSec: 452,
     photos: [],
     report: { included: false, month: "2025-12" },
@@ -201,16 +193,25 @@ export const DIARY_DETAIL_DUMMIES: DiaryDetailResponse[] = [
     oneLineDiary: "가족과 함께해 마음이 따뜻해진 하루였어요.",
     content:
       "크리스마스를 맞아 가족과 함께 시간을 보냈어요. 오랜만에 모두 모여 식사를 하며 이야기를 나눴고, 소소한 농담에도 웃음이 끊이지 않았어요. 바쁘다는 이유로 미뤄왔던 시간들이 얼마나 소중한지 다시 느끼게 된 하루였어요.",
-    conversationSessionId: "conv_8",
     conversationDurationSec: 602,
-    photos: [],
+    photos: [
+      {
+        id: 1,
+        imageUrl: "https://picsum.photos/400/300?random=1",
+        order: 1,
+      },
+      {
+        id: 2,
+        imageUrl: "https://picsum.photos/400/300?random=2",
+        order: 2,
+      },
+    ],
     report: { included: true, month: "2025-12" },
   },
 ];
 
 export const CONVERSATION_MESSAGES_DUMMIES: ConversationMessagesResponse[] = [
   {
-    sessionId: "conv_0",
     messages: [
       {
         role: "ASSISTANT",
@@ -255,7 +256,6 @@ export const CONVERSATION_MESSAGES_DUMMIES: ConversationMessagesResponse[] = [
     ],
   },
   {
-    sessionId: "conv_1",
     messages: [
       {
         role: "ASSISTANT",
@@ -290,7 +290,6 @@ export const CONVERSATION_MESSAGES_DUMMIES: ConversationMessagesResponse[] = [
     ],
   },
   {
-    sessionId: "conv_2",
     messages: [
       {
         role: "ASSISTANT",
@@ -305,7 +304,6 @@ export const CONVERSATION_MESSAGES_DUMMIES: ConversationMessagesResponse[] = [
     ],
   },
   {
-    sessionId: "conv_3",
     messages: [
       {
         role: "ASSISTANT",
@@ -320,7 +318,6 @@ export const CONVERSATION_MESSAGES_DUMMIES: ConversationMessagesResponse[] = [
     ],
   },
   {
-    sessionId: "conv_4",
     messages: [
       {
         role: "ASSISTANT",
@@ -355,7 +352,6 @@ export const CONVERSATION_MESSAGES_DUMMIES: ConversationMessagesResponse[] = [
     ],
   },
   {
-    sessionId: "conv_5",
     messages: [
       {
         role: "ASSISTANT",
@@ -390,7 +386,6 @@ export const CONVERSATION_MESSAGES_DUMMIES: ConversationMessagesResponse[] = [
     ],
   },
   {
-    sessionId: "conv_6",
     messages: [
       {
         role: "ASSISTANT",
@@ -415,7 +410,6 @@ export const CONVERSATION_MESSAGES_DUMMIES: ConversationMessagesResponse[] = [
     ],
   },
   {
-    sessionId: "conv_7",
     messages: [
       {
         role: "ASSISTANT",
@@ -440,7 +434,6 @@ export const CONVERSATION_MESSAGES_DUMMIES: ConversationMessagesResponse[] = [
     ],
   },
   {
-    sessionId: "conv_8",
     messages: [
       {
         role: "ASSISTANT",

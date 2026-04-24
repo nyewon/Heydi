@@ -26,6 +26,7 @@ interface CommunityCardProps {
   comments: number;
   liked: boolean;
   onClick?: () => void;
+  onLike?: () => void;
 }
 
 const CommunityCard = ({
@@ -40,12 +41,14 @@ const CommunityCard = ({
   comments = 0,
   liked,
   onClick,
+  onLike,
 }: CommunityCardProps) => {
   const [isLiked, setIsLiked] = useState(liked);
 
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsLiked(prev => !prev);
+    onLike?.();
   };
 
   return (

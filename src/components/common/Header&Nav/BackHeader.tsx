@@ -5,6 +5,7 @@ import { useState } from "react";
 import Logo from "@assets/logo_txt.svg?react";
 import SaveIcon from "@assets/icons/save.svg?react";
 import { MenuDropdown, DeleteModal, PdfModal } from "@components/index";
+import { deleteDiary, exportDiaryPdf } from "@services/diary";
 
 interface BackHeaderProps {
   rightIcon?: "none" | "save" | "menu";
@@ -38,14 +39,40 @@ const BackHeader = ({
     setPdfOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    console.log("diary deleted");
-    setDeleteOpen(false);
+  const handleDeleteConfirm = async () => {
+    if (!diaryId) return;
+
+    try {
+      await deleteDiary(Number(diaryId));
+
+      setDeleteOpen(false);
+      setOpen(false);
+
+      navigate("/diary", { replace: true });
+    } catch (e) {
+      console.error("일기 삭제 실패", e);
+      setDeleteOpen(false);
+    }
   };
 
-  const handlePdfConfirm = () => {
-    console.log("pdf exported");
-    setPdfOpen(false);
+  const handlePdfConfirm = async () => {
+    if (!diaryId) return;
+
+    try {
+      const res = await exportDiaryPdf(Number(diaryId));
+
+      const link = document.createElement("a");
+      link.href = res.pdfUrl;
+      link.download = res.fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setPdfOpen(false);
+    } catch (e) {
+      console.error("PDF 생성 실패", e);
+      setPdfOpen(false);
+    }
   };
 
   return (

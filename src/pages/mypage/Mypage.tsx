@@ -6,9 +6,10 @@
  * - 프로필 수정, 알림 설정, 로그아웃, 회원탈퇴 기능 제공
  * - AccountModal: 로그아웃 및 회원탈퇴 확인 모달 표시
  * - AlarmModal: 알림 설정 모달 표시 (알림 활성화/비활성화 토글), 선택된 시간 없을 시 기본값 현재 시간
+ * - api 연동 완료, 연동 실패 시 더미데이터 출력
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -20,18 +21,23 @@ import {
 import DefaultProfile from "@assets/icons/profile.svg";
 import { IoChevronForward } from "react-icons/io5";
 import { MYPAGE_INFO_DUMMY, ALARM_DUMMY } from "@mocks/mypage";
-import { AlarmResponseRequest } from "@models/mypage";
-import { logout, withdraw } from "@services/auth";
+import { AlarmResponseRequest, MypageInfoResponse } from "@models/mypage";
+import {
+  disableReminder,
+  getMypageMain,
+  getReminder,
+  logout,
+  updateReminder,
+  withdraw,
+} from "@services/auth";
 import { useAuthStore } from "@stores/useAuthStore";
 
 const Mypage = () => {
   const navigate = useNavigate();
   const clearAuth = useAuthStore(state => state.logout);
 
-  const { nickname, profileImageUrl, likedPostCount, sharedPostCount, alarm } =
-    MYPAGE_INFO_DUMMY;
-
-  const [alarmEnabled, setAlarmEnabled] = useState(alarm.enabled);
+  const [mypageInfo, setMypageInfo] = useState<MypageInfoResponse | null>(null);
+  const [alarmEnabled, setAlarmEnabled] = useState(false);
   const [alarmSetting, setAlarmSetting] = useState<AlarmResponseRequest | null>(
     null,
   );
@@ -40,7 +46,43 @@ const Mypage = () => {
     null,
   );
 
-  const profileImage = profileImageUrl || DefaultProfile;
+  const profileImage = mypageInfo?.profileImageUrl || DefaultProfile;
+
+  useEffect(() => {
+    const fetchMypage = async () => {
+      try {
+        const res = await getMypageMain();
+        if (res.success) {
+          setMypageInfo(res.result);
+          setAlarmEnabled(res.result.alarm.enabled);
+        } else {
+          setMypageInfo(MYPAGE_INFO_DUMMY);
+          setAlarmEnabled(MYPAGE_INFO_DUMMY.alarm.enabled);
+        }
+      } catch (e) {
+        console.error("마이페이지 조회 실패", e);
+        setMypageInfo(MYPAGE_INFO_DUMMY);
+        setAlarmEnabled(MYPAGE_INFO_DUMMY.alarm.enabled);
+      }
+    };
+
+    const fetchReminder = async () => {
+      try {
+        const res = await getReminder();
+
+        if (res.success) {
+          const reminder = res.result.reminder;
+          setAlarmEnabled(reminder.enabled);
+          setAlarmSetting(reminder);
+        }
+      } catch (e) {
+        console.error("알림 설정 조회 실패", e);
+      }
+    };
+
+    fetchMypage();
+    fetchReminder();
+  }, []);
 
   const handleOpenAlarmModal = () => {
     if (alarmEnabled) {
@@ -51,7 +93,7 @@ const Mypage = () => {
     setIsAlarmModalOpen(true);
   };
 
-  const handleConfirmAlarm = (
+  const handleConfirmAlarm = async (
     meridiem: "AM" | "PM",
     hour: number,
     minute: number,
@@ -63,15 +105,50 @@ const Mypage = () => {
       minute,
     };
 
-    setAlarmEnabled(true);
-    setAlarmSetting(payload);
-    setIsAlarmModalOpen(false);
+    try {
+      const res = await updateReminder(payload);
+
+      if (res.success) {
+        setAlarmEnabled(true);
+        setAlarmSetting(payload);
+        setIsAlarmModalOpen(false);
+      }
+    } catch (e) {
+      console.error("알림 설정 변경 실패", e);
+    }
   };
 
-  const handleDisableAlarm = () => {
-    setAlarmEnabled(false);
-    setAlarmSetting(null);
-    setIsAlarmModalOpen(false);
+  const handleToggleAlarm = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (alarmEnabled) {
+      try {
+        const res = await disableReminder();
+
+        if (res.success) {
+          setAlarmEnabled(false);
+          setAlarmSetting(null);
+        }
+      } catch (e) {
+        console.error("토글 비활성화 실패", e);
+      }
+    } else {
+      setIsAlarmModalOpen(true);
+    }
+  };
+
+  const handleDisableAlarm = async () => {
+    try {
+      const res = await disableReminder();
+
+      if (res.success) {
+        setAlarmEnabled(false);
+        setAlarmSetting(null);
+        setIsAlarmModalOpen(false);
+      }
+    } catch (e) {
+      console.error("알림 비활성화 실패", e);
+    }
   };
 
   const handleConfirmAccount = async () => {
@@ -119,7 +196,7 @@ const Mypage = () => {
             className="w-[124px] h-[124px] rounded-full object-cover mb-2"
           />
           <span className="text-lg font-extrabold text-[#4A4A4A]">
-            {nickname}
+            {mypageInfo?.nickname}
           </span>
         </div>
 
@@ -132,7 +209,7 @@ const Mypage = () => {
               내가 좋아요 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {likedPostCount}
+              {mypageInfo?.likedPostCount}
             </span>
           </div>
 
@@ -144,7 +221,7 @@ const Mypage = () => {
               내가 공유 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {sharedPostCount}
+              {mypageInfo?.sharedPostCount}
             </span>
           </div>
         </div>
@@ -170,10 +247,7 @@ const Mypage = () => {
               w-13 h-7 flex items-center rounded-full p-1 transition-all
               ${alarmEnabled ? "bg-[#B28C7E]" : "bg-[#EFE8E1]"}
             `}
-            onClick={e => {
-              e.stopPropagation();
-              setAlarmEnabled(prev => !prev);
-            }}
+            onClick={handleToggleAlarm}
           >
             <div
               className={`

@@ -25,6 +25,11 @@ import { useImageUploader } from "@hooks/useImageUploader";
 import { formatDate, formatElapsedTime } from "@utils/date";
 import { DiaryDetailResponse } from "@models/diary";
 import { CommunityPostUpsertRequest } from "@models/community";
+import {
+  uploadPostPhoto,
+  deletePostPhoto,
+  updatePost,
+} from "@services/community";
 import Plus from "@assets/icons/plus.svg?react";
 
 const PostEdit = () => {
@@ -65,23 +70,61 @@ const PostEdit = () => {
     }
   }, [editingField]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    const postId = 1;
+
     const payload: CommunityPostUpsertRequest = {
-      diary_id: diary.id,
-      post_title: diary.title,
-      diary_date: diary.createdDate.split("T")[0],
-      conversation_duration: diary.conversationDurationSec,
-      post_emotion: diary.emotionCategory,
-      post_content: diary.content,
-      post_topics: diary.topic,
+      diaryId: diary.id,
+      postTitle: diary.title,
+      diaryDate: diary.createdDate.split("T")[0],
+      conversationDuration: diary.conversationDurationSec,
+      postEmotion: diary.emotionCategory,
+      postContent: diary.content,
+      postTopics: diary.topic,
+      existingPhotos: images
+        .filter(img => !img.file)
+        .map(img => ({ imageUrl: img.imageUrl })),
     };
 
-    console.log("SAVE PAYLOAD", payload); // api 연동 시 삭제
+    try {
+      const res = await updatePost(postId, payload);
 
-    // api 호출 시 반환되는 postId로 이동. 지금은 임시로 1 고정
-    navigate(`/community/detail/1`, {
-      replace: true,
-    });
+      if (!res.success) {
+        alert("게시글 수정에 실패했습니다.");
+        return;
+      }
+
+      if (images.length > 0) {
+        await Promise.all(
+          images
+            .filter(img => img.file)
+            .map(img => uploadPostPhoto(postId, img.file as File)),
+        );
+      }
+
+      navigate(`/community/detail/${postId}`, {
+        replace: true,
+      });
+    } catch (error) {
+      console.error("게시글 수정 실패", error);
+      alert("게시글 저장 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleRemoveImage = async (index: number) => {
+    const image = images[index];
+
+    try {
+      if (image.id) {
+        const postId = 1;
+        await deletePostPhoto(postId, image.id);
+      }
+
+      removeImage(index);
+    } catch (error) {
+      console.error("사진 삭제 실패", error);
+      alert("사진 삭제에 실패했습니다.");
+    }
   };
 
   return (
@@ -197,7 +240,7 @@ const PostEdit = () => {
               images={images}
               currentIndex={currentIndex}
               onChangeIndex={setCurrentIndex}
-              onRemove={removeImage}
+              onRemove={handleRemoveImage}
             />
           )}
 

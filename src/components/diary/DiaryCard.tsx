@@ -39,7 +39,7 @@ const DiaryCard = ({ title, emotion, topics, onClick }: DiaryCardProps) => {
               {emotion}
             </span>
           </span>
-          <span>주제: {topics.join(" / ")}</span>
+          <span>주제: {topics?.join(" / ") || ""}</span>
         </div>
       </div>
 

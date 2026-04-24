@@ -4,6 +4,7 @@
  * 세부사항:
  * - 현재 날짜와 시간 표시
  * - 대화 시작하기 버튼 클릭 시 대화 시작 화면으로 이동
+ * - 대화 세션 시작 API 임시 연동
  */
 
 import { useEffect, useState } from "react";
@@ -11,6 +12,11 @@ import { useNavigate } from "react-router-dom";
 import { Container, Button, BackHeader } from "@components/index";
 import Bear from "@assets/icons/bear.png";
 import { getFormattedDate, getFormattedTime } from "@/utils/date";
+import { startConversationSession } from "@services/diary";
+
+const getISODate = () => {
+  return new Date().toISOString().slice(0, 10);
+};
 
 const DiaryWaiting = () => {
   const navigate = useNavigate();
@@ -22,8 +28,23 @@ const DiaryWaiting = () => {
     setTime(getFormattedTime());
   }, []);
 
-  const handleStartChat = () => {
-    navigate("/diary/chat/:sessionId", { replace: true });
+  const handleStartChat = async () => {
+    try {
+      const today = getISODate();
+      const res = await startConversationSession(today);
+
+      if (res.success) {
+        const diaryId = res.result.diaryId;
+        navigate(`/diary/chat/${diaryId}`, { replace: true });
+        console.log("대화 세션 시작 성공, diaryId:", diaryId);
+      }
+    } catch (e: any) {
+      if (e.response?.status === 409) {
+        alert("이미 오늘 일기가 존재합니다");
+      } else {
+        console.error("세션 시작 실패", e);
+      }
+    }
   };
 
   return (
