@@ -26,12 +26,16 @@ import { validatePassword, validateNickname } from "@utils/validate";
 import Profile from "@assets/icons/profile.svg?react";
 import Plus from "@assets/icons/plus.svg?react";
 import { IoMdInformationCircle } from "react-icons/io";
-import { UserInfoUpdateRequest, UserInfoResponse } from "@models/mypage";
-import { updateUserInfo, getUserInfo } from "@services/auth";
+import { UserInfoUpdateRequest } from "@models/mypage";
+import { useUserInfo } from "@queries/auth/useUserInfo";
+import { useUpdateUser } from "@queries/auth/useUpdateUser";
 
 const ProfileEdit = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserInfoResponse | null>(null);
+
+  const { data: user } = useUserInfo();
+  const { mutate: updateUser } = useUpdateUser();
+
   const [pw, setPw] = useState("");
   const [newpw, setNewpw] = useState("");
   const [nickname, setNickname] = useState("");
@@ -47,27 +51,17 @@ const ProfileEdit = () => {
   } = useProfileImage();
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const res = await getUserInfo();
-        const info = res.result as UserInfoResponse;
-
-        setUser(info);
-        setNickname(info.nickname);
-      } catch {
-        setError("프로필 정보를 불러오지 못했습니다.");
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
+    if (user) {
+      setNickname(user.nickname);
+    }
+  }, [user]);
 
   if (!user) return null;
 
   const displayImage = profileImg || user.profileImageUrl || null;
   const showPasswordFields = Boolean(user.password);
 
-  const handleSaveProfile = async () => {
+  const handleSaveProfile = () => {
     setError("");
 
     if (!validateNickname(nickname)) {
@@ -101,12 +95,14 @@ const ProfileEdit = () => {
       payload.profileImage = profileFile;
     }
 
-    try {
-      await updateUserInfo(payload);
-      navigate("/mypage", { replace: true });
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "프로필 수정 실패");
-    }
+    updateUser(payload, {
+      onSuccess: () => {
+        navigate("/mypage", { replace: true });
+      },
+      onError: (err: any) => {
+        setError(err?.response?.data?.message || "프로필 수정 실패");
+      },
+    });
   };
 
   const isDisabled =
