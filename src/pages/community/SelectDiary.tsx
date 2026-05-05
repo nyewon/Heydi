@@ -8,7 +8,7 @@
  * - api 연동 완료, 연동 실패 시 더미 데이터 사용
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -17,52 +17,40 @@ import {
   Button,
 } from "@components/index";
 import { DIARY_LIST_DUMMIES } from "@mocks/diary";
-import { DiaryListItem } from "@models/diary";
-import { getDiaryList } from "@services/diary";
 import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
 import { selectDiaryForPost } from "@services/community";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getDiaryList } from "@services/diary";
+import { queryKeys } from "@queries/queryKeys";
 
 const SelectDiary = () => {
   const navigate = useNavigate();
 
   const [selectedDiaryId, setSelectedDiaryId] = useState<number | null>(null);
-  const [diaries, setDiaries] = useState<DiaryListItem[]>([]);
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState<number | null>(null);
-  const [isFetching, setIsFetching] = useState(false);
 
-  useEffect(() => {
-    const fetchDiaries = async () => {
-      if (isFetching) return;
-      if (totalPages !== null && page >= totalPages - 1) return;
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError } =
+    useInfiniteQuery({
+      queryKey: queryKeys.diary.list,
 
-      try {
-        setIsFetching(true);
-        const res = await getDiaryList(page, 20);
+      queryFn: ({ pageParam = 0 }) => getDiaryList(pageParam, 20),
 
-        setDiaries(prev => [...prev, ...res.content]);
-        setTotalPages(res.totalPages);
-      } catch (e) {
-        console.error("일기 목록 조회 실패", e);
+      initialPageParam: 0,
 
-        if (page === 0) {
-          setDiaries([...DIARY_LIST_DUMMIES]);
-          setTotalPages(1);
-        }
-      } finally {
-        setIsFetching(false);
-      }
-    };
+      getNextPageParam: lastPage => {
+        const next = lastPage.pageNumber + 1;
+        return next < lastPage.totalPages ? next : undefined;
+      },
+    });
 
-    fetchDiaries();
-  }, [page]);
+  const diaries = data?.pages.flatMap(page => page?.content ?? []) ?? [];
 
-  const hasMore = totalPages === null || page < totalPages - 1;
+  const displayDiaries =
+    diaries.length === 0 && isError ? DIARY_LIST_DUMMIES : diaries;
 
   const observerRef = useInfiniteScroll({
-    hasMore,
-    isFetching,
-    onLoadMore: () => setPage(prev => prev + 1),
+    hasMore: !!hasNextPage,
+    isFetching: isFetchingNextPage,
+    onLoadMore: fetchNextPage,
   });
 
   const handleConfirm = async () => {
@@ -92,7 +80,7 @@ const SelectDiary = () => {
       <BackHeader />
 
       <Container className="pb-10">
-        {diaries.length === 0 && !isFetching && (
+        {displayDiaries.length === 0 && !isFetchingNextPage && (
           <div className="w-full flex flex-col items-center mt-20 text-center">
             <p className="text-base font-extrabold text-[#7C7C7C]">
               아직 작성된 일기가 없어요🥲
@@ -111,7 +99,7 @@ const SelectDiary = () => {
           </div>
         )}
 
-        {[...diaries]
+        {[...displayDiaries]
           .sort((a, b) => b.diaryId - a.diaryId)
           .map(item => (
             <SelectDiaryCard
@@ -127,7 +115,7 @@ const SelectDiary = () => {
         <div ref={observerRef} className="h-10" />
       </Container>
 
-      {diaries.length > 0 && (
+      {displayDiaries.length > 0 && (
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[425px] bg-white">
           <div className="px-5 py-4">
             <Button

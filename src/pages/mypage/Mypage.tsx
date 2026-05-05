@@ -9,7 +9,7 @@
  * - api 연동 완료, 연동 실패 시 더미데이터 출력
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -20,23 +20,26 @@ import {
 } from "@components/index";
 import DefaultProfile from "@assets/icons/profile.svg";
 import { IoChevronForward } from "react-icons/io5";
-import { MYPAGE_INFO_DUMMY, ALARM_DUMMY } from "@mocks/mypage";
-import { AlarmResponseRequest, MypageInfoResponse } from "@models/mypage";
+import { ALARM_DUMMY } from "@mocks/mypage";
+import { AlarmResponseRequest } from "@models/mypage";
 import {
   disableReminder,
-  getMypageMain,
   getReminder,
   logout,
   updateReminder,
   withdraw,
 } from "@services/auth";
 import { useAuthStore } from "@stores/useAuthStore";
+import { useMypageMain } from "@queries/auth/useMypageMain";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Mypage = () => {
   const navigate = useNavigate();
   const clearAuth = useAuthStore(state => state.logout);
+  const queryClient = useQueryClient();
 
-  const [mypageInfo, setMypageInfo] = useState<MypageInfoResponse | null>(null);
+  const { data: user } = useMypageMain();
+
   const [alarmEnabled, setAlarmEnabled] = useState(false);
   const [alarmSetting, setAlarmSetting] = useState<AlarmResponseRequest | null>(
     null,
@@ -46,30 +49,12 @@ const Mypage = () => {
     null,
   );
 
-  const profileImage = mypageInfo?.profileImageUrl || DefaultProfile;
+  const profileImage = user?.profileImageUrl || DefaultProfile;
 
-  useEffect(() => {
-    const fetchMypage = async () => {
-      try {
-        const res = await getMypageMain();
-        if (res.success) {
-          setMypageInfo(res.result);
-          setAlarmEnabled(res.result.alarm.enabled);
-        } else {
-          setMypageInfo(MYPAGE_INFO_DUMMY);
-          setAlarmEnabled(MYPAGE_INFO_DUMMY.alarm.enabled);
-        }
-      } catch (e) {
-        console.error("마이페이지 조회 실패", e);
-        setMypageInfo(MYPAGE_INFO_DUMMY);
-        setAlarmEnabled(MYPAGE_INFO_DUMMY.alarm.enabled);
-      }
-    };
-
+  useState(() => {
     const fetchReminder = async () => {
       try {
         const res = await getReminder();
-
         if (res.success) {
           const reminder = res.result.reminder;
           setAlarmEnabled(reminder.enabled);
@@ -79,10 +64,8 @@ const Mypage = () => {
         console.error("알림 설정 조회 실패", e);
       }
     };
-
-    fetchMypage();
     fetchReminder();
-  }, []);
+  });
 
   const handleOpenAlarmModal = () => {
     if (alarmEnabled) {
@@ -107,7 +90,6 @@ const Mypage = () => {
 
     try {
       const res = await updateReminder(payload);
-
       if (res.success) {
         setAlarmEnabled(true);
         setAlarmSetting(payload);
@@ -124,7 +106,6 @@ const Mypage = () => {
     if (alarmEnabled) {
       try {
         const res = await disableReminder();
-
         if (res.success) {
           setAlarmEnabled(false);
           setAlarmSetting(null);
@@ -140,7 +121,6 @@ const Mypage = () => {
   const handleDisableAlarm = async () => {
     try {
       const res = await disableReminder();
-
       if (res.success) {
         setAlarmEnabled(false);
         setAlarmSetting(null);
@@ -155,9 +135,9 @@ const Mypage = () => {
     if (modalType === "logout") {
       try {
         const res = await logout();
-
         if (res.success) {
           clearAuth();
+          queryClient.clear();
           navigate("/", { replace: true });
         }
       } catch (e) {
@@ -168,9 +148,9 @@ const Mypage = () => {
     if (modalType === "withdraw") {
       try {
         const res = await withdraw();
-
         if (res.success) {
           clearAuth();
+          queryClient.clear();
           navigate("/", { replace: true });
         }
       } catch (e) {
@@ -196,7 +176,7 @@ const Mypage = () => {
             className="w-[124px] h-[124px] rounded-full object-cover mb-2"
           />
           <span className="text-lg font-extrabold text-[#4A4A4A]">
-            {mypageInfo?.nickname}
+            {user?.nickname}
           </span>
         </div>
 
@@ -209,7 +189,7 @@ const Mypage = () => {
               내가 좋아요 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {mypageInfo?.likedPostCount}
+              {user?.likedPostCount}
             </span>
           </div>
 
@@ -221,7 +201,7 @@ const Mypage = () => {
               내가 공유 한 글
             </span>
             <span className="text-[24px] font-extrabold text-[#B28C7E]">
-              {mypageInfo?.sharedPostCount}
+              {user?.sharedPostCount}
             </span>
           </div>
         </div>

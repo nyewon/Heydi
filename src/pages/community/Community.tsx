@@ -8,7 +8,6 @@
  * - 좋아요 api 연동, 연동 실패 시 alert로 오류 메시지 표시
  */
 
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -17,65 +16,25 @@ import {
   CommunityCard,
 } from "@components/index";
 import { COMMUNITY_POST_LIST_DUMMY } from "@mocks/community";
-import { PostListItem } from "@models/community";
-import { getPostList, togglePostLike } from "@services/community";
 import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
+import { usePostList } from "@queries/community/usePostList";
+import { togglePostLike } from "@services/community";
 
 const Community = () => {
   const navigate = useNavigate();
 
-  const [posts, setPosts] = useState<PostListItem[]>([]);
-  const [cursor, setCursor] = useState<number | null>(null);
-  const [hasNext, setHasNext] = useState(true);
-  const [isFetching, setIsFetching] = useState(false);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError } =
+    usePostList();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      if (isFetching || !hasNext) return;
+  const posts =
+    data?.pages.flatMap(page => page?.result?.result?.posts ?? []) ?? [];
 
-      try {
-        setIsFetching(true);
-        const res = await getPostList(cursor, 10);
-
-        if (res.success && res.result?.result) {
-          const data = res.result.result;
-
-          setPosts(prev => [...prev, ...data.posts]);
-          setCursor(data.next_cursor);
-          setHasNext(data.has_next);
-        }
-      } catch (e) {
-        console.error("커뮤니티 목록 조회 실패", e);
-
-        if (cursor === null) {
-          setPosts([...COMMUNITY_POST_LIST_DUMMY.posts]);
-          setHasNext(false);
-        }
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    fetchPosts();
-  }, [cursor]);
+  const displayPosts =
+    posts.length === 0 && isError ? COMMUNITY_POST_LIST_DUMMY.posts : posts;
 
   const handleToggleLike = async (postId: number) => {
     try {
       await togglePostLike(postId);
-
-      setPosts(prev =>
-        prev.map(post =>
-          post.postId === postId
-            ? {
-                ...post,
-                isLiked: !post.isLiked,
-                likeCount: post.isLiked
-                  ? post.likeCount - 1
-                  : post.likeCount + 1,
-              }
-            : post,
-        ),
-      );
     } catch (e) {
       console.error("좋아요 토글 실패", e);
       alert("좋아요 처리 중 오류가 발생했습니다.");
@@ -83,13 +42,9 @@ const Community = () => {
   };
 
   const observerRef = useInfiniteScroll({
-    hasMore: hasNext,
-    isFetching,
-    onLoadMore: () => {
-      if (hasNext) {
-        setCursor(prev => prev);
-      }
-    },
+    hasMore: !!hasNextPage,
+    isFetching: isFetchingNextPage,
+    onLoadMore: fetchNextPage,
   });
 
   return (
@@ -97,7 +52,7 @@ const Community = () => {
       <DefaultHeader showIcon="community" />
 
       <Container withBottomNav={true}>
-        {posts.length === 0 && !isFetching && (
+        {displayPosts.length === 0 && !isFetchingNextPage && (
           <div className="w-full flex flex-col items-center mt-20 text-center">
             <p className="text-base font-extrabold text-[#7C7C7C]">
               아직 작성된 게시글이 없어요🥲
@@ -109,7 +64,7 @@ const Community = () => {
           </div>
         )}
 
-        {[...posts]
+        {[...displayPosts]
           .sort(
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),

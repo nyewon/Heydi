@@ -8,7 +8,7 @@
  * - api 임시 연동, 연동 실패 시 더미 데이터 사용
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Container,
@@ -24,61 +24,33 @@ import {
 import { EMOTION_S_ICONS, EMOTION_SENTENCE } from "@constants/emotions";
 import { formatDate, formatElapsedTime } from "@utils/date";
 import {
-  ConversationMessagesResponse,
-  DiaryDetailResponse,
-} from "@models/diary";
-import {
-  getDiaryDetail,
-  getDiaryConversation,
-  sendDiaryToMonthlyReport,
-} from "@services/diary";
+  useDiaryDetail,
+  useDiaryConversation,
+} from "@queries/diary/useDiaryDetail";
+import { sendDiaryToMonthlyReport } from "@services/diary";
+import { ConversationMessagesResponse } from "@models/diary";
 
 const DiaryDetail = () => {
   const { diaryId } = useParams<{ diaryId: string }>();
   const id = Number(diaryId);
 
-  const [diary, setDiary] = useState<DiaryDetailResponse | null>(null);
-  const [messages, setMessages] = useState<ConversationMessagesResponse | null>(
-    null,
-  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSending, setIsSending] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
+  const { data: detailData, isError: detailError } = useDiaryDetail(id);
 
-    const fetchDiaryDetail = async () => {
-      try {
-        const detail = await getDiaryDetail(id);
-        setDiary(detail);
+  const { data: conversationData, isError: convError } =
+    useDiaryConversation(id);
 
-        try {
-          const conversation = await getDiaryConversation(id);
-          setMessages(conversation);
-        } catch (conversationError) {
-          console.error("대화 조회 실패", conversationError);
+  const diary =
+    detailError || !detailData
+      ? (DIARY_DETAIL_DUMMIES.find(d => d.id === id) ?? null)
+      : detailData;
 
-          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
-
-          setMessages(dummyConversation);
-        }
-      } catch (detailError) {
-        console.error("일기 상세 조회 실패", detailError);
-
-        const dummyDiary = DIARY_DETAIL_DUMMIES.find(d => d.id === id);
-
-        if (dummyDiary) {
-          setDiary(dummyDiary);
-
-          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
-
-          setMessages(dummyConversation);
-        }
-      }
-    };
-
-    fetchDiaryDetail();
-  }, [id]);
+  const messages =
+    convError || !conversationData
+      ? (CONVERSATION_MESSAGES_DUMMIES[id] ?? null)
+      : (conversationData as ConversationMessagesResponse);
 
   if (!diary) {
     return (
@@ -99,17 +71,7 @@ const DiaryDetail = () => {
         diaryId: diary.id,
       });
 
-      setDiary(prev =>
-        prev
-          ? {
-              ...prev,
-              report: {
-                ...prev.report,
-                included: true,
-              },
-            }
-          : prev,
-      );
+      diary.report.included = true;
     } catch (e) {
       console.error("리포트 전송 실패", e);
       alert("리포트 전송에 실패했습니다. 다시 시도해주세요.");

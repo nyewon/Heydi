@@ -29,12 +29,9 @@ import {
   POST_DETAIL_DUMMIES,
   COMMUNITY_COMMENT_DUMMIES,
 } from "@mocks/community";
-import {
-  getPostComments,
-  getPostDetail,
-  togglePostLike,
-} from "@services/community";
+import { getPostComments, togglePostLike } from "@services/community";
 import { CommunityComment, PostDetailResponse } from "@models/community";
+import { usePostDetail } from "@queries/community/usePostDetail";
 
 const PostDetail = () => {
   const currentUser = "Test";
@@ -48,26 +45,27 @@ const PostDetail = () => {
   const [likeCount, setLikeCount] = useState(0);
   const [comments, setComments] = useState<CommunityComment[]>([]);
 
+  const { data: detailData, isError: detailError } = usePostDetail(
+    Number(postId),
+  );
+
   useEffect(() => {
-    const fetchDetail = async () => {
-      try {
-        const data = await getPostDetail(Number(postId));
-        setPost(data);
-        setIsLiked(data.isLiked);
-        setLikeCount(data.likeCount);
-      } catch (e) {
-        console.error("게시물 상세 조회 실패", e);
+    if (detailData) {
+      setPost(detailData);
+      setIsLiked(detailData.isLiked);
+      setLikeCount(detailData.likeCount);
+    } else if (detailError) {
+      const dummy =
+        POST_DETAIL_DUMMIES.find(p => p.postId === Number(postId)) ||
+        POST_DETAIL_DUMMIES[0];
 
-        const dummy =
-          POST_DETAIL_DUMMIES.find(p => p.postId === Number(postId)) ||
-          POST_DETAIL_DUMMIES[0];
+      setPost(dummy);
+      setIsLiked(dummy.isLiked);
+      setLikeCount(dummy.likeCount);
+    }
+  }, [detailData, detailError, postId]);
 
-        setPost(dummy);
-        setIsLiked(dummy.isLiked);
-        setLikeCount(dummy.likeCount);
-      }
-    };
-
+  useEffect(() => {
     const fetchComments = async () => {
       try {
         const data = await getPostComments(Number(postId), null, 10);
@@ -78,7 +76,6 @@ const PostDetail = () => {
       }
     };
 
-    fetchDetail();
     fetchComments();
   }, [postId]);
 

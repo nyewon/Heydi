@@ -12,7 +12,7 @@
  * - api 임시 연동, 연동 실패 시 임시 더미 데이터 사용
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -32,17 +32,11 @@ import {
   MONTHLY_REPORT_DUMMY,
 } from "@mocks/report";
 import {
-  getMonthlyCalendar,
-  getMonthlyEmotions,
-  getMonthlyReport,
-  getMonthlyTopics,
-} from "@services/report";
-import {
-  CalendarResponse,
-  MonthlyEmotionResponse,
-  MonthlyReportResponse,
-  MonthlyTopicsResponse,
-} from "@models/report";
+  useMonthlyReport,
+  useMonthlyCalendar,
+  useMonthlyTopics,
+  useMonthlyEmotions,
+} from "@queries/report/useReport";
 
 const Report = () => {
   const navigate = useNavigate();
@@ -51,80 +45,40 @@ const Report = () => {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
   const [isMonthModalOpen, setIsMonthModalOpen] = useState(false);
-  const [report, setReport] = useState<MonthlyReportResponse | null>(null);
-  const [calendar, setCalendar] = useState<CalendarResponse["entries"] | null>(
-    null,
-  );
-  const [topics, setTopics] = useState<MonthlyTopicsResponse | null>(null);
-  const [emotions, setEmotions] = useState<MonthlyEmotionResponse | null>(null);
+
   const yearMonth = `${year}-${String(month).padStart(2, "0")}`;
 
-  useEffect(() => {
-    const fetchReport = async () => {
-      try {
-        const res = await getMonthlyReport(yearMonth);
+  const { data: reportData, isError: reportError } =
+    useMonthlyReport(yearMonth);
 
-        if (res.isSuccess) {
-          setReport(res.result);
-        } else {
-          setReport(MONTHLY_REPORT_DUMMY);
-        }
-      } catch (error) {
-        console.error("월간 리포트 조회 실패", error);
-        setReport(MONTHLY_REPORT_DUMMY);
-      }
-    };
+  const { data: calendarData, isError: calendarError } =
+    useMonthlyCalendar(yearMonth);
 
-    const fetchCalendar = async () => {
-      try {
-        const res = await getMonthlyCalendar(yearMonth);
+  const { data: topicsData, isError: topicsError } =
+    useMonthlyTopics(yearMonth);
 
-        if (res.isSuccess) {
-          setCalendar(res.result.entries);
-        } else {
-          setCalendar(CALENDAR_DUMMY.entries);
-        }
-      } catch (error) {
-        console.error("캘린더 조회 실패", error);
-        setCalendar(CALENDAR_DUMMY.entries);
-      }
-    };
+  const { data: emotionsData, isError: emotionsError } =
+    useMonthlyEmotions(yearMonth);
 
-    const fetchTopics = async () => {
-      try {
-        const res = await getMonthlyTopics(yearMonth);
+  const report =
+    reportError || !reportData?.result
+      ? MONTHLY_REPORT_DUMMY
+      : reportData.result;
 
-        if (res.isSuccess) {
-          setTopics(res.result);
-        } else {
-          setTopics(MONTHLY_TOPICS_DUMMY);
-        }
-      } catch (error) {
-        console.error("주제 조회 실패", error);
-        setTopics(MONTHLY_TOPICS_DUMMY);
-      }
-    };
+  const calendar =
+    calendarError || !calendarData?.result?.entries
+      ? CALENDAR_DUMMY.entries
+      : calendarData.result.entries;
 
-    const fetchEmotions = async () => {
-      try {
-        const res = await getMonthlyEmotions(yearMonth);
+  const topics =
+    topicsError || !topicsData?.result
+      ? MONTHLY_TOPICS_DUMMY
+      : topicsData.result;
 
-        if (res.isSuccess) {
-          setEmotions(res.result);
-        } else {
-          setEmotions(MONTHLY_EMOTION_DUMMY);
-        }
-      } catch (error) {
-        console.error("감정 조회 실패", error);
-        setEmotions(MONTHLY_EMOTION_DUMMY);
-      }
-    };
-
-    fetchReport();
-    fetchCalendar();
-    fetchTopics();
-    fetchEmotions();
-  }, [yearMonth]);
+  const emotions =
+    emotionsError || !emotionsData?.result
+      ? MONTHLY_EMOTION_DUMMY
+      : emotionsData.result;
 
   if (!report || !calendar || !topics || !emotions) return null;
 
