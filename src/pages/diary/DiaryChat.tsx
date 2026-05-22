@@ -25,7 +25,6 @@ const WS_HOST =
   import.meta.env.VITE_WEBSOCKET_URL?.replace(/^https?:\/\//, "") ||
   "api.example.com";
 const WS_PATH = "/ws/conversations";
-const SERVER_URL = `${WS_SCHEME}://${WS_HOST}${WS_PATH}`;
 
 const SEND_SAMPLE_RATE = 16000;
 const RECEIVE_SAMPLE_RATE = 24000;
@@ -43,7 +42,7 @@ const DiaryChat = () => {
   const [today, setToday] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const isSpeaking = useAudioStream();
 
   const geminiRef = useRef<GeminiAPI | null>(null);
@@ -52,74 +51,166 @@ const DiaryChat = () => {
 
   useEffect(() => {
     setToday(getFormattedDate());
-    const id = setInterval(() => setElapsed(prev => prev + 1), 1000);
-    return () => clearInterval(id);
   }, []);
 
   useEffect(() => {
+    if (!isConnected) return;
+
+    const id = setInterval(() => {
+      setElapsed(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [isConnected]);
+
+  useEffect(() => {
+    if (!diaryId) return;
+
     let cancelled = false;
+
+    const socketUrl = `${WS_SCHEME}://${WS_HOST}${WS_PATH}?diaryId=${diaryId}`;
 
     const start = async () => {
       playerRef.current = new StreamingAudioPlayer(RECEIVE_SAMPLE_RATE);
-      geminiRef.current = new GeminiAPI(SERVER_URL);
 
-      micRef.current = new Microphone(SEND_SAMPLE_RATE, ab => {
-        geminiRef.current?.sendAudio(ab);
+      geminiRef.current = new GeminiAPI(socketUrl);
+
+      micRef.current = new Microphone(SEND_SAMPLE_RATE, audioBuffer => {
+        geminiRef.current?.sendAudio(audioBuffer);
       });
 
       const api = geminiRef.current;
 
       api.onOpen = () => {
         if (cancelled) return;
+
         setIsConnected(true);
       };
 
       api.onClose = () => {
         if (cancelled) return;
+
         setIsConnected(false);
+
         stopAll();
       };
 
       api.onError = () => {
         if (cancelled) return;
+
         setIsConnected(false);
+
         stopAll();
       };
 
-      api.onInputTranscript = text => appendMessage(text, "user");
-      api.onOutputTranscript = text => appendMessage(text, "assistant");
-      api.onTurnComplete = finalizeLast;
-      api.onAudio = b64 => playerRef.current?.receiveAudio(b64);
+      api.onServerError = error => {
+        console.error("서버 에러:", error);
+
+        if (error.code === "401") {
+          alert("인증이 만료되었습니다.");
+          navigate("/login");
+          return;
+        }
+
+        if (error.code === "409") {
+          alert("이미 오늘 작성된 일기가 존재합니다.");
+          navigate("/diary");
+          return;
+        }
+
+        alert(error.message ?? "알 수 없는 오류가 발생했습니다.");
+      };
+
+      api.onInputTranscript = text => {
+        appendMessage(text, "user");
+      };
+
+      api.onOutputTranscript = text => {
+        appendMessage(text, "assistant");
+      };
+
+      api.onInputTurnCommitted = () => {
+        finalizeLast("user");
+      };
+
+      api.onTurnComplete = () => {
+        finalizeLast("assistant");
+      };
+
+      api.onAudio = base64 => {
+        playerRef.current?.receiveAudio(base64);
+      };
+
+      api.onInterrupt = () => {
+        playerRef.current?.interrupt();
+      };
 
       try {
         api.connect();
+
         await micRef.current.start();
-      } catch {
+      } catch (error) {
+        console.error(error);
+
         stopAll();
       }
     };
 
     start();
+
     return () => {
       cancelled = true;
+
       stopAll();
     };
-  }, []);
+  }, [diaryId, navigate]);
 
   const appendMessage = (text: string, speaker: "user" | "assistant") => {
     setMessages(prev => {
-      const last = prev[prev.length - 1];
-      if (last && last.speaker === speaker && !last.final) {
-        return [...prev.slice(0, -1), { ...last, text: last.text + text }];
+      const copied = [...prev];
+
+      for (let i = copied.length - 1; i >= 0; i--) {
+        const target = copied[i];
+
+        if (target.speaker === speaker && !target.final) {
+          copied[i] = {
+            ...target,
+            text: target.text + text,
+          };
+
+          return copied;
+        }
       }
-      return [...prev, { speaker, text }];
+
+      copied.push({
+        speaker,
+        text,
+        final: false,
+      });
+
+      return copied;
     });
   };
 
-  const finalizeLast = () => {
-    setMessages(prev =>
-      prev.map((m, i) => (i === prev.length - 1 ? { ...m, final: true } : m)),
-    );
+  const finalizeLast = (speaker: "user" | "assistant") => {
+    setMessages(prev => {
+      const copied = [...prev];
+
+      for (let i = copied.length - 1; i >= 0; i--) {
+        const target = copied[i];
+
+        if (target.speaker === speaker && !target.final) {
+          copied[i] = {
+            ...target,
+            final: true,
+          };
+
+          break;
+        }
+      }
+
+      return copied;
+    });
   };
 
   const stopAll = () => {
@@ -136,10 +227,12 @@ const DiaryChat = () => {
       const res = await endConversationSession(Number(diaryId));
 
       if (res.success) {
-        navigate(`/diary`, { replace: true });
+        navigate("/diary", {
+          replace: true,
+        });
       }
-    } catch (e) {
-      console.error("세션 종료 실패", e);
+    } catch (error) {
+      console.error("세션 종료 실패", error);
     }
   };
 
