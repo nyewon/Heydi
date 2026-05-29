@@ -59,6 +59,7 @@ const Mypage = () => {
           const reminder = res.result.reminder;
           setAlarmEnabled(reminder.enabled);
           setAlarmSetting(reminder);
+          console.log("알림 설정 조회", reminder);
         }
       } catch (e) {
         console.error("알림 설정 조회 실패", e);
@@ -68,11 +69,12 @@ const Mypage = () => {
   });
 
   const handleOpenAlarmModal = () => {
-    if (alarmEnabled) {
-      setAlarmSetting(ALARM_DUMMY);
+    if (alarmEnabled && alarmSetting) {
+      setAlarmSetting(alarmSetting);
     } else {
       setAlarmSetting(null);
     }
+
     setIsAlarmModalOpen(true);
   };
 
