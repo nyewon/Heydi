@@ -121,7 +121,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {report.preferences.like}
+                {report.preferences.like ?? "👀"}
               </div>
             </div>
 
@@ -135,7 +135,7 @@ const Report = () => {
                   flex items-center justify-center
                 "
               >
-                {report.preferences.dislike}
+                {report.preferences.dislike ?? "👀"}
               </div>
             </div>
           </div>
@@ -174,12 +174,24 @@ const Report = () => {
             한 달 전에 이런 하루가 있었어요
           </p>
 
-          <DiaryCard
-            {...report.lastMonthReminder}
-            onClick={() =>
-              navigate(`/diary/detail/${report.lastMonthReminder.diaryId}`)
-            }
-          />
+          {report.lastMonthReminder ? (
+            <DiaryCard
+              {...report.lastMonthReminder}
+              onClick={() =>
+                navigate(`/diary/detail/${report.lastMonthReminder.diaryId}`)
+              }
+            />
+          ) : (
+            <div
+              className="
+                w-full bg-[#EFE8E1]
+                rounded-xl py-6
+                text-center text-sm text-[#76615A]
+              "
+            >
+              지난달에 작성한 일기가 없어요 🥲
+            </div>
+          )}
         </div>
       </Container>
 
