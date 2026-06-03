@@ -43,7 +43,7 @@ export interface PostDetailResponse {
   }[];
   likeCount: number;
   commentCount: number;
-  isLiked: boolean;
+  liked: boolean;
   createdAt: string;
 }
 

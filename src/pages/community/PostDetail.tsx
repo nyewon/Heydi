@@ -29,11 +29,12 @@ import {
   POST_DETAIL_DUMMIES,
   COMMUNITY_COMMENT_DUMMIES,
 } from "@mocks/community";
-import { getPostComments, togglePostLike } from "@services/community";
+import { getPostComments } from "@services/community";
 import { CommunityComment, PostDetailResponse } from "@models/community";
 import { usePostDetail } from "@queries/community/usePostDetail";
 import { useUserInfo } from "@queries/auth/useUserInfo";
 import { useDeletePost } from "@queries/community/useDeletePost";
+import { useLiked } from "@queries/community/useLiked";
 
 const PostDetail = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -53,11 +54,12 @@ const PostDetail = () => {
   const { data: userInfo } = useUserInfo();
 
   const { mutateAsync: deletePostMutate } = useDeletePost();
+  const { toggleLike } = useLiked();
 
   useEffect(() => {
     if (detailData) {
       setPost(detailData);
-      setIsLiked(detailData.isLiked);
+      setIsLiked(detailData.liked);
       setLikeCount(detailData.likeCount);
     } else if (detailError) {
       const dummy =
@@ -65,7 +67,7 @@ const PostDetail = () => {
         POST_DETAIL_DUMMIES[0];
 
       setPost(dummy);
-      setIsLiked(dummy.isLiked);
+      setIsLiked(dummy.liked);
       setLikeCount(dummy.likeCount);
     }
   }, [detailData, detailError, postId]);
@@ -88,14 +90,10 @@ const PostDetail = () => {
 
   const handleToggleLike = async () => {
     try {
-      const res = await togglePostLike(post.postId);
+      await toggleLike(post.postId);
 
-      if (res.success) {
-        setIsLiked(prev => !prev);
-        setLikeCount(prev => (isLiked ? prev - 1 : prev + 1));
-      } else {
-        alert("좋아요 처리에 실패했습니다.");
-      }
+      setIsLiked(prev => !prev);
+      setLikeCount(prev => (isLiked ? prev - 1 : prev + 1));
     } catch (e) {
       console.error("좋아요 API 실패", e);
       alert("좋아요 처리 중 오류가 발생했습니다.");
