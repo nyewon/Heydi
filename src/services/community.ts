@@ -91,7 +91,7 @@ export const updatePostComment = async (
   content: string,
 ) => {
   const res = await instance.patch(
-    `/community/post/${postId}/comments/${commentId}`,
+    `/community/posts/${postId}/comments/${commentId}`,
     {
       content,
     },
@@ -103,7 +103,7 @@ export const updatePostComment = async (
 // 댓글 삭제
 export const deletePostComment = async (postId: number, commentId: number) => {
   const res = await instance.delete(
-    `/community/post/${postId}/comments/${commentId}`,
+    `/community/posts/${postId}/comments/${commentId}`,
   );
 
   return res.data;

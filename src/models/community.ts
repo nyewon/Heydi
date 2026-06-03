@@ -53,7 +53,7 @@ export interface CommunityComment {
   nickname: string;
   profileUrl: string;
   content: string;
-  isMine: boolean;
+  mine: boolean;
   createdAt: string;
 }
 

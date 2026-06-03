@@ -204,11 +204,7 @@ const PostDetail = () => {
           </div>
         </div>
 
-        <Comment
-          postId={post.postId}
-          initialComments={comments}
-          currentUser={userInfo?.userId}
-        />
+        <Comment postId={post.postId} initialComments={comments} />
       </Container>
 
       <DeleteModal

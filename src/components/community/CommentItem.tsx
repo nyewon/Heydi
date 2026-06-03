@@ -6,13 +6,12 @@ import { CommentDropdown } from "@components/index";
 
 interface CommentItemProps {
   comment: CommunityComment;
-  currentUser: string;
   onEdit: () => void;
   onDelete: () => void;
 }
 
 const CommentItem = ({ comment, onEdit, onDelete }: CommentItemProps) => {
-  const isMine = comment.isMine;
+  const isMine = comment.mine;
   const [open, setOpen] = useState(false);
 
   const handleEditComment = () => {
@@ -29,7 +28,7 @@ const CommentItem = ({ comment, onEdit, onDelete }: CommentItemProps) => {
     <div className="flex gap-3 w-full">
       <img
         src={comment.profileUrl || DefaultProfile}
-        className="w-7 h-7 rounded-full opacity-60 shrink-0 shadow-sm"
+        className="w-7 h-7 rounded-full shrink-0 shadow-sm"
       />
 
       <div className="flex-1">
@@ -70,7 +69,7 @@ const CommentItem = ({ comment, onEdit, onDelete }: CommentItemProps) => {
             bg-[#FAF7F5]
             px-4 py-3
             text-xs text-[#4A4A4A]
-            leading-4 break-words
+            leading-4 wrap-break-word
             rounded-tr-lg rounded-br-lg rounded-bl-lg
           "
         >
