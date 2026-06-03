@@ -18,7 +18,7 @@ import {
 import { COMMUNITY_POST_LIST_DUMMY } from "@mocks/community";
 import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
 import { usePostList } from "@queries/community/usePostList";
-import { togglePostLike } from "@services/community";
+import { useLiked } from "@queries/community/useLiked";
 
 const Community = () => {
   const navigate = useNavigate();
@@ -27,14 +27,16 @@ const Community = () => {
     usePostList();
 
   const posts =
-    data?.pages.flatMap(page => page?.result?.result?.posts ?? []) ?? [];
+    data?.pages.flatMap(page => page?.result?.feed?.posts ?? []) ?? [];
 
   const displayPosts =
     posts.length === 0 && isError ? COMMUNITY_POST_LIST_DUMMY.posts : posts;
 
+  const { toggleLike } = useLiked();
+
   const handleToggleLike = async (postId: number) => {
     try {
-      await togglePostLike(postId);
+      await toggleLike(postId);
     } catch (e) {
       console.error("좋아요 토글 실패", e);
       alert("좋아요 처리 중 오류가 발생했습니다.");
@@ -73,6 +75,7 @@ const Community = () => {
             <CommunityCard
               key={post.postId}
               user={post.nickname}
+              profileImg={post.profileUrl}
               date={post.createdAt.split("T")[0].replace(/-/g, ".")}
               title={post.postTitle}
               emotion={post.postEmotion}
@@ -80,7 +83,7 @@ const Community = () => {
               content={post.postContent}
               likes={post.likeCount}
               comments={post.commentCount}
-              liked={post.isLiked}
+              liked={post.liked}
               onLike={() => handleToggleLike(post.postId)}
               onClick={() => navigate(`/community/detail/${post.postId}`)}
             />
