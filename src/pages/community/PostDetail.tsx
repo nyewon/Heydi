@@ -32,9 +32,10 @@ import {
 import { getPostComments, togglePostLike } from "@services/community";
 import { CommunityComment, PostDetailResponse } from "@models/community";
 import { usePostDetail } from "@queries/community/usePostDetail";
+import { useUserInfo } from "@queries/auth/useUserInfo";
+import { useDeletePost } from "@queries/community/useDeletePost";
 
 const PostDetail = () => {
-  const currentUser = "Test";
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
 
@@ -48,6 +49,10 @@ const PostDetail = () => {
   const { data: detailData, isError: detailError } = usePostDetail(
     Number(postId),
   );
+
+  const { data: userInfo } = useUserInfo();
+
+  const { mutateAsync: deletePostMutate } = useDeletePost();
 
   useEffect(() => {
     if (detailData) {
@@ -69,7 +74,7 @@ const PostDetail = () => {
     const fetchComments = async () => {
       try {
         const data = await getPostComments(Number(postId), null, 10);
-        setComments(data.comments);
+        setComments(data.result.comments);
       } catch (e) {
         console.error("댓글 조회 실패", e);
         setComments(COMMUNITY_COMMENT_DUMMIES.comments);
@@ -97,12 +102,20 @@ const PostDetail = () => {
     }
   };
 
-  const handleDeletePost = () => {
-    console.log("delete post:", post.postId);
-    setIsDeleteOpen(false);
-    navigate(-1);
-  };
+  const handleDeletePost = async () => {
+    try {
+      await deletePostMutate(post.postId);
 
+      setIsDeleteOpen(false);
+
+      alert("게시글이 삭제되었습니다.");
+
+      navigate("/community");
+    } catch (e) {
+      console.error("게시글 삭제 실패", e);
+      alert("게시글 삭제에 실패했습니다.");
+    }
+  };
   return (
     <div className="w-full flex flex-col items-center">
       <BackHeader />
@@ -180,7 +193,7 @@ const PostDetail = () => {
               </span>
             </div>
 
-            {post.author.nickname === currentUser && (
+            {post.author.userId === userInfo?.userId && (
               <button
                 onClick={() => setIsDeleteOpen(true)}
                 className="ml-auto cursor-pointer"
@@ -194,7 +207,7 @@ const PostDetail = () => {
         <Comment
           postId={post.postId}
           initialComments={comments}
-          currentUser={currentUser}
+          currentUser={userInfo?.userId}
         />
       </Container>
 
