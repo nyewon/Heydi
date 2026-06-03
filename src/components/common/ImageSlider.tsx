@@ -18,7 +18,7 @@ interface ImageSliderProps {
   // eslint-disable-next-line no-unused-vars
   onChangeIndex: (index: number) => void;
   // eslint-disable-next-line no-unused-vars
-  onRemove?: (index: number) => void;
+  onRemove?: (photoId: number) => void;
   height?: number;
 }
 
@@ -89,7 +89,7 @@ const ImageSlider = ({
 
               {idx === currentIndex && onRemove && (
                 <button
-                  onClick={() => onRemove(idx)}
+                  onClick={() => onRemove(image.id!)}
                   className="
                     absolute top-2 right-2
                     rounded-full

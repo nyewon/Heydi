@@ -9,7 +9,8 @@ export const updatePost = async (
   postId: number,
   data: CommunityPostUpsertRequest,
 ) => {
-  const res = await instance.put(`/community/posts/${postId}`, data);
+  const res = await instance.post(`/community/posts/${postId}`, data);
+
   return res.data;
 };
 
@@ -104,7 +105,7 @@ export const deletePostComment = async (postId: number, commentId: number) => {
 // 게시글 사진 업로드
 export const uploadPostPhoto = async (postId: number, photo: File) => {
   const formData = new FormData();
-  formData.append("photo", photo);
+  formData.append("photos", photo);
 
   const res = await instance.post(
     `/community/posts/${postId}/photos`,
