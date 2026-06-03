@@ -29,5 +29,6 @@ export const queryKeys = {
     calendar: (ym: string) => ["report", "calendar", ym],
     topics: (ym: string) => ["report", "topics", ym],
     emotions: (ym: string) => ["report", "emotions", ym],
+    availableMonths: ["report", "availableMonths"],
   },
 };
