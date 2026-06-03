@@ -72,7 +72,7 @@ const ImageSlider = ({
           {images.map((image, idx) => (
             <div
               key={image.id ?? idx}
-              className="relative w-full flex-shrink-0"
+              className="relative w-full shrink-0"
               style={{ height }}
             >
               <img
