@@ -129,9 +129,15 @@ export const uploadPostPhoto = async (postId: number, photo: File) => {
 
 // 게시글 사진 삭제
 export const deletePostPhoto = async (postId: number, fileId: number) => {
+  console.log("DELETE 요청");
+  console.log("postId:", postId);
+  console.log("fileId:", fileId);
+
   const res = await instance.delete(
     `/community/posts/${postId}/photos/${fileId}`,
   );
+
+  console.log("DELETE 응답", res.data);
 
   return res.data;
 };

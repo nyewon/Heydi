@@ -110,6 +110,7 @@ const PostEdit = () => {
   }
 
   const handleSave = async () => {
+    console.log("images", images);
     const payload: CommunityPostUpsertRequest = {
       diaryId: diary.id,
       postTitle: diary.title ?? "제목 없음",
@@ -122,6 +123,7 @@ const PostEdit = () => {
         .filter(img => !img.file)
         .map(img => ({ imageUrl: img.imageUrl })),
     };
+    console.log("payload", payload);
 
     try {
       const res = await updatePost(Number(postId), payload);
@@ -155,11 +157,30 @@ const PostEdit = () => {
       const uploadResults = await Promise.all(
         fileArray.map(file => uploadPostPhoto(Number(postId), file)),
       );
-      const uploadedPhotos = uploadResults.flatMap(result => result.photos);
+
+      const uploadedPhotos = uploadResults.flatMap(result =>
+        (result.photos ?? []).map(
+          (photo: { fileId: number; fileUrl: string }) => ({
+            id: photo.fileId,
+            imageUrl: photo.fileUrl,
+          }),
+        ),
+      );
+
+      console.log(
+        "업로드된 사진 URL",
+        uploadedPhotos.map(photo => photo.imageUrl),
+      );
+
       handleFiles(files);
+
       setDiary(prev => {
         if (!prev) return prev;
-        return { ...prev, photos: [...prev.photos, ...uploadedPhotos] };
+
+        return {
+          ...prev,
+          photos: [...prev.photos, ...uploadedPhotos],
+        };
       });
     } catch (error) {
       console.error("사진 업로드 실패", error);
@@ -168,8 +189,13 @@ const PostEdit = () => {
   };
 
   const handleRemoveImage = async (photoId: number) => {
+    console.log("삭제할 photoId", photoId);
+    console.log("현재 photos", diary.photos);
+
     try {
-      await deletePostPhoto(Number(postId), photoId);
+      const res = await deletePostPhoto(Number(postId), photoId);
+
+      console.log("삭제 응답", res);
 
       removeImage(photoId);
 
@@ -183,6 +209,13 @@ const PostEdit = () => {
       });
     } catch (error) {
       console.error("사진 삭제 실패", error);
+
+      if (error && typeof error === "object" && "response" in error) {
+        console.log("삭제 에러 응답", (error as any).response?.data);
+        console.log("삭제 에러 상태", (error as any).response?.status);
+        console.log("삭제 에러 URL", (error as any).config?.url);
+      }
+
       alert("사진 삭제에 실패했습니다.");
     }
   };
