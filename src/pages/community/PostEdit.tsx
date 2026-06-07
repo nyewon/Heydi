@@ -52,6 +52,7 @@ const PostEdit = () => {
   const [tempValue, setTempValue] = useState("");
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const initialPhotoIdsRef = useRef<number[]>([]);
   const initialImages = useMemo(() => {
     return (diary?.photos ?? []).map(photo => ({
       id: photo.id,
@@ -78,11 +79,11 @@ const PostEdit = () => {
       try {
         const detail = await getDiaryDetail(id);
 
-        if (initialDiaryPhotosRef.current.length === 0) {
-          initialDiaryPhotosRef.current = detail.photos.map((p: any) => ({
-            imageUrl: p.imageUrl,
-          }));
-        }
+        initialDiaryPhotosRef.current = detail.photos.map((p: any) => ({
+          imageUrl: p.imageUrl,
+        }));
+
+        initialPhotoIdsRef.current = detail.photos.map((p: any) => p.id);
 
         setDiary(detail);
       } catch (error) {
@@ -124,7 +125,11 @@ const PostEdit = () => {
       postEmotion: diary.emotionCategory,
       postContent: diary.content,
       postTopics: diary.topic,
-      existingPhotos: initialDiaryPhotosRef.current,
+      existingPhotos: diary.photos
+        .filter(photo => initialPhotoIdsRef.current.includes(photo.id))
+        .map(photo => ({
+          imageUrl: photo.imageUrl,
+        })),
     };
 
     try {
@@ -133,14 +138,6 @@ const PostEdit = () => {
       if (!res.success) {
         alert("게시글 수정에 실패했습니다.");
         return;
-      }
-
-      if (images.length > 0) {
-        await Promise.all(
-          images
-            .filter(img => img.file)
-            .map(img => uploadPostPhoto(Number(postId), img.file as File)),
-        );
       }
 
       navigate(`/community/detail/${postId}`, {
@@ -186,8 +183,12 @@ const PostEdit = () => {
   };
 
   const handleRemoveImage = async (photoId: number) => {
+    const isInitialPhoto = initialPhotoIdsRef.current.includes(photoId);
+
     try {
-      await deletePostPhoto(Number(postId), photoId);
+      if (!isInitialPhoto) {
+        await deletePostPhoto(Number(postId), photoId);
+      }
 
       removeImage(photoId);
 
