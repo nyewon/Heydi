@@ -43,7 +43,7 @@ const PostEdit = () => {
   const [diary, setDiary] = useState<DiaryDetailResponse | null>(
     diaryData ?? null,
   );
-
+  const initialDiaryPhotosRef = useRef<{ imageUrl: string }[]>([]);
   const [emotionModalOpen, setEmotionModalOpen] = useState(false);
   const [topicModalOpen, setTopicModalOpen] = useState(false);
   const [editingField, setEditingField] = useState<
@@ -78,6 +78,12 @@ const PostEdit = () => {
       try {
         const detail = await getDiaryDetail(id);
 
+        if (initialDiaryPhotosRef.current.length === 0) {
+          initialDiaryPhotosRef.current = detail.photos.map((p: any) => ({
+            imageUrl: p.imageUrl,
+          }));
+        }
+
         setDiary(detail);
       } catch (error) {
         console.error("일기 상세 조회 실패", error);
@@ -110,7 +116,6 @@ const PostEdit = () => {
   }
 
   const handleSave = async () => {
-    console.log("images", images);
     const payload: CommunityPostUpsertRequest = {
       diaryId: diary.id,
       postTitle: diary.title ?? "제목 없음",
@@ -119,11 +124,8 @@ const PostEdit = () => {
       postEmotion: diary.emotionCategory,
       postContent: diary.content,
       postTopics: diary.topic,
-      existingPhotos: images
-        .filter(img => !img.file)
-        .map(img => ({ imageUrl: img.imageUrl })),
+      existingPhotos: initialDiaryPhotosRef.current,
     };
-    console.log("payload", payload);
 
     try {
       const res = await updatePost(Number(postId), payload);
@@ -167,11 +169,6 @@ const PostEdit = () => {
         ),
       );
 
-      console.log(
-        "업로드된 사진 URL",
-        uploadedPhotos.map(photo => photo.imageUrl),
-      );
-
       handleFiles(files);
 
       setDiary(prev => {
@@ -189,13 +186,8 @@ const PostEdit = () => {
   };
 
   const handleRemoveImage = async (photoId: number) => {
-    console.log("삭제할 photoId", photoId);
-    console.log("현재 photos", diary.photos);
-
     try {
-      const res = await deletePostPhoto(Number(postId), photoId);
-
-      console.log("삭제 응답", res);
+      await deletePostPhoto(Number(postId), photoId);
 
       removeImage(photoId);
 
@@ -209,13 +201,6 @@ const PostEdit = () => {
       });
     } catch (error) {
       console.error("사진 삭제 실패", error);
-
-      if (error && typeof error === "object" && "response" in error) {
-        console.log("삭제 에러 응답", (error as any).response?.data);
-        console.log("삭제 에러 상태", (error as any).response?.status);
-        console.log("삭제 에러 URL", (error as any).config?.url);
-      }
-
       alert("사진 삭제에 실패했습니다.");
     }
   };
