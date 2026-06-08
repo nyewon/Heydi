@@ -80,3 +80,24 @@ export const endConversationSession = async (
 
   return res.data;
 };
+
+// 일기 사진 업로드
+export const uploadDiaryPhotos = async (diaryId: number, files: File[]) => {
+  const formData = new FormData();
+
+  files.forEach(file => {
+    formData.append("photos", file);
+  });
+
+  const res = await instance.post(`/api/diaries/${diaryId}/photos`, formData);
+
+  return res.data.result;
+};
+
+// 일기 사진 삭제
+export const deleteDiaryPhoto = async (diaryId: number, photoId: number) => {
+  const res = await instance.delete(
+    `/api/diaries/${diaryId}/photos/${photoId}`,
+  );
+  return res.data;
+};

@@ -8,7 +8,7 @@
  * - - api 임시 연동, 연동 실패 시 상세보기 더미 데이터 사용
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Container,
@@ -34,6 +34,8 @@ import {
   getDiaryDetail,
   getDiaryConversation,
   updateDiary,
+  uploadDiaryPhotos,
+  deleteDiaryPhoto,
 } from "@services/diary";
 import Plus from "@assets/icons/plus.svg?react";
 
@@ -42,8 +44,8 @@ const DiaryEdit = () => {
   const { diaryId } = useParams<{ diaryId: string }>();
   const diaryData = DIARY_DETAIL_DUMMIES.find(d => d.id === Number(diaryId));
 
-  const [diary, setDiary] = useState<DiaryDetailResponse>(
-    diaryData as DiaryDetailResponse,
+  const [diary, setDiary] = useState<DiaryDetailResponse | null>(
+    diaryData ?? null,
   );
 
   const [messages, setMessages] = useState<ConversationMessagesResponse | null>(
@@ -57,6 +59,12 @@ const DiaryEdit = () => {
   >(null);
   const [tempValue, setTempValue] = useState("");
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
+  const initialImages = useMemo(() => {
+    return (diary?.photos ?? []).map(photo => ({
+      id: photo.id,
+      imageUrl: photo.imageUrl,
+    }));
+  }, [diary?.photos]);
 
   const {
     images,
@@ -65,12 +73,8 @@ const DiaryEdit = () => {
     removeImage,
     fileInputRef,
     openFilePicker,
-    handleFiles,
   } = useImageUploader({
-    initialImages: diary.photos.map(photo => ({
-      id: photo.id,
-      imageUrl: photo.imageUrl,
-    })),
+    initialImages: initialImages,
   });
 
   useEffect(() => {
@@ -122,11 +126,10 @@ const DiaryEdit = () => {
     }
   }, [editingField, tempValue]);
 
-  if (!diaryData && !diary) {
+  if (!diary) {
     return (
-      <div className="w-full flex justify-center items-center text-center p-10 text-sm font-bold text-[#76615A]">
-        Error <br />
-        일기를 찾을 수 없습니다.
+      <div className="w-full flex justify-center items-center p-10">
+        Loading...
       </div>
     );
   }
@@ -139,8 +142,6 @@ const DiaryEdit = () => {
       content: diary.content,
     };
 
-    console.log("SAVE PAYLOAD", payload);
-
     try {
       await updateDiary(diary.id, payload);
 
@@ -150,6 +151,47 @@ const DiaryEdit = () => {
     } catch (error) {
       console.error("일기 수정 실패", error);
       alert("일기 수정에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  const handlePhotoUpload = async (files: FileList | null) => {
+    if (!files || !diaryId) return;
+
+    const fileArray = Array.from(files);
+
+    try {
+      const result = await uploadDiaryPhotos(Number(diaryId), fileArray);
+
+      setDiary(prev => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          photos: [...prev.photos, ...result.photos],
+        };
+      });
+    } catch (error) {
+      console.error("사진 업로드 실패", error);
+
+      alert("사진 업로드에 실패했습니다.");
+    }
+  };
+
+  const handlePhotoRemove = async (photoId: number) => {
+    if (!diaryId) return;
+    try {
+      await deleteDiaryPhoto(Number(diaryId), photoId);
+      removeImage(photoId);
+      setDiary(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          photos: prev.photos.filter(photo => photo.id !== photoId),
+        };
+      });
+    } catch (error) {
+      console.error("사진 삭제 실패", error);
+      alert("사진 삭제에 실패했습니다.");
     }
   };
 
@@ -206,10 +248,15 @@ const DiaryEdit = () => {
               spellCheck={false}
               onChange={e => setTempValue(e.target.value)}
               onBlur={() => {
-                setDiary(prev => ({
-                  ...prev,
-                  oneLineDiary: tempValue,
-                }));
+                setDiary(prev => {
+                  if (!prev) return prev;
+
+                  return {
+                    ...prev,
+                    oneLineDiary: tempValue,
+                  };
+                });
+
                 setEditingField(null);
               }}
               onKeyDown={e => {
@@ -248,10 +295,15 @@ const DiaryEdit = () => {
                 }
               }}
               onBlur={() => {
-                setDiary(prev => ({
-                  ...prev,
-                  content: tempValue,
-                }));
+                setDiary(prev => {
+                  if (!prev) return prev;
+
+                  return {
+                    ...prev,
+                    content: tempValue,
+                  };
+                });
+
                 setEditingField(null);
               }}
               className="w-full text-xs leading-5 resize-none overflow-hidden focus:outline-none"
@@ -303,7 +355,7 @@ const DiaryEdit = () => {
               images={images}
               currentIndex={currentIndex}
               onChangeIndex={setCurrentIndex}
-              onRemove={removeImage}
+              onRemove={handlePhotoRemove}
             />
           )}
 
@@ -313,7 +365,7 @@ const DiaryEdit = () => {
             accept="image/*"
             multiple
             hidden
-            onChange={e => handleFiles(e.target.files)}
+            onChange={e => handlePhotoUpload(e.target.files)}
           />
         </DiaryInfoBox>
       </Container>
@@ -323,10 +375,14 @@ const DiaryEdit = () => {
         defaultEmotion={diary.emotionCategory}
         onClose={() => setEmotionModalOpen(false)}
         onConfirm={nextEmotion =>
-          setDiary(prev => ({
-            ...prev,
-            emotionCategory: nextEmotion,
-          }))
+          setDiary(prev => {
+            if (!prev) return prev;
+
+            return {
+              ...prev,
+              emotionCategory: nextEmotion,
+            };
+          })
         }
       />
 
@@ -335,10 +391,14 @@ const DiaryEdit = () => {
         defaultTopics={diary.topic}
         onClose={() => setTopicModalOpen(false)}
         onConfirm={nextTopics =>
-          setDiary(prev => ({
-            ...prev,
-            topic: nextTopics,
-          }))
+          setDiary(prev => {
+            if (!prev) return prev;
+
+            return {
+              ...prev,
+              topic: nextTopics,
+            };
+          })
         }
       />
     </div>

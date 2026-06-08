@@ -4,6 +4,7 @@ import {
   getMonthlyCalendar,
   getMonthlyTopics,
   getMonthlyEmotions,
+  getAvailableMonths,
 } from "@services/report";
 import { queryKeys } from "@queries/queryKeys";
 
@@ -32,5 +33,12 @@ export const useMonthlyEmotions = (ym: string) => {
   return useQuery({
     queryKey: queryKeys.report.emotions(ym),
     queryFn: () => getMonthlyEmotions(ym),
+  });
+};
+
+export const useAvailableMonths = () => {
+  return useQuery({
+    queryKey: queryKeys.report.availableMonths,
+    queryFn: getAvailableMonths,
   });
 };

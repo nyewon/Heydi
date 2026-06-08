@@ -12,10 +12,9 @@ import {
 interface CommentProps {
   postId: number;
   initialComments: CommunityComment[];
-  currentUser: string;
 }
 
-const Comment = ({ postId, initialComments, currentUser }: CommentProps) => {
+const Comment = ({ postId, initialComments }: CommentProps) => {
   const [comments, setComments] = useState<CommunityComment[]>(initialComments);
   const [inputValue, setInputValue] = useState("");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -108,7 +107,6 @@ const Comment = ({ postId, initialComments, currentUser }: CommentProps) => {
           <CommentItem
             key={comment.commentId}
             comment={comment}
-            currentUser={currentUser}
             onDelete={() => handleDeleteComment(idx)}
             onEdit={() => handleEditComment(idx)}
           />

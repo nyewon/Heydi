@@ -14,6 +14,8 @@ export const queryKeys = {
     posts: ["community", "posts"],
     post: (id: number) => ["community", "post", id],
     comments: (id: number) => ["community", "comments", id],
+    shared: ["user", "shared"],
+    liked: ["user", "liked"],
   },
 
   diary: {
@@ -27,5 +29,6 @@ export const queryKeys = {
     calendar: (ym: string) => ["report", "calendar", ym],
     topics: (ym: string) => ["report", "topics", ym],
     emotions: (ym: string) => ["report", "emotions", ym],
+    availableMonths: ["report", "availableMonths"],
   },
 };
