@@ -64,14 +64,14 @@ const SelectDiary = () => {
 
         navigate(`/community/post-edit/${postId}`, {
           replace: true,
+          state: {
+            diaryId: selectedDiaryId,
+          },
         });
       }
     } catch (error) {
       console.error("post id 생성 실패", error);
-
-      navigate(`/community/post-edit/${selectedDiaryId}`, {
-        replace: true,
-      });
+      alert("post id 생성에 실패했습니다. 다시 시도해주세요.");
     }
   };
 

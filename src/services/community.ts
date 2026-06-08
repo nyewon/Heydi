@@ -9,15 +9,17 @@ export const updatePost = async (
   postId: number,
   data: CommunityPostUpsertRequest,
 ) => {
-  const res = await instance.put(`/community/posts/${postId}`, data);
+  const res = await instance.post(`/community/posts/${postId}`, data);
+
   return res.data;
 };
 
 // 커뮤니티 게시글 작성용 일기 선택
-export const selectDiaryForPost = async (diary_id: number) => {
+export const selectDiaryForPost = async (diaryId: number) => {
   const res = await instance.post("/community/selectdiary", {
-    diary_id,
+    diaryId,
   });
+
   return res.data;
 };
 
@@ -41,6 +43,13 @@ export const getPostDetail = async (postId: number) => {
   const res = await instance.get(`/community/posts/${postId}`);
 
   return res.data.result as PostDetailResponse;
+};
+
+// 게시글 삭제
+export const deletePost = async (postId: number) => {
+  const res = await instance.delete(`/community/posts/${postId}`);
+
+  return res.data;
 };
 
 // 게시글 좋아요 토글
@@ -82,7 +91,7 @@ export const updatePostComment = async (
   content: string,
 ) => {
   const res = await instance.patch(
-    `/community/post/${postId}/comments/${commentId}`,
+    `/community/posts/${postId}/comments/${commentId}`,
     {
       content,
     },
@@ -94,7 +103,7 @@ export const updatePostComment = async (
 // 댓글 삭제
 export const deletePostComment = async (postId: number, commentId: number) => {
   const res = await instance.delete(
-    `/community/post/${postId}/comments/${commentId}`,
+    `/community/posts/${postId}/comments/${commentId}`,
   );
 
   return res.data;
@@ -103,7 +112,7 @@ export const deletePostComment = async (postId: number, commentId: number) => {
 // 게시글 사진 업로드
 export const uploadPostPhoto = async (postId: number, photo: File) => {
   const formData = new FormData();
-  formData.append("photo", photo);
+  formData.append("photos", photo);
 
   const res = await instance.post(
     `/community/posts/${postId}/photos`,
@@ -120,9 +129,15 @@ export const uploadPostPhoto = async (postId: number, photo: File) => {
 
 // 게시글 사진 삭제
 export const deletePostPhoto = async (postId: number, fileId: number) => {
+  console.log("DELETE 요청");
+  console.log("postId:", postId);
+  console.log("fileId:", fileId);
+
   const res = await instance.delete(
     `/community/posts/${postId}/photos/${fileId}`,
   );
+
+  console.log("DELETE 응답", res.data);
 
   return res.data;
 };

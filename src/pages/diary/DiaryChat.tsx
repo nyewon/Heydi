@@ -19,6 +19,7 @@ import {
   Microphone,
 } from "@services/gemini-client";
 import { endConversationSession } from "@services/diary";
+import { Loading } from "@pages/etc";
 
 const WS_SCHEME = window.location.protocol === "https:" ? "wss" : "ws";
 const WS_HOST =
@@ -43,6 +44,7 @@ const DiaryChat = () => {
   const [elapsed, setElapsed] = useState(0);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const isSpeaking = useAudioStream();
 
   const geminiRef = useRef<GeminiAPI | null>(null);
@@ -165,6 +167,10 @@ const DiaryChat = () => {
     };
   }, [diaryId, navigate]);
 
+  if (isLoading) {
+    return <Loading type="diary" />;
+  }
+
   const appendMessage = (text: string, speaker: "user" | "assistant") => {
     setMessages(prev => {
       const copied = [...prev];
@@ -221,9 +227,12 @@ const DiaryChat = () => {
 
   const handleExitChat = async () => {
     try {
+      setIsLoading(true);
+
       stopAll();
 
       if (!diaryId) return;
+
       const res = await endConversationSession(Number(diaryId));
 
       if (res.success) {
@@ -233,6 +242,8 @@ const DiaryChat = () => {
       }
     } catch (error) {
       console.error("세션 종료 실패", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

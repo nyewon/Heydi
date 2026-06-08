@@ -8,7 +8,6 @@
  * - 카드 클릭 시 상세 페이지로 이동 가능
  */
 
-import { useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import DefaultProfile from "@assets/icons/profile_s.svg";
@@ -43,11 +42,8 @@ const CommunityCard = ({
   onClick,
   onLike,
 }: CommunityCardProps) => {
-  const [isLiked, setIsLiked] = useState(liked);
-
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsLiked(prev => !prev);
     onLike?.();
   };
 
@@ -97,12 +93,11 @@ const CommunityCard = ({
         >
           <FaHeart
             size={20}
-            color={isLiked ? "#B28C7E" : "#EFE8E1"}
-            className={isLiked ? "opacity-100" : "opacity-70"}
+            color={liked ? "#B28C7E" : "#EFE8E1"}
+            className={liked ? "opacity-100" : "opacity-70"}
           />
-          <span className="text-xs font-bold text-[#4A4A4A]">
-            {isLiked ? likes + 1 : likes}
-          </span>
+
+          <span className="text-xs font-bold text-[#4A4A4A]">{likes}</span>
         </button>
 
         <div className="flex items-center gap-1">

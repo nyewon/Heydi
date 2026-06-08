@@ -51,7 +51,7 @@ const App = () => {
     <Router>
       <div
         className="
-          w-[100vw]
+          w-screen
           max-w-[425px]
           min-w-[320px]
           flex
@@ -98,7 +98,7 @@ const App = () => {
                   element={<SelectDiary />}
                 />
                 <Route
-                  path="/community/post-edit/:diaryId"
+                  path="/community/post-edit/:postId"
                   element={<PostEdit />}
                 />
 

@@ -43,7 +43,7 @@ export interface PostDetailResponse {
   }[];
   likeCount: number;
   commentCount: number;
-  isLiked: boolean;
+  liked: boolean;
   createdAt: string;
 }
 
@@ -53,7 +53,7 @@ export interface CommunityComment {
   nickname: string;
   profileUrl: string;
   content: string;
-  isMine: boolean;
+  mine: boolean;
   createdAt: string;
 }
 

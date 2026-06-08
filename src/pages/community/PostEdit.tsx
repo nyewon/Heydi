@@ -8,8 +8,8 @@
  * - 임시 더미 데이터 사용
  */
 
-import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   Container,
   BackHeader,
@@ -25,6 +25,7 @@ import { useImageUploader } from "@hooks/useImageUploader";
 import { formatDate, formatElapsedTime } from "@utils/date";
 import { DiaryDetailResponse } from "@models/diary";
 import { CommunityPostUpsertRequest } from "@models/community";
+import { getDiaryDetail } from "@services/diary";
 import {
   uploadPostPhoto,
   deletePostPhoto,
@@ -34,12 +35,15 @@ import Plus from "@assets/icons/plus.svg?react";
 
 const PostEdit = () => {
   const navigate = useNavigate();
-  const { diaryId } = useParams<{ diaryId: string }>();
+  const location = useLocation();
+  const diaryId = location.state?.diaryId;
+  const { postId } = useParams<{ postId: string }>();
   const diaryData = DIARY_DETAIL_DUMMIES.find(d => d.id === Number(diaryId));
 
-  if (!diaryData) return null;
-
-  const [diary, setDiary] = useState<DiaryDetailResponse>(diaryData);
+  const [diary, setDiary] = useState<DiaryDetailResponse | null>(
+    diaryData ?? null,
+  );
+  const initialDiaryPhotosRef = useRef<{ imageUrl: string }[]>([]);
   const [emotionModalOpen, setEmotionModalOpen] = useState(false);
   const [topicModalOpen, setTopicModalOpen] = useState(false);
   const [editingField, setEditingField] = useState<
@@ -47,6 +51,14 @@ const PostEdit = () => {
   >(null);
   const [tempValue, setTempValue] = useState("");
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const initialPhotoIdsRef = useRef<number[]>([]);
+  const initialImages = useMemo(() => {
+    return (diary?.photos ?? []).map(photo => ({
+      id: photo.id,
+      imageUrl: photo.imageUrl,
+    }));
+  }, [diary?.photos]);
 
   const {
     images,
@@ -56,7 +68,37 @@ const PostEdit = () => {
     fileInputRef,
     openFilePicker,
     handleFiles,
-  } = useImageUploader();
+  } = useImageUploader({ initialImages });
+
+  useEffect(() => {
+    const id = Number(diaryId);
+
+    if (!id) return;
+
+    const fetchDiaryDetail = async () => {
+      try {
+        const detail = await getDiaryDetail(id);
+
+        initialDiaryPhotosRef.current = detail.photos.map((p: any) => ({
+          imageUrl: p.imageUrl,
+        }));
+
+        initialPhotoIdsRef.current = detail.photos.map((p: any) => p.id);
+
+        setDiary(detail);
+      } catch (error) {
+        console.error("일기 상세 조회 실패", error);
+
+        const dummyDiary = DIARY_DETAIL_DUMMIES.find(d => d.id === id);
+
+        if (dummyDiary) {
+          setDiary(dummyDiary);
+        }
+      }
+    };
+
+    fetchDiaryDetail();
+  }, [diaryId]);
 
   useEffect(() => {
     if (editingField === "content" && contentRef.current) {
@@ -70,36 +112,32 @@ const PostEdit = () => {
     }
   }, [editingField]);
 
-  const handleSave = async () => {
-    const postId = 1;
+  if (!diary) {
+    return null;
+  }
 
+  const handleSave = async () => {
     const payload: CommunityPostUpsertRequest = {
       diaryId: diary.id,
-      postTitle: diary.title,
+      postTitle: diary.title ?? "제목 없음",
       diaryDate: diary.createdDate.split("T")[0],
       conversationDuration: diary.conversationDurationSec,
       postEmotion: diary.emotionCategory,
       postContent: diary.content,
       postTopics: diary.topic,
-      existingPhotos: images
-        .filter(img => !img.file)
-        .map(img => ({ imageUrl: img.imageUrl })),
+      existingPhotos: diary.photos
+        .filter(photo => initialPhotoIdsRef.current.includes(photo.id))
+        .map(photo => ({
+          imageUrl: photo.imageUrl,
+        })),
     };
 
     try {
-      const res = await updatePost(postId, payload);
+      const res = await updatePost(Number(postId), payload);
 
       if (!res.success) {
         alert("게시글 수정에 실패했습니다.");
         return;
-      }
-
-      if (images.length > 0) {
-        await Promise.all(
-          images
-            .filter(img => img.file)
-            .map(img => uploadPostPhoto(postId, img.file as File)),
-        );
       }
 
       navigate(`/community/detail/${postId}`, {
@@ -111,16 +149,57 @@ const PostEdit = () => {
     }
   };
 
-  const handleRemoveImage = async (index: number) => {
-    const image = images[index];
+  const handlePhotoUpload = async (files: FileList | null) => {
+    if (!files || !postId) return;
+    const fileArray = Array.from(files);
+    try {
+      const uploadResults = await Promise.all(
+        fileArray.map(file => uploadPostPhoto(Number(postId), file)),
+      );
+
+      const uploadedPhotos = uploadResults.flatMap(result =>
+        (result.photos ?? []).map(
+          (photo: { fileId: number; fileUrl: string }) => ({
+            id: photo.fileId,
+            imageUrl: photo.fileUrl,
+          }),
+        ),
+      );
+
+      handleFiles(files);
+
+      setDiary(prev => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          photos: [...prev.photos, ...uploadedPhotos],
+        };
+      });
+    } catch (error) {
+      console.error("사진 업로드 실패", error);
+      alert("사진 업로드에 실패했습니다.");
+    }
+  };
+
+  const handleRemoveImage = async (photoId: number) => {
+    const isInitialPhoto = initialPhotoIdsRef.current.includes(photoId);
 
     try {
-      if (image.id) {
-        const postId = 1;
-        await deletePostPhoto(postId, image.id);
+      if (!isInitialPhoto) {
+        await deletePostPhoto(Number(postId), photoId);
       }
 
-      removeImage(index);
+      removeImage(photoId);
+
+      setDiary(prev => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          photos: prev.photos.filter(photo => photo.id !== photoId),
+        };
+      });
     } catch (error) {
       console.error("사진 삭제 실패", error);
       alert("사진 삭제에 실패했습니다.");
@@ -134,7 +213,7 @@ const PostEdit = () => {
       <Container className="pb-10">
         <div className="w-full bg-white border border-[#E0CFC5] rounded-xl p-4 mb-4">
           <p className="text-sm font-extrabold text-[#4A4A4A] mb-2">
-            {diary.title}
+            {diary.title ?? "제목 없음"}
           </p>
           <p className="text-xs text-[#4A4A4A]">
             작성 날짜: {formatDate(diary.createdDate)}
@@ -189,10 +268,15 @@ const PostEdit = () => {
                 }
               }}
               onBlur={() => {
-                setDiary(prev => ({
-                  ...prev,
-                  content: tempValue,
-                }));
+                setDiary(prev => {
+                  if (!prev) return prev;
+
+                  return {
+                    ...prev,
+                    content: tempValue,
+                  };
+                });
+
                 setEditingField(null);
               }}
               className="
@@ -250,7 +334,7 @@ const PostEdit = () => {
             accept="image/*"
             multiple
             hidden
-            onChange={e => handleFiles(e.target.files)}
+            onChange={e => handlePhotoUpload(e.target.files)}
           />
         </DiaryInfoBox>
 
@@ -264,10 +348,14 @@ const PostEdit = () => {
         defaultEmotion={diary.emotionCategory}
         onClose={() => setEmotionModalOpen(false)}
         onConfirm={nextEmotion =>
-          setDiary(prev => ({
-            ...prev,
-            emotionCategory: nextEmotion,
-          }))
+          setDiary(prev => {
+            if (!prev) return prev;
+
+            return {
+              ...prev,
+              emotionCategory: nextEmotion,
+            };
+          })
         }
       />
 
@@ -276,10 +364,14 @@ const PostEdit = () => {
         defaultTopics={diary.topic}
         onClose={() => setTopicModalOpen(false)}
         onConfirm={nextTopics =>
-          setDiary(prev => ({
-            ...prev,
-            topic: nextTopics,
-          }))
+          setDiary(prev => {
+            if (!prev) return prev;
+
+            return {
+              ...prev,
+              topic: nextTopics,
+            };
+          })
         }
       />
     </div>

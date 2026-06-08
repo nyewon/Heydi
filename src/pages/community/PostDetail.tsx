@@ -29,12 +29,14 @@ import {
   POST_DETAIL_DUMMIES,
   COMMUNITY_COMMENT_DUMMIES,
 } from "@mocks/community";
-import { getPostComments, togglePostLike } from "@services/community";
+import { getPostComments } from "@services/community";
 import { CommunityComment, PostDetailResponse } from "@models/community";
 import { usePostDetail } from "@queries/community/usePostDetail";
+import { useUserInfo } from "@queries/auth/useUserInfo";
+import { useDeletePost } from "@queries/community/useDeletePost";
+import { useLiked } from "@queries/community/useLiked";
 
 const PostDetail = () => {
-  const currentUser = "Test";
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
 
@@ -49,10 +51,15 @@ const PostDetail = () => {
     Number(postId),
   );
 
+  const { data: userInfo } = useUserInfo();
+
+  const { mutateAsync: deletePostMutate } = useDeletePost();
+  const { toggleLike } = useLiked();
+
   useEffect(() => {
     if (detailData) {
       setPost(detailData);
-      setIsLiked(detailData.isLiked);
+      setIsLiked(detailData.liked);
       setLikeCount(detailData.likeCount);
     } else if (detailError) {
       const dummy =
@@ -60,7 +67,7 @@ const PostDetail = () => {
         POST_DETAIL_DUMMIES[0];
 
       setPost(dummy);
-      setIsLiked(dummy.isLiked);
+      setIsLiked(dummy.liked);
       setLikeCount(dummy.likeCount);
     }
   }, [detailData, detailError, postId]);
@@ -69,7 +76,7 @@ const PostDetail = () => {
     const fetchComments = async () => {
       try {
         const data = await getPostComments(Number(postId), null, 10);
-        setComments(data.comments);
+        setComments(data.result.comments);
       } catch (e) {
         console.error("댓글 조회 실패", e);
         setComments(COMMUNITY_COMMENT_DUMMIES.comments);
@@ -83,26 +90,30 @@ const PostDetail = () => {
 
   const handleToggleLike = async () => {
     try {
-      const res = await togglePostLike(post.postId);
+      await toggleLike(post.postId);
 
-      if (res.success) {
-        setIsLiked(prev => !prev);
-        setLikeCount(prev => (isLiked ? prev - 1 : prev + 1));
-      } else {
-        alert("좋아요 처리에 실패했습니다.");
-      }
+      setIsLiked(prev => !prev);
+      setLikeCount(prev => (isLiked ? prev - 1 : prev + 1));
     } catch (e) {
       console.error("좋아요 API 실패", e);
       alert("좋아요 처리 중 오류가 발생했습니다.");
     }
   };
 
-  const handleDeletePost = () => {
-    console.log("delete post:", post.postId);
-    setIsDeleteOpen(false);
-    navigate(-1);
-  };
+  const handleDeletePost = async () => {
+    try {
+      await deletePostMutate(post.postId);
 
+      setIsDeleteOpen(false);
+
+      alert("게시글이 삭제되었습니다.");
+
+      navigate("/community");
+    } catch (e) {
+      console.error("게시글 삭제 실패", e);
+      alert("게시글 삭제에 실패했습니다.");
+    }
+  };
   return (
     <div className="w-full flex flex-col items-center">
       <BackHeader />
@@ -180,7 +191,7 @@ const PostDetail = () => {
               </span>
             </div>
 
-            {post.author.nickname === currentUser && (
+            {post.author.userId === userInfo?.userId && (
               <button
                 onClick={() => setIsDeleteOpen(true)}
                 className="ml-auto cursor-pointer"
@@ -191,11 +202,7 @@ const PostDetail = () => {
           </div>
         </div>
 
-        <Comment
-          postId={post.postId}
-          initialComments={comments}
-          currentUser={currentUser}
-        />
+        <Comment postId={post.postId} initialComments={comments} />
       </Container>
 
       <DeleteModal

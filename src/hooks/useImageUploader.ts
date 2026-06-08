@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PhotoItem } from "@models/diary";
 
 interface UseImageUploaderOptions {
@@ -13,6 +13,10 @@ export const useImageUploader = ({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [images, setImages] = useState<PhotoItem[]>(initialImages);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    setImages(initialImages);
+  }, [initialImages]);
 
   const openFilePicker = () => {
     fileInputRef.current?.click();
