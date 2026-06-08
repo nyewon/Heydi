@@ -3,13 +3,22 @@ import { useLocation } from "react-router-dom";
 import { EMOTION_S_ICONS } from "@constants/emotions";
 import type { MonthlyEmotionResponse } from "@models/report";
 
+const BAR_AREA_HEIGHT = 85;
+const MIN_BAR_HEIGHT = 20;
+const CHART_CONTAINER_HEIGHT = 110;
+
 const EmotionChart = ({ data }: { data: MonthlyEmotionResponse }) => {
   const location = useLocation();
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     setAnimate(false);
-    requestAnimationFrame(() => setAnimate(true));
+
+    const frame = requestAnimationFrame(() => {
+      setAnimate(true);
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [location.pathname]);
 
   const weekCount = data.weeks.length;
@@ -20,7 +29,7 @@ const EmotionChart = ({ data }: { data: MonthlyEmotionResponse }) => {
     return 32;
   };
 
-  const percents = data.weeks.map(w => w.emotionRate);
+  const percents = data.weeks.map(week => week.emotionRate);
   const max = Math.max(...percents);
   const min = Math.min(...percents);
 
@@ -34,18 +43,23 @@ const EmotionChart = ({ data }: { data: MonthlyEmotionResponse }) => {
     <div className="w-full border border-[#E0CFC5] rounded-2xl p-2 bg-white mb-6">
       <div className="flex justify-center gap-6 px-1">
         {data.weeks.map(week => {
-          const barHeight = (week.emotionRate / 100) * 90 + 20;
+          const barHeight =
+            MIN_BAR_HEIGHT +
+            (week.emotionRate / 100) * (BAR_AREA_HEIGHT - MIN_BAR_HEIGHT);
 
           return (
             <div key={week.weekIndex} className="flex flex-col items-center">
               <div
-                className="relative h-[100px] mb-1 flex items-end"
-                style={{ width: `${getBarWidthPx()}px` }}
+                className="relative mb-1 flex items-end"
+                style={{
+                  width: `${getBarWidthPx()}px`,
+                  height: `${CHART_CONTAINER_HEIGHT}px`,
+                }}
               >
                 <div
                   className="w-full rounded-t-xl flex items-end justify-center transition-[height] duration-400 ease-out"
                   style={{
-                    height: animate ? `${barHeight - 6}px` : "0px",
+                    height: animate ? `${barHeight}px` : "0px",
                     backgroundColor: getBarColor(week.emotionRate),
                   }}
                 >
@@ -57,7 +71,7 @@ const EmotionChart = ({ data }: { data: MonthlyEmotionResponse }) => {
                 <div
                   className="absolute left-1/2 -translate-x-1/2 transition-[bottom] duration-400 ease-out"
                   style={{
-                    bottom: animate ? `${barHeight}px` : "0px",
+                    bottom: animate ? `${barHeight + 4}px` : "0px",
                   }}
                 >
                   {EMOTION_S_ICONS[week.topEmotion]}

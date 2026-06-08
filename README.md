@@ -79,6 +79,8 @@ src/
 │   ├── report/    # 월간 리포트 페이지
 │   └── index.ts   # 페이지 export 관리
 │
+├── queries/       # react query 로직
+│
 ├── services/      # API 통신 로직
 │
 ├── stores/        # 전역 상태 관리 (zustand)

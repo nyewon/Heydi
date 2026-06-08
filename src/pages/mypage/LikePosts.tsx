@@ -4,70 +4,39 @@
  * 세부사항:
  * - CommunityCard 컴포넌트를 사용
  * - 게시글 클릭 시 해당 게시글 상세 페이지로 이동
- * - api 연동 완료, 연동 실패 시 더미데이터 표시
+ * - React Query 기반 무한 스크롤
+ * - 좋아요 토글 시 목록 자동 갱신
  */
 
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, BackHeader, CommunityCard } from "@components/index";
-import { LIKE_POST_DUMMIES } from "@mocks/mypage";
-import { MypagePost } from "@models/mypage";
-import { getLikedPosts } from "@services/auth";
 import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
+import { useLiked } from "@queries/community/useLiked";
+import { useLikedPosts } from "@queries/community/useLikedPosts";
 
 const LikePosts = () => {
   const navigate = useNavigate();
 
-  const [posts, setPosts] = useState<MypagePost[]>([]);
-  const [page, setPage] = useState(0);
-  const [totalCount, setTotalCount] = useState<number | null>(null);
-  const [isFetching, setIsFetching] = useState(false);
+  const { toggleLike } = useLiked();
 
-  useEffect(() => {
-    const fetchLikedPosts = async () => {
-      if (isFetching) return;
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useLikedPosts();
 
-      try {
-        setIsFetching(true);
+  const posts = data?.pages.flatMap(page => page.posts) ?? [];
 
-        const res = await getLikedPosts(page, 10);
-
-        if (res.success) {
-          const newPosts = Array.isArray(res.result)
-            ? res.result
-            : (res.result?.posts ?? []);
-
-          setPosts(prev => [...prev, ...newPosts]);
-
-          const total = res.result?.totalCount ?? newPosts.length;
-          setTotalCount(total);
-        } else {
-          if (page === 0) {
-            setPosts(LIKE_POST_DUMMIES);
-            setTotalCount(LIKE_POST_DUMMIES.length);
-          }
-        }
-      } catch (e) {
-        console.error("좋아요 게시글 조회 실패", e);
-
-        if (page === 0) {
-          setPosts(LIKE_POST_DUMMIES);
-          setTotalCount(LIKE_POST_DUMMIES.length);
-        }
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    fetchLikedPosts();
-  }, [page]);
-
-  const hasMore = totalCount === null || posts.length < totalCount;
+  const handleToggleLike = async (postId: number) => {
+    try {
+      await toggleLike(postId);
+    } catch (e) {
+      console.error("좋아요 토글 실패", e);
+      alert("좋아요 처리 중 오류가 발생했습니다.");
+    }
+  };
 
   const observerRef = useInfiniteScroll({
-    hasMore,
-    isFetching,
-    onLoadMore: () => setPage(prev => prev + 1),
+    hasMore: !!hasNextPage,
+    isFetching: isFetchingNextPage,
+    onLoadMore: fetchNextPage,
   });
 
   return (
@@ -75,7 +44,7 @@ const LikePosts = () => {
       <BackHeader />
 
       <Container>
-        {posts.length === 0 && !isFetching && (
+        {posts.length === 0 && !isFetchingNextPage && (
           <div className="w-full flex flex-col items-center mt-20 text-center">
             <p className="text-base font-extrabold text-[#7C7C7C]">
               아직 좋아요한 글이 없어요🥲
@@ -101,6 +70,7 @@ const LikePosts = () => {
               likes={post.likeCount}
               comments={post.commentCount}
               liked={post.isLiked}
+              onLike={() => handleToggleLike(post.postId)}
               onClick={() => navigate(`/community/detail/${post.postId}`)}
             />
           ))}

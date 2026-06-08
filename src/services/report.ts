@@ -23,3 +23,9 @@ export const getMonthlyEmotions = async (yearMonth: string) => {
   const res = await instance.get(`/reports/monthly/${yearMonth}/emotions`);
   return res.data;
 };
+
+// 월간 리포트 조회 가능 월 목록
+export const getAvailableMonths = async () => {
+  const res = await instance.get("/reports/monthly");
+  return res.data;
+};
