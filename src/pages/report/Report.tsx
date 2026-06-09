@@ -9,7 +9,6 @@
  * - 인사이트 & 피드백
  * - 캘린더
  * - 한 달 전 하루 일기 카드
- * - api 임시 연동, 연동 실패 시 임시 더미 데이터 사용
  */
 
 import { useEffect, useState } from "react";
@@ -25,12 +24,6 @@ import {
   MonthModal,
 } from "@components/index";
 import { IoCalendarNumberOutline } from "react-icons/io5";
-import {
-  MONTHLY_EMOTION_DUMMY,
-  MONTHLY_TOPICS_DUMMY,
-  CALENDAR_DUMMY,
-  MONTHLY_REPORT_DUMMY,
-} from "@mocks/report";
 import {
   useMonthlyReport,
   useMonthlyCalendar,
@@ -67,37 +60,18 @@ const Report = () => {
   const isAvailableMonth =
     availableMonths.length === 0 || availableMonths.includes(yearMonth);
 
-  const { data: reportData, isError: reportError } =
-    useMonthlyReport(yearMonth);
+  const { data: reportData } = useMonthlyReport(yearMonth);
 
-  const { data: calendarData, isError: calendarError } =
-    useMonthlyCalendar(yearMonth);
+  const { data: calendarData } = useMonthlyCalendar(yearMonth);
 
-  const { data: topicsData, isError: topicsError } =
-    useMonthlyTopics(yearMonth);
+  const { data: topicsData } = useMonthlyTopics(yearMonth);
 
-  const { data: emotionsData, isError: emotionsError } =
-    useMonthlyEmotions(yearMonth);
+  const { data: emotionsData } = useMonthlyEmotions(yearMonth);
 
-  const report =
-    reportError || !reportData?.result
-      ? MONTHLY_REPORT_DUMMY
-      : reportData.result;
-
-  const calendar =
-    calendarError || !calendarData?.result?.entries
-      ? CALENDAR_DUMMY.entries
-      : calendarData.result.entries;
-
-  const topics =
-    topicsError || !topicsData?.result
-      ? MONTHLY_TOPICS_DUMMY
-      : topicsData.result;
-
-  const emotions =
-    emotionsError || !emotionsData?.result
-      ? MONTHLY_EMOTION_DUMMY
-      : emotionsData.result;
+  const report = reportData?.result;
+  const calendar = calendarData?.result?.entries;
+  const topics = topicsData?.result;
+  const emotions = emotionsData?.result;
 
   if (!report || !calendar || !topics || !emotions) return null;
 
