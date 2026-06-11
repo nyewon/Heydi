@@ -20,7 +20,6 @@ import {
 } from "@components/index";
 import DefaultProfile from "@assets/icons/profile.svg";
 import { IoChevronForward } from "react-icons/io5";
-import { ALARM_DUMMY } from "@mocks/mypage";
 import { AlarmResponseRequest } from "@models/mypage";
 import {
   disableReminder,

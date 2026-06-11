@@ -16,7 +16,6 @@ import {
   DefaultHeader,
   DiaryCard,
 } from "@components/index";
-import { DIARY_LIST_DUMMIES } from "@mocks/diary";
 import { useDiaryList } from "@queries/diary/useDiaryList";
 import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
 
@@ -25,7 +24,7 @@ const Diary = () => {
 
   const [page, setPage] = useState(0);
 
-  const { data, isFetching, isError } = useDiaryList(page);
+  const { data, isFetching } = useDiaryList(page);
 
   const diaries = data?.content ?? [];
   const totalPages = data?.totalPages ?? null;
@@ -38,7 +37,7 @@ const Diary = () => {
     onLoadMore: () => setPage(prev => prev + 1),
   });
 
-  const displayDiaries = page === 0 && isError ? DIARY_LIST_DUMMIES : diaries;
+  const displayDiaries = diaries;
 
   return (
     <div className="w-full flex flex-col items-center">

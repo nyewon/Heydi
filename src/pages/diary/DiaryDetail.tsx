@@ -5,7 +5,7 @@
  * - 일기 세부내용 표시
  * - 리포트로 보내기 버튼
  * - 사진 데이터가 있을 때만 오늘의 사진 보이기
- * - api 임시 연동, 연동 실패 시 더미 데이터 사용
+ * - api 연동 완료
  */
 
 import { useState } from "react";
@@ -17,10 +17,6 @@ import {
   DiaryInfoBox,
   ImageSlider,
 } from "@components/index";
-import {
-  DIARY_DETAIL_DUMMIES,
-  CONVERSATION_MESSAGES_DUMMIES,
-} from "@mocks/diary";
 import { EMOTION_S_ICONS, EMOTION_SENTENCE } from "@constants/emotions";
 import { formatDate, formatElapsedTime } from "@utils/date";
 import {
@@ -37,20 +33,13 @@ const DiaryDetail = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSending, setIsSending] = useState(false);
 
-  const { data: detailData, isError: detailError } = useDiaryDetail(id);
+  const { data: detailData } = useDiaryDetail(id);
 
-  const { data: conversationData, isError: convError } =
-    useDiaryConversation(id);
+  const { data: conversationData } = useDiaryConversation(id);
 
-  const diary =
-    detailError || !detailData
-      ? (DIARY_DETAIL_DUMMIES.find(d => d.id === id) ?? null)
-      : detailData;
+  const diary = detailData ?? null;
 
-  const messages =
-    convError || !conversationData
-      ? (CONVERSATION_MESSAGES_DUMMIES[id] ?? null)
-      : (conversationData as ConversationMessagesResponse);
+  const messages = conversationData as ConversationMessagesResponse | undefined;
 
   if (!diary) {
     return (
