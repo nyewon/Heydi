@@ -5,7 +5,7 @@
  * - 일기 수정 내용 표시
  * - 감정 상태, 주제, 한 줄 일기, 일기 내용 수정 기능
  * - 사진 업로드 및 삭제 기능
- * - - api 임시 연동, 연동 실패 시 상세보기 더미 데이터 사용
+ * - api 연동 완료
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -19,10 +19,6 @@ import {
   TopicModal,
 } from "@components/index";
 import { EMOTION_SENTENCE, EMOTION_S_ICONS } from "@constants/emotions";
-import {
-  DIARY_DETAIL_DUMMIES,
-  CONVERSATION_MESSAGES_DUMMIES,
-} from "@mocks/diary";
 import {
   DiaryDetailResponse,
   DiaryEditRequest,
@@ -42,11 +38,7 @@ import Plus from "@assets/icons/plus.svg?react";
 const DiaryEdit = () => {
   const navigate = useNavigate();
   const { diaryId } = useParams<{ diaryId: string }>();
-  const diaryData = DIARY_DETAIL_DUMMIES.find(d => d.id === Number(diaryId));
-
-  const [diary, setDiary] = useState<DiaryDetailResponse | null>(
-    diaryData ?? null,
-  );
+  const [diary, setDiary] = useState<DiaryDetailResponse | null>(null);
 
   const [messages, setMessages] = useState<ConversationMessagesResponse | null>(
     null,
@@ -85,29 +77,15 @@ const DiaryEdit = () => {
       try {
         const detail = await getDiaryDetail(id);
         setDiary(detail);
+      } catch (error) {
+        console.error("일기 상세 조회 실패", error);
+      }
 
-        try {
-          const conversation = await getDiaryConversation(id);
-          setMessages(conversation);
-        } catch (conversationError) {
-          console.error("대화 조회 실패", conversationError);
-
-          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
-
-          setMessages(dummyConversation);
-        }
-      } catch (detailError) {
-        console.error("일기 상세 조회 실패", detailError);
-
-        const dummyDiary = DIARY_DETAIL_DUMMIES.find(d => d.id === id);
-
-        if (dummyDiary) {
-          setDiary(dummyDiary);
-
-          const dummyConversation = CONVERSATION_MESSAGES_DUMMIES[id] ?? null;
-
-          setMessages(dummyConversation);
-        }
+      try {
+        const conversation = await getDiaryConversation(id);
+        setMessages(conversation);
+      } catch (error) {
+        console.error("대화 조회 실패", error);
       }
     };
 
