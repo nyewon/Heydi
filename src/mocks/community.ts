@@ -87,7 +87,7 @@ export const POST_DETAIL_DUMMIES: PostDetailResponse[] = [
     ],
     likeCount: 32,
     commentCount: 2,
-    isLiked: true,
+    liked: true,
     createdAt: "2025-12-07T10:00:00",
   },
   {
@@ -113,7 +113,7 @@ export const POST_DETAIL_DUMMIES: PostDetailResponse[] = [
     ],
     likeCount: 5,
     commentCount: 1,
-    isLiked: false,
+    liked: false,
     createdAt: "2025-12-05T09:30:00",
   },
   {
@@ -132,7 +132,7 @@ export const POST_DETAIL_DUMMIES: PostDetailResponse[] = [
     photos: [],
     likeCount: 0,
     commentCount: 0,
-    isLiked: false,
+    liked: false,
     createdAt: "2025-12-01T08:00:00",
   },
 ];
@@ -145,7 +145,7 @@ export const COMMUNITY_COMMENT_DUMMIES: CommunityCommentListResponse = {
       nickname: "Test1",
       profileUrl: "",
       content: "와 여행 시작부터 너무 알차네요!",
-      isMine: false,
+      mine: false,
       createdAt: "2025-12-07T11:30:00",
     },
     {
@@ -154,7 +154,7 @@ export const COMMUNITY_COMMENT_DUMMIES: CommunityCommentListResponse = {
       nickname: "Test2",
       profileUrl: "",
       content: "사진 많이 찍었겠다 😊",
-      isMine: false,
+      mine: false,
       createdAt: "2025-12-07T11:10:00",
     },
     {
@@ -163,7 +163,7 @@ export const COMMUNITY_COMMENT_DUMMIES: CommunityCommentListResponse = {
       nickname: "Test",
       profileUrl: "",
       content: "감사합니다",
-      isMine: true,
+      mine: true,
       createdAt: "2025-12-07T11:10:00",
     },
   ],
