@@ -126,7 +126,7 @@ const Signup = () => {
       <BackHeader />
 
       <Container className="pt-6 pb-10">
-        <div className="relative flex items-center justify-center mt-5 mb-18">
+        <div className="relative flex items-center justify-center mt-4 mb-16">
           {profileImg ? (
             <img
               src={profileImg}
@@ -243,7 +243,7 @@ const Signup = () => {
           variant="full"
           disabled={isDisabled}
           onClick={handleSignup}
-          className="w-full mt-24"
+          className="w-full mt-16"
         >
           회원가입하기
         </Button>

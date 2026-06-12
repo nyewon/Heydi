@@ -41,6 +41,8 @@ const DiaryDetail = () => {
 
   const messages = conversationData as ConversationMessagesResponse | undefined;
 
+  const ENABLE_REPORT_BUTTON = false;
+
   if (!diary) {
     return (
       <div className="w-full flex justify-center items-center text-center p-10 text-sm font-bold text-[#76615A]">
@@ -134,16 +136,18 @@ const DiaryDetail = () => {
           </DiaryInfoBox>
         )}
 
-        <Button
-          variant="full"
-          className="w-full mt-8"
-          onClick={handleSendToReport}
-          disabled={isSending || diary.report.included}
-        >
-          {isSending || diary.report.included
-            ? "리포트 전달 완료"
-            : "리포트로 보내기"}
-        </Button>
+        {ENABLE_REPORT_BUTTON && (
+          <Button
+            variant="full"
+            className="w-full mt-8"
+            onClick={handleSendToReport}
+            disabled={isSending || diary.report.included}
+          >
+            {isSending || diary.report.included
+              ? "리포트 전달 완료"
+              : "리포트로 보내기"}
+          </Button>
+        )}
       </Container>
     </div>
   );

@@ -15,7 +15,7 @@ const Container = ({
     <div
       className={`
         w-full flex flex-col justify-center items-center
-        px-10 mt-4
+        px-6 mt-4
         ${withBottomNav ? "mb-20" : "mb-0"} 
         ${className}
       `}

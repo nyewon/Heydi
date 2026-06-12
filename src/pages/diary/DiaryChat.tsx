@@ -303,7 +303,7 @@ const DiaryChat = () => {
 
         <Button
           variant="full"
-          className="w-full mt-17"
+          className="w-full mt-12"
           onClick={handleExitChat}
         >
           대화 종료하기
